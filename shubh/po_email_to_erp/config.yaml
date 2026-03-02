@@ -1,0 +1,49 @@
+# PO Email → ERP Entry — Config
+workflow_name: po_email_to_erp
+description: "Parse purchase order emails/attachments → extract line items → validate → push to ERP"
+
+prompts:
+  system: |
+    You are a purchase order processing agent for wholesale distribution.
+    Extract PO details with extreme accuracy. SKU, quantities, and prices must be exact.
+    Return valid JSON only.
+
+  extraction: |
+    Extract purchase order details from this email/document. Return ONLY valid JSON.
+
+    Fields:
+    - po_number: string (purchase order number)
+    - customer_name: string (buyer company name)
+    - customer_email: string (if available, else "N/A")
+    - order_date: string (YYYY-MM-DD)
+    - requested_ship_date: string (YYYY-MM-DD, or "ASAP" if not specified)
+    - shipping_address: string
+    - line_items: array of objects, each with:
+      - sku: string
+      - description: string
+      - quantity: integer
+      - unit_price: float
+      - total: float
+    - subtotal: float
+    - tax: float (0 if not mentioned)
+    - total: float
+    - payment_terms: string (e.g. "Net 30", "N/A")
+    - special_instructions: string (or "N/A")
+    - confidence: float (0.0-1.0)
+
+    Document content:
+    {input_text}
+
+validation:
+  # Known SKU prefixes for validation
+  valid_sku_prefixes: ["SKU-", "WHL-", "DST-"]
+  # Maximum line item price tolerance vs catalog (%)
+  price_tolerance_pct: 5.0
+  # Catalog prices (example — override per client)
+  catalog:
+    SKU-1001: 24.99
+    SKU-1002: 49.99
+    SKU-1003: 12.50
+    WHL-2001: 89.99
+    WHL-2002: 34.50
+    DST-3001: 199.99

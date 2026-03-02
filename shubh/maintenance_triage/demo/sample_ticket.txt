@@ -1,0 +1,16 @@
+Ticket submitted by: Floor Supervisor, Line 3
+Date: 2025-03-14 14:22
+
+Subject: Hydraulic press making grinding noise — possible seal failure
+
+The hydraulic press on Assembly Line 3 (Equipment ID: HP-042) has been making 
+a loud grinding noise since this morning. Operators noticed hydraulic fluid leaking 
+around the main cylinder seal. Production has been slowed — we're running at 60% 
+capacity on this line.
+
+Possible safety concern: if the seal fully fails, there is risk of high-pressure 
+fluid spray. We've put up caution tape but the press is still running at reduced power.
+
+Please send someone ASAP. This could shut down the line completely if not addressed today.
+
+Location: Building A, Assembly Line 3, Station 7

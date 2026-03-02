@@ -1,0 +1,39 @@
+# Warranty Claim Processing — Config
+workflow_name: warranty_claims
+description: "Parse claim forms → validate against warranty rules → approve/reject/review"
+
+prompts:
+  system: |
+    You are a warranty claims processing agent. Extract claim details from forms
+    and documents with precision. Product IDs, dates, and serial numbers must be exact.
+    Return valid JSON only.
+
+  extraction: |
+    Extract warranty claim information from this document. Return ONLY valid JSON.
+
+    Fields:
+    - claim_id: string (claim number if present, else "N/A")
+    - customer_name: string
+    - customer_email: string (if available, else "N/A")
+    - product_id: string (product model/SKU)
+    - serial_number: string (if available, else "N/A")
+    - purchase_date: string (YYYY-MM-DD)
+    - claim_date: string (YYYY-MM-DD, today if not specified)
+    - issue_type: string (one of: "defect", "malfunction", "damage", "missing_parts", "performance", "other")
+    - issue_description: string (brief description of the problem)
+    - requested_resolution: string (one of: "replacement", "repair", "refund", "credit")
+    - attachments_mentioned: boolean (whether photos/docs were mentioned)
+    - confidence: float (0.0-1.0)
+
+    Claim document:
+    {input_text}
+
+rules:
+  # Warranty period in days from purchase date
+  warranty_period_days: 365
+  # Extended warranty period (if applicable)
+  extended_warranty_days: 730
+  # Known valid product prefixes
+  valid_product_prefixes: ["PRD-", "SKU-", "MDL-"]
+  # Max claim amount for auto-approval
+  auto_approve_max_days: 90

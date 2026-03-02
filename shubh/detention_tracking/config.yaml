@@ -1,0 +1,35 @@
+# Detention Tracking Automation — Config
+workflow_name: detention_tracking
+description: "Track arrival/departure timestamps → calculate detention fees → generate invoice draft"
+
+prompts:
+  system: |
+    You are a logistics detention tracking agent. Extract arrival and departure
+    timestamps from emails, check-call logs, or facility records. Be precise with
+    times and facility names. Return valid JSON only.
+
+  extraction: |
+    Extract the following fields from this detention-related document or message.
+    Return ONLY valid JSON.
+
+    Fields:
+    - load_id: string (load/shipment number)
+    - facility_name: string (facility where detention occurred)
+    - carrier_name: string (carrier name if available, else "N/A")
+    - driver_name: string (driver name if available, else "N/A")
+    - arrival_time: string (ISO 8601 datetime, e.g. "2025-03-14T08:00:00")
+    - departure_time: string (ISO 8601 datetime)
+    - free_time_minutes: integer (free time allowed before detention, default 120)
+    - detention_reason: string (reason for delay: "loading", "unloading", "paperwork", "other")
+    - confidence: float (0.0-1.0)
+
+    Document content:
+    {input_text}
+
+thresholds:
+  # Free time before detention kicks in (minutes)
+  default_free_time_minutes: 120
+  # Detention rate per hour
+  rate_per_hour: 75.00
+  # Maximum billable detention hours
+  max_detention_hours: 24

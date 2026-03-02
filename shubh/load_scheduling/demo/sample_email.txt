@@ -1,0 +1,27 @@
+Subject: Scheduling Request — Load #TRK-88412
+From: dispatch@acmefreight.com
+Date: Mon, 10 Mar 2025 09:15:00 -0500
+
+Hi Team,
+
+Please schedule the following pickup:
+
+Load Number: TRK-88412
+Facility: Johnson Distribution Center
+Address: 1450 Industrial Blvd, Memphis, TN 38118
+Date: March 14, 2025
+Time: 08:00 AM - 10:00 AM (2-hour window)
+Type: Pickup
+
+Contact at facility: Mike Thompson, (901) 555-0142
+
+Special Instructions:
+- Dock 7, south entrance
+- Driver must check in at guard shack first
+- 48-foot trailer required
+
+Please confirm once appointment is locked in.
+
+Thanks,
+Sarah Chen
+Dispatch Manager, Acme Freight

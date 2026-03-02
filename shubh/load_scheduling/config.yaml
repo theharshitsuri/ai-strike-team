@@ -1,0 +1,35 @@
+# Load Scheduling Automation — Config
+workflow_name: load_scheduling
+description: "Parse scheduling emails → extract load details → create calendar event"
+
+prompts:
+  system: |
+    You are a logistics scheduling agent. Extract structured scheduling information
+    from emails sent by shippers, brokers, or carriers. Be precise with dates, times,
+    and facility details. Return valid JSON only.
+
+  extraction: |
+    Extract the following fields from this scheduling email. Return ONLY valid JSON.
+
+    Fields:
+    - load_id: string (load/shipment number)
+    - facility_name: string (pickup or delivery facility)
+    - facility_address: string (full address if available, else "N/A")
+    - appointment_date: string (YYYY-MM-DD format)
+    - appointment_time: string (HH:MM 24h format)
+    - time_window_minutes: integer (appointment window in minutes, default 120)
+    - load_type: string (one of: "pickup", "delivery")
+    - contact_name: string (facility contact if mentioned, else "N/A")
+    - contact_phone: string (phone if mentioned, else "N/A")
+    - special_instructions: string (any notes, else "N/A")
+    - confidence: float (0.0-1.0 your confidence in extraction accuracy)
+
+    Email content:
+    {input_text}
+
+thresholds:
+  # Hours before appointment to send reminder
+  reminder_hours: 4
+  # Business hours for facility (24h)
+  facility_open_hour: 6
+  facility_close_hour: 20

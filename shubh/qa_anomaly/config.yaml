@@ -1,0 +1,56 @@
+# QA Anomaly Detection — Config
+workflow_name: qa_anomaly
+description: "Analyze inspection logs → detect statistical anomalies → generate plain-English summary"
+
+prompts:
+  system: |
+    You are a manufacturing quality assurance agent. You analyze inspection data,
+    identify anomalies, and generate clear, actionable summaries for plant managers.
+    Be specific about which measurements are out of spec.
+
+  summarize_anomalies: |
+    Analyze these QA inspection anomalies and write a plain-English executive summary.
+    Be specific, mention exact measurements and how far they deviate from specification.
+
+    Anomalies detected:
+    {anomalies_json}
+
+    Column specifications:
+    {specs_json}
+
+    Return JSON with:
+    - summary: string (2-4 paragraph executive summary)
+    - severity: string ("low", "medium", "high", "critical")
+    - recommended_actions: array of strings
+    - confidence: float (0.0-1.0)
+
+thresholds:
+  # Z-score above which a measurement is flagged as anomalous
+  z_score_threshold: 2.5
+  # Minimum number of data points before anomaly detection activates
+  min_data_points: 5
+  # Percentage deviation from spec to flag
+  spec_deviation_pct: 0.05
+
+# Column specifications (example — override per client)
+column_specs:
+  temperature:
+    unit: "°F"
+    min: 350
+    max: 400
+    target: 375
+  pressure:
+    unit: "PSI"
+    min: 28
+    max: 35
+    target: 31
+  thickness:
+    unit: "mm"
+    min: 2.0
+    max: 2.5
+    target: 2.25
+  weight:
+    unit: "g"
+    min: 495
+    max: 505
+    target: 500

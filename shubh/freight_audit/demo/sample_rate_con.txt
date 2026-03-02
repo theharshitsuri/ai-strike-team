@@ -1,0 +1,10 @@
+RATE CONFIRMATION
+Rate Con #: RC-2025-4410
+Carrier: Heartland Transport LLC
+Load: FRT-44500
+
+Agreed Charges:
+  Linehaul                 $2,850.00
+  Fuel Surcharge (26%)       $741.00
+  Detention (2 hrs)          $150.00
+  TOTAL                    $3,741.00

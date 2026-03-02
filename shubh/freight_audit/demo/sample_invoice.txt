@@ -1,0 +1,12 @@
+CARRIER INVOICE
+Invoice #: INV-2025-8834
+Date: 2025-03-15
+Carrier: Heartland Transport LLC
+Load: FRT-44500
+
+Charges:
+  Linehaul                 $2,850.00
+  Fuel Surcharge (28%)       $798.00
+  Detention (3 hrs)          $225.00
+  Lumper Fee                 $150.00
+  TOTAL                    $4,023.00

@@ -1,0 +1,21 @@
+Hi,
+
+I need to schedule a service call for our HVAC system at the downtown office.
+
+Preferably next Tuesday (March 18, 2025) around 10 AM. The visit usually takes about 
+2 hours. The technician will need access to the rooftop unit, so please coordinate 
+with building management.
+
+Location: 200 Main Street, Suite 400, Denver, CO 80202
+Contact: Rachel Kim, Facilities Manager (rachel.kim@company.com)
+Participants: Rachel Kim, building maintenance lead
+
+This is a routine quarterly maintenance, but we've noticed the unit cycling more 
+frequently so there may be an issue. Would appreciate if we can get this done sooner 
+rather than later.
+
+Priority: High
+Flexibility: Time is flexible, but prefer morning.
+
+Thanks,
+Tom

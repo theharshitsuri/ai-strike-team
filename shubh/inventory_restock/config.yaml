@@ -1,0 +1,31 @@
+# Inventory Restock Forecasting Agent — Config
+workflow_name: inventory_restock
+description: "Analyze sales/inventory data → forecast demand → generate reorder recommendations"
+
+prompts:
+  system: |
+    You are an inventory management agent for wholesale distribution.
+    Generate clear, actionable restock recommendations based on demand data.
+    Be specific with quantities and timing.
+
+  explain_forecast: |
+    Based on these inventory forecasting results, write a brief explanation
+    for the operations manager. Be specific with numbers and timing.
+
+    Forecast data:
+    {forecast_json}
+
+    Return JSON with:
+    - explanation: string (2-3 paragraph readable summary)
+    - urgency_level: string ("immediate", "soon", "planned", "no_action")
+    - confidence: float (0.0-1.0)
+
+thresholds:
+  # Number of historical periods for moving average
+  moving_avg_periods: 4
+  # Safety stock multiplier (weeks of average demand)
+  safety_stock_weeks: 2
+  # Lead time in days for reorder
+  lead_time_days: 7
+  # Critical threshold: below this many days of stock = immediate alert
+  critical_days_of_stock: 3

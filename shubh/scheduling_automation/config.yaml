@@ -1,0 +1,55 @@
+# Generic Scheduling Automation — Config
+workflow_name: scheduling_automation
+description: "Parse scheduling requests → check availability → optimize slots → confirm"
+
+prompts:
+  system: |
+    You are a scheduling automation agent. Parse free-text scheduling requests
+    and extract structured appointment data. Handle various date/time formats.
+    Return valid JSON only.
+
+  extraction: |
+    Extract scheduling request information from this text. Return ONLY valid JSON.
+
+    Fields:
+    - request_id: string (generate if not provided, format "SCH-XXXXX")
+    - requester_name: string
+    - requester_email: string (if available, else "N/A")
+    - request_type: string (one of: "meeting", "delivery", "service_call", "inspection", "pickup", "installation", "other")
+    - preferred_date: string (YYYY-MM-DD)
+    - preferred_time: string (HH:MM 24h format)
+    - duration_minutes: integer (estimated duration, default 60)
+    - location: string
+    - participants: array of strings (names of people involved)
+    - priority: string (one of: "high", "normal", "low")
+    - notes: string (any special requirements or "N/A")
+    - flexibility: string (one of: "exact", "flexible_time", "flexible_date", "fully_flexible")
+    - confidence: float (0.0-1.0)
+
+    Scheduling request:
+    {input_text}
+
+  confirmation_message: |
+    Write a brief, professional scheduling confirmation message.
+
+    Details:
+    - Type: {request_type}
+    - Date: {date}
+    - Time: {time}
+    - Duration: {duration} minutes
+    - Location: {location}
+    - Participants: {participants}
+
+    Return JSON with:
+    - subject: string
+    - body: string
+    - confidence: float (0.0-1.0)
+
+thresholds:
+  # Business hours
+  business_start_hour: 8
+  business_end_hour: 18
+  # Minimum gap between appointments (minutes)
+  min_gap_minutes: 15
+  # Maximum scheduling days in advance
+  max_advance_days: 90

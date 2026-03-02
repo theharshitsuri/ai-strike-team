@@ -1,0 +1,48 @@
+# Freight Audit Automation — Config
+workflow_name: freight_audit
+description: "Compare carrier invoice vs rate confirmation → flag mismatches → generate audit report"
+
+prompts:
+  system: |
+    You are a freight audit agent. Extract charge line items from invoices and
+    rate confirmations with extreme precision. Every dollar matters.
+    Return valid JSON only.
+
+  invoice_extraction: |
+    Extract all charge line items from this carrier INVOICE.
+    Return ONLY valid JSON with fields:
+    - load_id: string
+    - carrier_name: string
+    - invoice_number: string
+    - invoice_date: string (YYYY-MM-DD)
+    - line_items: array of objects, each with:
+      - description: string (e.g. "linehaul", "fuel_surcharge", "detention", "lumper", "accessorial")
+      - amount: float
+    - total_amount: float
+    - confidence: float (0.0-1.0)
+
+    Invoice content:
+    {input_text}
+
+  rate_extraction: |
+    Extract all charge line items from this RATE CONFIRMATION.
+    Return ONLY valid JSON with fields:
+    - load_id: string
+    - carrier_name: string
+    - rate_con_number: string
+    - line_items: array of objects, each with:
+      - description: string (e.g. "linehaul", "fuel_surcharge", "detention", "lumper", "accessorial")
+      - amount: float
+    - total_amount: float
+    - confidence: float (0.0-1.0)
+
+    Rate confirmation content:
+    {input_text}
+
+thresholds:
+  # Dollar tolerance for line-item mismatch (below this = pass)
+  line_item_tolerance: 5.00
+  # Dollar tolerance for total mismatch
+  total_tolerance: 10.00
+  # Percentage tolerance for fuel surcharge variance
+  fuel_pct_tolerance: 0.02

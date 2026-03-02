@@ -1,0 +1,38 @@
+Subject: PO #WD-2025-1140 — Monthly Restock Order
+From: purchasing@midwestsupply.com
+Date: Thu, 13 Mar 2025 11:20:00 -0500
+
+Hi Team,
+
+Please process the following purchase order at your earliest convenience.
+
+PO Number: WD-2025-1140
+Company: MidWest Supply Co.
+
+Ship To:
+MidWest Supply Co. Warehouse
+8900 Commerce Dr, Suite 200
+Indianapolis, IN 46256
+
+Items:
+1. SKU-1001 — Industrial Bolt Pack (100ct)    Qty: 200    @ $24.99 ea = $4,998.00
+2. SKU-1002 — Heavy Duty Bracket Set          Qty: 50     @ $49.99 ea = $2,499.50
+3. WHL-2001 — Hydraulic Hose Assembly         Qty: 30     @ $89.99 ea = $2,699.70
+4. SKU-1003 — Safety Pin Assortment           Qty: 500    @ $12.50 ea = $6,250.00
+
+Subtotal: $16,447.20
+Tax: $0.00 (tax exempt — certificate on file)
+Total: $16,447.20
+
+Payment Terms: Net 30
+Requested Ship Date: March 20, 2025
+
+Special Instructions: 
+- Palletize by SKU
+- Include packing list per pallet
+- Delivery appointment required — call (317) 555-0198
+
+Thanks,
+Jennifer Walsh
+Procurement Manager
+MidWest Supply Co.

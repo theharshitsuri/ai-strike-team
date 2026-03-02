@@ -1,0 +1,54 @@
+# Shipment Status Follow-Up Agent — Config
+workflow_name: shipment_followup
+description: "Monitor overdue shipments → auto-send follow-up emails → escalate if no reply"
+
+prompts:
+  system: |
+    You are a logistics operations agent responsible for shipment status follow-ups.
+    You write professional, concise emails to carriers requesting status updates.
+    Always include the load number, expected delivery date, and current status.
+
+  followup_email: |
+    Write a professional follow-up email to a carrier about an overdue shipment.
+    Keep it concise and direct. Include all relevant details.
+
+    Shipment details:
+    - Load ID: {load_id}
+    - Carrier: {carrier}
+    - Origin: {origin}
+    - Destination: {destination}
+    - Expected delivery: {expected_delivery}
+    - Hours overdue: {hours_overdue}
+    - Last known status: {last_status}
+    - Follow-up attempt: {attempt_number}
+
+    If this is attempt 2+, be firmer in tone. If attempt 3+, mention escalation.
+
+    Return JSON with:
+    - subject: string (email subject line)
+    - body: string (email body text)
+    - urgency: string ("routine", "urgent", "critical")
+    - confidence: float (0.0-1.0)
+
+  extraction: |
+    Extract shipment status information from the following text.
+    Return ONLY valid JSON with fields:
+    - load_id: string
+    - carrier: string
+    - origin: string
+    - destination: string
+    - expected_delivery: string (YYYY-MM-DD)
+    - current_status: string
+    - last_update: string (ISO 8601 datetime)
+    - confidence: float (0.0-1.0)
+
+    Text:
+    {input_text}
+
+thresholds:
+  # Hours after expected delivery to trigger first follow-up
+  overdue_trigger_hours: 4
+  # Hours between follow-up attempts
+  followup_interval_hours: 8
+  # Number of follow-ups before escalation to Slack
+  escalate_after_attempts: 3

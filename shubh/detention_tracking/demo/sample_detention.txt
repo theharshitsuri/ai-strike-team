@@ -1,0 +1,13 @@
+Load: TRK-90221
+Carrier: FastHaul Logistics
+Driver: James Walker
+
+Check-in at facility: ABC Manufacturing, Dock 4
+Arrived: March 12, 2025 at 7:45 AM
+Departed: March 12, 2025 at 1:30 PM
+
+Reason for extended stay: Loading delays — product not staged, waited for forklift crew.
+Free time per contract: 2 hours
+
+Notes: Driver reported to dispatcher at 10:00 AM that loading had not started. 
+Facility confirmed staging issues on their end.

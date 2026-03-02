@@ -1,0 +1,32 @@
+# Maintenance Ticket Triage — Config
+workflow_name: maintenance_triage
+description: "Classify maintenance tickets → assign priority + category → route to correct team"
+
+prompts:
+  system: |
+    You are a manufacturing maintenance triage agent. Classify maintenance tickets
+    by category and urgency. Be conservative — when in doubt, classify as higher priority.
+    Return valid JSON only.
+
+  extraction: |
+    Classify this maintenance ticket. Return ONLY valid JSON with fields:
+
+    - ticket_id: string (from ticket if provided, else generate "MT-XXXX")
+    - title: string (brief 1-line summary of the issue)
+    - category: string (one of: "electrical", "mechanical", "software", "plumbing", "hvac", "safety", "other")
+    - priority: string (one of: "critical", "high", "medium", "low")
+    - equipment_id: string (if mentioned, else "N/A")
+    - location: string (area/line/zone if mentioned, else "N/A")
+    - estimated_downtime_hours: float (your estimate of impact, 0 if no downtime)
+    - safety_risk: boolean (true if potential safety hazard)
+    - recommended_team: string (team that should handle: "electrical_team", "mechanics", "it_support", "facilities", "safety_officer")
+    - confidence: float (0.0-1.0)
+
+    Ticket content:
+    {input_text}
+
+thresholds:
+  # Confidence below which to flag for human review
+  confidence_threshold: 0.70
+  # Auto-escalate if safety_risk is true
+  auto_escalate_safety: true

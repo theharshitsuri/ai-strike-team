@@ -1,0 +1,29 @@
+# Production Report Auto-Generation — Config
+workflow_name: production_report
+description: "Daily production CSV → aggregate metrics → LLM executive summary → report"
+
+prompts:
+  system: |
+    You are a manufacturing production analyst. Generate concise, data-driven
+    executive summaries from daily production data. Highlight output trends,
+    downtime issues, and variance from targets. Be specific with numbers.
+
+  summarize: |
+    Generate an executive production summary from this data. Return ONLY valid JSON.
+
+    Production metrics:
+    {metrics_json}
+
+    Return JSON with:
+    - executive_summary: string (3-5 paragraph narrative hitting: output, downtime, quality, variance)
+    - highlights: array of strings (top 3 positive highlights)
+    - concerns: array of strings (top 3 concerns or issues)
+    - recommendations: array of strings (2-3 actionable recommendations)
+    - overall_grade: string (one of: "excellent", "good", "satisfactory", "below_target", "critical")
+    - confidence: float (0.0-1.0)
+
+targets:
+  daily_output_units: 1000
+  max_downtime_pct: 5.0
+  quality_pass_rate_pct: 98.0
+  max_scrap_rate_pct: 2.0

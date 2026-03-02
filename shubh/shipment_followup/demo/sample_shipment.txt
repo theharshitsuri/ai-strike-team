@@ -1,0 +1,10 @@
+Load ID: FRT-44102
+Carrier: MidWest Express Trucking
+Route: Chicago, IL → Nashville, TN
+Expected Delivery: 2025-03-12
+Last Status Update: In transit — departed Chicago terminal at 6:00 AM on March 11, 2025
+Current Date/Time: 2025-03-13 14:00
+
+Notes: No driver check-in since departure. GPS signal lost near Indianapolis. 
+Dispatcher at MidWest Express has not responded to 2 voicemails.
+This is the 2nd follow-up attempt.
