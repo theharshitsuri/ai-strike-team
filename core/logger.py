@@ -12,13 +12,19 @@ import logging
 import structlog
 from core.config import settings
 
+_LOGGING_CONFIGURED = False
+
 
 def setup_logging() -> None:
+    global _LOGGING_CONFIGURED
+    if _LOGGING_CONFIGURED:
+        return
+    _LOGGING_CONFIGURED = True
+
     log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
 
     shared_processors = [
         structlog.contextvars.merge_contextvars,
-        structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),

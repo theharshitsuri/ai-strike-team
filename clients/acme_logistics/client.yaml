@@ -1,0 +1,11 @@
+company_name: Acme Logistics
+contact_email: john@acme.com
+contact_name: John
+contract_type: deployment
+contract_value: 0
+deployment_start: '2026-03-04'
+deployment_status: setup
+enabled_workflows: []
+integrations: {}
+monthly_retainer: 0
+vertical: logistics
