@@ -96,3 +96,36 @@ def save_confirmation(confirmation: ScheduleConfirmation) -> dict:
         json.dump(confirmation.model_dump(), f, indent=2, default=str)
     log.info("confirmation_saved", request_id=confirmation.request_id, path=str(out_path))
     return {"path": str(out_path)}
+
+
+def generate_scheduling_report(request: ScheduleRequest, confirmation: ScheduleConfirmation) -> str:
+    """Generate professional scheduling confirmation report."""
+    from datetime import datetime
+
+    report = f"""# ✅ Scheduling Confirmation Report
+
+## Appointment Details
+| Field | Value |
+|-------|-------|
+| Request ID | `{confirmation.request_id}` |
+| Date | {confirmation.confirmed_date} |
+| Time | {confirmation.confirmed_time} |
+| Duration | {confirmation.duration_minutes} minutes |
+| Location | {confirmation.location} |
+| Participants | {', '.join(confirmation.participants)} |
+| Slot Optimized | {'Yes — moved from preferred time' if confirmation.slot_optimized else 'No — preferred slot available'} |
+
+## Confirmation Email
+**Subject:** {confirmation.confirmation_subject}
+
+{confirmation.confirmation_body}
+
+---
+*Confidence: {confirmation.confidence:.0%} | Confirmed: {datetime.utcnow().isoformat()}*
+"""
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    report_path = OUTPUT_DIR / f"scheduling_report_{confirmation.request_id}.md"
+    with open(report_path, "w") as f:
+        f.write(report)
+    return report

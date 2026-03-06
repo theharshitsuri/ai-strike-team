@@ -1,16 +1,43 @@
 # Shipment Status Follow-Up Agent — Config
 workflow_name: shipment_followup
-description: "Monitor overdue shipments → auto-send follow-up emails → escalate if no reply"
+description: "Monitor overdue shipments → auto-draft follow-up emails → escalate if unresolved"
 
 prompts:
   system: |
-    You are a logistics operations agent responsible for shipment status follow-ups.
-    You write professional, concise emails to carriers requesting status updates.
-    Always include the load number, expected delivery date, and current status.
+    You are a logistics operations agent at a freight brokerage. You write
+    professional, concise follow-up emails to carriers requesting shipment
+    status updates. You adjust tone based on urgency — polite for first
+    contact, firmer for repeated follow-ups, and escalation language for
+    critical delays. Always return valid JSON.
+
+  extraction: |
+    Extract shipment status information from the following text.
+    Return ONLY valid JSON matching this exact schema:
+    {{
+      "load_id": "string — load/shipment number",
+      "carrier": "string — carrier/trucking company name",
+      "carrier_contact_email": "string — carrier email if found, or 'N/A'",
+      "origin": "string — origin city, state or full address",
+      "destination": "string — destination city, state or full address",
+      "expected_delivery": "string — YYYY-MM-DD expected delivery date",
+      "actual_pickup_date": "string — YYYY-MM-DD actual pickup date or 'N/A'",
+      "current_status": "string — current shipment status (e.g., 'in_transit', 'at_origin', 'delayed', 'delivered', 'unknown')",
+      "last_update": "string — ISO 8601 datetime of last status update or 'N/A'",
+      "last_known_location": "string — last GPS/checkcall location or 'N/A'",
+      "customer_name": "string — end customer/consignee name or 'N/A'",
+      "commodity": "string — what is being shipped or 'general freight'",
+      "is_overdue": "boolean — true if past expected delivery",
+      "hours_overdue": "integer — hours past expected delivery (0 if not overdue)",
+      "confidence": "float 0.0-1.0",
+      "notes": "string — any relevant context"
+    }}
+
+    TEXT:
+    {input_text}
 
   followup_email: |
-    Write a professional follow-up email to a carrier about an overdue shipment.
-    Keep it concise and direct. Include all relevant details.
+    Write a professional follow-up email to a carrier about a shipment.
+    Adjust tone based on attempt number and urgency.
 
     Shipment details:
     - Load ID: {load_id}
@@ -20,35 +47,28 @@ prompts:
     - Expected delivery: {expected_delivery}
     - Hours overdue: {hours_overdue}
     - Last known status: {last_status}
+    - Last location: {last_location}
+    - Customer: {customer}
     - Follow-up attempt: {attempt_number}
 
-    If this is attempt 2+, be firmer in tone. If attempt 3+, mention escalation.
+    TONE RULES:
+    - Attempt 1: Professional, polite request for status update
+    - Attempt 2: Firmer, express concern about the delay
+    - Attempt 3+: Urgent, mention escalation to management and potential claims
 
-    Return JSON with:
-    - subject: string (email subject line)
-    - body: string (email body text)
-    - urgency: string ("routine", "urgent", "critical")
-    - confidence: float (0.0-1.0)
-
-  extraction: |
-    Extract shipment status information from the following text.
-    Return ONLY valid JSON with fields:
-    - load_id: string
-    - carrier: string
-    - origin: string
-    - destination: string
-    - expected_delivery: string (YYYY-MM-DD)
-    - current_status: string
-    - last_update: string (ISO 8601 datetime)
-    - confidence: float (0.0-1.0)
-
-    Text:
-    {input_text}
+    Return ONLY valid JSON:
+    {{
+      "subject": "string — email subject line",
+      "body": "string — full email body text",
+      "urgency": "string — 'routine', 'urgent', or 'critical'",
+      "should_escalate": "boolean — true if attempt >= 3 or hours_overdue > 24",
+      "recommended_action": "string — what should happen next",
+      "confidence": "float 0.0-1.0"
+    }}
 
 thresholds:
-  # Hours after expected delivery to trigger first follow-up
   overdue_trigger_hours: 4
-  # Hours between follow-up attempts
   followup_interval_hours: 8
-  # Number of follow-ups before escalation to Slack
   escalate_after_attempts: 3
+  critical_overdue_hours: 24
+  customer_notify_after_hours: 12

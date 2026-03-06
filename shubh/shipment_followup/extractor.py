@@ -21,35 +21,46 @@ def _load_config() -> dict:
 
 
 async def extract_shipment_status(raw_text: str) -> ShipmentStatus:
-    """Extract shipment status data from text."""
+    """Extract shipment status from tracking data, emails, or check-call logs."""
     config = _load_config()
-    prompt = config["prompts"]["extraction"].replace("{input_text}", raw_text)
-    system = config["prompts"]["system"]
+    prompts = config["prompts"]
 
+    prompt = prompts["extraction"].replace("{input_text}", raw_text)
+    system = prompts["system"]
+
+    log.info("extracting_shipment_status", input_length=len(raw_text))
     response = await llm_call(prompt=prompt, system=system)
-    return parse_llm_json(response, ShipmentStatus)
+    result = parse_llm_json(response, ShipmentStatus)
+    log.info("shipment_extraction_complete",
+             load_id=result.load_id, carrier=result.carrier,
+             status=result.current_status, overdue=result.is_overdue)
+    return result
 
 
-async def generate_followup_email(status: ShipmentStatus, attempt_number: int = 1) -> FollowUpEmail:
-    """Generate a follow-up email using LLM."""
+async def generate_followup_email(
+    status: ShipmentStatus,
+    attempt_number: int = 1,
+) -> FollowUpEmail:
+    """Generate a tone-appropriate follow-up email based on attempt number."""
     config = _load_config()
-    thresholds = config["thresholds"]
+    prompts = config["prompts"]
 
-    prompt = config["prompts"]["followup_email"].format(
-        load_id=status.load_id,
-        carrier=status.carrier,
-        origin=status.origin,
-        destination=status.destination,
-        expected_delivery=status.expected_delivery,
-        hours_overdue=status.hours_overdue,
-        last_status=status.current_status,
-        attempt_number=attempt_number,
-    )
-    system = config["prompts"]["system"]
+    prompt = prompts["followup_email"]
+    prompt = prompt.replace("{load_id}", status.load_id)
+    prompt = prompt.replace("{carrier}", status.carrier)
+    prompt = prompt.replace("{origin}", status.origin)
+    prompt = prompt.replace("{destination}", status.destination)
+    prompt = prompt.replace("{expected_delivery}", status.expected_delivery)
+    prompt = prompt.replace("{hours_overdue}", str(status.hours_overdue))
+    prompt = prompt.replace("{last_status}", status.current_status)
+    prompt = prompt.replace("{last_location}", status.last_known_location)
+    prompt = prompt.replace("{customer}", status.customer_name)
+    prompt = prompt.replace("{attempt_number}", str(attempt_number))
 
+    system = prompts["system"]
+
+    log.info("generating_followup_email", load_id=status.load_id, attempt=attempt_number)
     response = await llm_call(prompt=prompt, system=system)
-    email_result = parse_llm_json(response, FollowUpEmail)
-    email_result.attempt_number = attempt_number
-    email_result.should_escalate = attempt_number >= thresholds["escalate_after_attempts"]
-
-    return email_result
+    email = parse_llm_json(response, FollowUpEmail)
+    log.info("followup_email_generated", urgency=email.urgency, escalate=email.should_escalate)
+    return email

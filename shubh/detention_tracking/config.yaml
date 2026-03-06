@@ -1,35 +1,49 @@
 # Detention Tracking Automation — Config
 workflow_name: detention_tracking
-description: "Track arrival/departure timestamps → calculate detention fees → generate invoice draft"
+description: "Track arrival/departure timestamps → calculate detention fees → generate professional invoice"
 
 prompts:
   system: |
-    You are a logistics detention tracking agent. Extract arrival and departure
-    timestamps from emails, check-call logs, or facility records. Be precise with
-    times and facility names. Return valid JSON only.
+    You are an expert logistics detention tracking agent. You extract arrival and
+    departure timestamps from check-call logs, emails, driver messages, or facility
+    records. You understand that detention = time spent at facility beyond free time.
+    Be extremely precise with datetime parsing. Return valid JSON only.
 
   extraction: |
-    Extract the following fields from this detention-related document or message.
-    Return ONLY valid JSON.
+    Extract detention event data from this document and return a JSON object.
 
-    Fields:
-    - load_id: string (load/shipment number)
-    - facility_name: string (facility where detention occurred)
-    - carrier_name: string (carrier name if available, else "N/A")
-    - driver_name: string (driver name if available, else "N/A")
-    - arrival_time: string (ISO 8601 datetime, e.g. "2025-03-14T08:00:00")
-    - departure_time: string (ISO 8601 datetime)
-    - free_time_minutes: integer (free time allowed before detention, default 120)
-    - detention_reason: string (reason for delay: "loading", "unloading", "paperwork", "other")
-    - confidence: float (0.0-1.0)
+    REQUIRED OUTPUT FORMAT (return ONLY this JSON, no other text):
+    {{
+      "load_id": "string — load/shipment/reference number",
+      "facility_name": "string — facility where detention occurred",
+      "facility_type": "string — 'shipper', 'consignee', 'warehouse', or 'other'",
+      "carrier_name": "string — trucking company name, or 'N/A'",
+      "driver_name": "string — driver name, or 'N/A'",
+      "arrival_time": "string — ISO 8601 datetime of truck arrival (e.g., '2025-03-14T08:00:00')",
+      "departure_time": "string — ISO 8601 datetime of truck departure",
+      "check_in_time": "string — when driver checked in at guard shack, or same as arrival_time",
+      "loading_start_time": "string — when loading/unloading actually started, or 'N/A'",
+      "free_time_minutes": "integer — free time allowed (default 120 if not specified)",
+      "detention_reason": "string — exactly one of: 'loading', 'unloading', 'paperwork', 'waiting_for_dock', 'product_not_ready', 'other'",
+      "detention_reason_detail": "string — specific explanation of delay",
+      "po_numbers": ["array of any PO or reference numbers"],
+      "confidence": "float 0.0-1.0",
+      "notes": "string — any ambiguities or assumptions"
+    }}
 
-    Document content:
+    RULES:
+    - Convert ALL timestamps to ISO 8601 format
+    - If only date and time given separately, combine them
+    - If time zone not specified, assume local facility time
+    - Free time defaults to 120 minutes if not mentioned in the document
+    - Set confidence < 0.7 if arrival or departure time is ambiguous
+
+    DOCUMENT CONTENT:
     {input_text}
 
 thresholds:
-  # Free time before detention kicks in (minutes)
   default_free_time_minutes: 120
-  # Detention rate per hour
   rate_per_hour: 75.00
-  # Maximum billable detention hours
   max_detention_hours: 24
+  auto_approve_under_hours: 4
+  escalation_over_hours: 8

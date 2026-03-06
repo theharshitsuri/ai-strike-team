@@ -1,48 +1,69 @@
 # Freight Audit Automation — Config
 workflow_name: freight_audit
-description: "Compare carrier invoice vs rate confirmation → flag mismatches → generate audit report"
+description: "Compare carrier invoice vs rate confirmation → flag every mismatch → generate professional audit report"
 
 prompts:
   system: |
-    You are a freight audit agent. Extract charge line items from invoices and
-    rate confirmations with extreme precision. Every dollar matters.
-    Return valid JSON only.
+    You are an expert freight audit agent. You extract charge line items from
+    carrier invoices and rate confirmations with extreme precision. Every dollar
+    matters. Normalize charge descriptions to standard categories.
+    Always return valid JSON matching the exact schema.
 
   invoice_extraction: |
     Extract all charge line items from this carrier INVOICE.
-    Return ONLY valid JSON with fields:
-    - load_id: string
-    - carrier_name: string
-    - invoice_number: string
-    - invoice_date: string (YYYY-MM-DD)
-    - line_items: array of objects, each with:
-      - description: string (e.g. "linehaul", "fuel_surcharge", "detention", "lumper", "accessorial")
-      - amount: float
-    - total_amount: float
-    - confidence: float (0.0-1.0)
+    Return ONLY valid JSON matching this schema:
+    {{
+      "load_id": "string — load/shipment number",
+      "carrier_name": "string — carrier/trucking company",
+      "invoice_number": "string — invoice number",
+      "invoice_date": "string — YYYY-MM-DD",
+      "payment_terms": "string — payment terms (e.g., 'Net 30') or 'N/A'",
+      "line_items": [
+        {{
+          "description": "string — normalized charge type (use exactly: 'linehaul', 'fuel_surcharge', 'detention', 'lumper', 'stop_off', 'accessorial', 'toll', 'layover', 'tarp', 'hazmat', 'reefer', 'other')",
+          "amount": "float — dollar amount",
+          "detail": "string — any additional detail or notes"
+        }}
+      ],
+      "total_amount": "float — invoice total",
+      "currency": "string — 'USD' or other",
+      "confidence": "float 0.0-1.0",
+      "notes": "string — any anomalies noticed"
+    }}
 
-    Invoice content:
+    RULES:
+    - Normalize ALL charge descriptions to the standard categories listed above
+    - If a charge doesn't fit, use 'accessorial' or 'other'
+    - Verify that line items sum to total_amount
+    - Flag any suspicious charges in 'notes'
+
+    INVOICE CONTENT:
     {input_text}
 
   rate_extraction: |
     Extract all charge line items from this RATE CONFIRMATION.
-    Return ONLY valid JSON with fields:
-    - load_id: string
-    - carrier_name: string
-    - rate_con_number: string
-    - line_items: array of objects, each with:
-      - description: string (e.g. "linehaul", "fuel_surcharge", "detention", "lumper", "accessorial")
-      - amount: float
-    - total_amount: float
-    - confidence: float (0.0-1.0)
+    Return ONLY valid JSON matching this schema:
+    {{
+      "load_id": "string — load/shipment number",
+      "carrier_name": "string — carrier/trucking company",
+      "rate_con_number": "string — rate confirmation number",
+      "line_items": [
+        {{
+          "description": "string — normalized charge type (use exactly: 'linehaul', 'fuel_surcharge', 'detention', 'lumper', 'stop_off', 'accessorial', 'toll', 'layover', 'tarp', 'hazmat', 'reefer', 'other')",
+          "amount": "float — dollar amount",
+          "detail": "string — any additional detail"
+        }}
+      ],
+      "total_amount": "float — rate con total",
+      "confidence": "float 0.0-1.0"
+    }}
 
-    Rate confirmation content:
+    RATE CONFIRMATION CONTENT:
     {input_text}
 
 thresholds:
-  # Dollar tolerance for line-item mismatch (below this = pass)
   line_item_tolerance: 5.00
-  # Dollar tolerance for total mismatch
   total_tolerance: 10.00
-  # Percentage tolerance for fuel surcharge variance
   fuel_pct_tolerance: 0.02
+  auto_approve_under: 5.00
+  escalate_over: 100.00

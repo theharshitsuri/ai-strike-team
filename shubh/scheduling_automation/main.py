@@ -1,8 +1,15 @@
 """
 Generic Scheduling Automation — Request → Availability → Confirm
 
-Cross-vertical reusable scheduling workflow. Parses free-text scheduling
-requests, checks availability, optimizes time slots, and generates confirmations.
+Production-ready workflow:
+1. Ingests free-text scheduling requests (emails, forms, messages)
+2. Validates input contains scheduling-related content
+3. Extracts date, time, duration, participants, location via LLM
+4. Checks availability against existing calendar
+5. Optimizes time slot if preferred is unavailable
+6. Generates professional confirmation message
+7. Saves confirmation to output
+8. Calculates ROI (10 min manual scheduling → seconds automated)
 
 Usage:
     python -m shubh.scheduling_automation.main
@@ -17,7 +24,7 @@ from core.ingestion import ingest_file
 from core.logger import get_logger
 from shubh.scheduling_automation.extractor import extract_schedule_request, generate_confirmation
 from shubh.scheduling_automation.validator import ScheduleRequest, ScheduleConfirmation
-from shubh.scheduling_automation.action import check_availability, save_confirmation
+from shubh.scheduling_automation.action import check_availability, save_confirmation, generate_scheduling_report
 
 log = get_logger(__name__)
 
@@ -35,21 +42,27 @@ class SchedulingAutomationWorkflow(BaseWorkflow):
         else:
             raise ValueError(f"Unsupported input type: {type(input_data)}")
 
+    async def validate_input(self, raw_text: str) -> str | None:
+        lower = raw_text.lower()
+        keywords = ["schedule", "meeting", "appointment", "available", "book", "calendar",
+                     "time", "date", "slot", "call", "visit", "demo", "interview"]
+        if not any(kw in lower for kw in keywords):
+            return "This doesn't appear to be a scheduling request. Expected keywords like 'schedule', 'meeting', 'appointment', 'available', etc."
+        return None
+
     async def extract(self, raw_text: str) -> ScheduleRequest:
         return await extract_schedule_request(raw_text)
 
     async def act(self, result: ScheduleRequest) -> dict:
-        # Check availability (empty calendar in demo)
         available, conflicts, slot = check_availability(result, existing_events=[])
 
         if not available:
             return {
                 "status": "no_slot_available",
                 "conflicts": conflicts,
-                "message": "Could not find an available slot. Manual intervention needed.",
+                "summary": "❌ No available slot found. Manual intervention needed.",
             }
 
-        # Generate confirmation message
         conf_data = await generate_confirmation(result)
 
         confirmation = ScheduleConfirmation(
@@ -67,13 +80,13 @@ class SchedulingAutomationWorkflow(BaseWorkflow):
         )
 
         save_confirmation(confirmation)
+        report = generate_scheduling_report(result, confirmation)
 
         return {
+            "summary": f"✅ Scheduled: {confirmation.confirmed_date} @ {confirmation.confirmed_time} ({result.duration_minutes} min) at {result.location}",
             "confirmation": confirmation.model_dump(),
-            "summary": (
-                f"Scheduled: {confirmation.confirmed_date} @ {confirmation.confirmed_time} "
-                f"({result.duration_minutes} min) at {result.location}"
-            ),
+            "report_preview": report[:500],
+            "slot_optimized": confirmation.slot_optimized,
         }
 
 

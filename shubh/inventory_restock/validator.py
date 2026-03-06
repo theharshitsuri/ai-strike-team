@@ -13,11 +13,13 @@ class SKUForecast(BaseModel):
     description: str = Field(default="")
     current_stock: int
     avg_weekly_demand: float
+    avg_daily_demand: float = Field(default=0.0, description="Average daily demand (weekly/7)")
     weeks_of_stock: float = Field(description="Current stock / weekly demand")
     reorder_point: int = Field(description="Stock level that triggers reorder")
     recommended_order_qty: int
     urgency: Literal["immediate", "soon", "planned", "no_action"] = Field(default="planned")
     days_until_stockout: float = Field(default=0)
+    unit_cost: float = Field(default=0.0, description="Unit cost for order value calculation")
 
 
 class RestockResult(WorkflowResult):
@@ -30,3 +32,4 @@ class RestockResult(WorkflowResult):
     forecasts: list[SKUForecast]
     explanation: str = Field(default="")
     urgency_level: Literal["immediate", "soon", "planned", "no_action"] = Field(default="planned")
+    total_order_value: float = Field(default=0.0, description="Total value of all recommended orders")

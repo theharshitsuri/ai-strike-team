@@ -1,8 +1,14 @@
 """
 Production Report Auto-Generation — CSV → Executive Summary
 
-Reads daily production CSV, aggregates metrics (output, downtime, quality),
-then uses LLM to generate a narrative executive summary.
+Production-ready workflow:
+1. Ingests daily production CSV/Excel data
+2. Validates data has required columns and sufficient rows
+3. Aggregates metrics (output, downtime, quality, efficiency)
+4. Uses LLM to generate narrative executive summary
+5. Assigns overall grade based on KPIs
+6. Generates professional markdown report
+7. Calculates ROI (90 min manual report → seconds automated)
 
 Usage:
     python -m shubh.production_report.main
@@ -31,16 +37,31 @@ class ProductionReportWorkflow(BaseWorkflow):
     async def ingest(self, input_data: Any) -> str:
         if isinstance(input_data, (str, Path)):
             path = Path(input_data)
-            self._df = pd.read_csv(path) if path.suffix == ".csv" else pd.read_excel(path)
+            if path.suffix == ".csv":
+                self._df = pd.read_csv(path)
+            elif path.suffix in (".xlsx", ".xls"):
+                self._df = pd.read_excel(path)
+            else:
+                import io
+                self._df = pd.read_csv(io.StringIO(str(input_data)))
+            return self._df.to_string()
+        elif isinstance(input_data, dict) and "body" in input_data:
+            import io
+            self._df = pd.read_csv(io.StringIO(input_data["body"]))
             return self._df.to_string()
         else:
             raise ValueError(f"Unsupported input type: {type(input_data)}")
 
-    async def extract(self, raw_text: str) -> ProductionReportResult:
-        # Aggregate metrics (rule-based)
-        metrics = aggregate_production_data(self._df)
+    async def validate_input(self, raw_text: str) -> str | None:
+        if not hasattr(self, "_df") or len(self._df) < 1:
+            return "No production data found. Provide a CSV/Excel file with production metrics."
+        numeric_cols = self._df.select_dtypes(include=["number"]).columns
+        if len(numeric_cols) == 0:
+            return "No numeric columns found. Production reports require metrics data (output, downtime, quality, etc.)."
+        return None
 
-        # Generate LLM summary
+    async def extract(self, raw_text: str) -> ProductionReportResult:
+        metrics = aggregate_production_data(self._df)
         summary_data = await generate_summary(metrics)
 
         return ProductionReportResult(
@@ -56,9 +77,13 @@ class ProductionReportWorkflow(BaseWorkflow):
     async def act(self, result: ProductionReportResult) -> dict:
         report_info = save_report(result)
         md_report = generate_markdown_report(result)
+
+        grade_emoji = {"excellent": "🏆", "good": "✅", "satisfactory": "👍", "needs_improvement": "⚠️", "critical": "🚨"}.get(result.overall_grade, "📊")
+
         return {
+            "summary": f"{grade_emoji} Production Report — Grade: {result.overall_grade.upper()} | {len(result.highlights)} highlights, {len(result.concerns)} concerns, {len(result.recommendations)} recommendations",
             "report": report_info,
-            "markdown_preview": md_report[:500] + "...",
+            "markdown_preview": md_report[:500],
             "grade": result.overall_grade,
         }
 

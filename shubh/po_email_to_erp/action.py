@@ -88,3 +88,60 @@ def validate_and_prepare_erp(po: PurchaseOrderResult) -> ERPEntryResult:
 
     log.info("erp_payload_prepared", po=po.po_number, all_valid=all_valid, issues=len(issues))
     return result
+
+
+def generate_po_report(po: PurchaseOrderResult, erp: ERPEntryResult) -> str:
+    """Generate professional PO processing report."""
+    from datetime import datetime
+    status_emoji = "✅" if erp.all_valid else "⚠️"
+
+    item_rows = ""
+    for item in po.line_items:
+        item_rows += f"| {item.sku} | {item.description} | {item.quantity} | ${item.unit_price:.2f} | ${item.quantity * item.unit_price:.2f} |\n"
+
+    issues_section = ""
+    if erp.issues:
+        issues_section = "## ⚠️ Validation Issues\n" + "\n".join(f"- {i}" for i in erp.issues) + "\n\n"
+
+    report = f"""# {status_emoji} Purchase Order Report — {po.po_number}
+
+## PO Summary
+| Field | Value |
+|-------|-------|
+| PO # | `{po.po_number}` |
+| Customer | {po.customer_name} |
+| Total | ${po.total:.2f} |
+| Items | {len(po.line_items)} |
+| ERP Status | {'Ready' if erp.all_valid else 'Needs Review'} |
+
+## Line Items
+| SKU | Description | Qty | Unit Price | Total |
+|-----|-------------|-----|-----------|-------|
+{item_rows}
+{issues_section}---
+*Confidence: {po.confidence:.0%} | Processed: {datetime.utcnow().isoformat()}*
+"""
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    report_path = OUTPUT_DIR / f"po_report_{po.po_number}.md"
+    with open(report_path, "w") as f:
+        f.write(report)
+    return report
+
+
+def build_po_slack_alert(po: PurchaseOrderResult, erp: ERPEntryResult) -> dict:
+    """Slack alert for PO processing."""
+    emoji = "✅" if erp.all_valid else "⚠️"
+    return {
+        "channel": "purchase-orders",
+        "text": f"{emoji} PO {po.po_number} — {len(po.line_items)} items, ${po.total:.2f}",
+        "blocks": [
+            {"type": "header", "text": {"type": "plain_text", "text": f"{emoji} Purchase Order — {po.po_number}"}},
+            {"type": "section", "fields": [
+                {"type": "mrkdwn", "text": f"*Customer:*\n{po.customer_name}"},
+                {"type": "mrkdwn", "text": f"*Total:*\n${po.total:.2f}"},
+                {"type": "mrkdwn", "text": f"*Items:*\n{len(po.line_items)}"},
+                {"type": "mrkdwn", "text": f"*Status:*\n{'Ready for ERP' if erp.all_valid else f'{len(erp.issues)} issues'}"},
+            ]},
+        ],
+    }

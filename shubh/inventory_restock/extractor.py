@@ -80,11 +80,13 @@ def forecast_demand(df: pd.DataFrame) -> list[SKUForecast]:
             description=desc,
             current_stock=current_stock,
             avg_weekly_demand=round(avg_weekly, 1),
+            avg_daily_demand=round(avg_weekly / 7, 2),
             weeks_of_stock=round(weeks_remaining, 1),
             reorder_point=reorder_point,
             recommended_order_qty=order_qty,
             urgency=urgency,
             days_until_stockout=round(days_until_stockout, 1),
+            unit_cost=float(row.get("unit_cost", 0)) if "unit_cost" in row.index else 0.0,
         ))
 
     log.info("demand_forecast_complete", total_skus=len(forecasts))

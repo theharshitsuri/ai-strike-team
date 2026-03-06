@@ -1,8 +1,16 @@
 """
 PO Email → ERP Entry — Purchase Order Email Processing
 
-Parses PO emails/attachments, extracts line items, validates SKUs and prices
-against catalog, and generates ERP-ready payloads.
+Production-ready workflow:
+1. Ingests PO emails or PDF attachments
+2. Validates input contains purchase order content
+3. Extracts PO header + line items via LLM
+4. Validates SKUs and prices against product catalog
+5. Generates ERP-ready JSON payload
+6. Flags issues (unknown SKUs, price mismatches, missing fields)
+7. Generates professional PO processing report
+8. Sends Slack alert for high-value orders
+9. Calculates ROI (25 min manual data entry → seconds automated)
 
 Usage:
     python -m shubh.po_email_to_erp.main
@@ -17,7 +25,7 @@ from core.ingestion import ingest_file
 from core.logger import get_logger
 from shubh.po_email_to_erp.extractor import extract_purchase_order
 from shubh.po_email_to_erp.validator import PurchaseOrderResult
-from shubh.po_email_to_erp.action import validate_and_prepare_erp
+from shubh.po_email_to_erp.action import validate_and_prepare_erp, generate_po_report, build_po_slack_alert
 
 log = get_logger(__name__)
 
@@ -35,17 +43,32 @@ class POEmailToERPWorkflow(BaseWorkflow):
         else:
             raise ValueError(f"Unsupported input type: {type(input_data)}")
 
+    async def validate_input(self, raw_text: str) -> str | None:
+        lower = raw_text.lower()
+        keywords = ["purchase order", "po", "order", "qty", "quantity", "sku",
+                     "item", "unit price", "total", "ship to", "bill to",
+                     "vendor", "supplier", "buyer"]
+        if not any(kw in lower for kw in keywords):
+            return "This doesn't appear to be a purchase order. Expected keywords like 'purchase order', 'PO', 'qty', 'SKU', etc."
+        return None
+
     async def extract(self, raw_text: str) -> PurchaseOrderResult:
         return await extract_purchase_order(raw_text)
 
     async def act(self, result: PurchaseOrderResult) -> dict:
         erp = validate_and_prepare_erp(result)
+        report = generate_po_report(result, erp)
+        slack = build_po_slack_alert(result, erp)
+
+        status_emoji = "✅" if erp.all_valid else "⚠️"
+        issues_text = f" — {len(erp.issues)} issues found" if erp.issues else ""
+
         return {
+            "summary": f"{status_emoji} PO {erp.po_number}: {len(erp.line_items)} items, ${erp.total:.2f}. {'Ready for ERP' if erp.all_valid else 'Needs review'}{issues_text}",
             "erp_entry": erp.model_dump(),
-            "summary": (
-                f"PO {erp.po_number}: {len(erp.line_items)} items, ${erp.total:.2f}. "
-                f"Validation: {'✅ All valid' if erp.all_valid else f'⚠️ {len(erp.issues)} issues found'}"
-            ),
+            "report_preview": report[:500],
+            "slack_alert": slack,
+            "ready_for_erp": erp.all_valid,
         }
 
 

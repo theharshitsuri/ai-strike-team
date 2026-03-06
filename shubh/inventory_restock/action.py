@@ -37,3 +37,43 @@ def build_restock_slack_alert(result: RestockResult) -> dict:
             + "\n".join(lines)
         ),
     }
+
+
+def generate_restock_markdown_report(result: RestockResult) -> str:
+    """Generate professional inventory restock report."""
+    from datetime import datetime
+    urgency_emoji = {"immediate": "🚨", "soon": "⚠️", "planned": "📋", "no_action": "✅"}.get(result.urgency_level, "📊")
+
+    forecast_rows = ""
+    for f in result.forecasts:
+        u_icon = {"immediate": "🚨", "soon": "⚠️", "planned": "📋", "no_action": "✅"}.get(f.urgency, "")
+        forecast_rows += f"| {u_icon} `{f.sku}` | {f.current_stock} | {f.avg_daily_demand:.1f} | {f.weeks_of_stock:.1f} | {f.reorder_point} | {f.recommended_order_qty} | {f.urgency} |\n"
+
+    report = f"""# {urgency_emoji} Inventory Restock Report
+
+## Overview
+| Metric | Value |
+|--------|-------|
+| SKUs Analyzed | {result.total_skus_analyzed} |
+| Immediate Reorders | {result.immediate_reorders} |
+| Reorder Soon | {result.soon_reorders} |
+| Planned | {result.planned_reorders} |
+| No Action | {result.no_action} |
+| Overall Urgency | **{result.urgency_level.upper()}** |
+
+## SKU Forecast
+| SKU | Stock | Avg Daily | Weeks Left | Reorder Pt | Order Qty | Urgency |
+|-----|-------|-----------|------------|------------|-----------|---------|
+{forecast_rows}
+## Analysis
+{result.explanation}
+
+---
+*Confidence: {result.confidence:.0%} | Generated: {datetime.utcnow().isoformat()}*
+"""
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    report_path = OUTPUT_DIR / f"restock_report_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.md"
+    with open(report_path, "w") as f:
+        f.write(report)
+    return report

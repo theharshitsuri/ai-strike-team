@@ -28,7 +28,7 @@ prompts:
     Claim document:
     {input_text}
 
-rules:
+thresholds:
   # Warranty period in days from purchase date
   warranty_period_days: 365
   # Extended warranty period (if applicable)
@@ -37,3 +37,7 @@ rules:
   valid_product_prefixes: ["PRD-", "SKU-", "MDL-"]
   # Max claim amount for auto-approval
   auto_approve_max_days: 90
+  # Max claim value for auto-approval
+  max_auto_approve_value: 500
+  # Review threshold for high-value claims
+  review_over_value: 200

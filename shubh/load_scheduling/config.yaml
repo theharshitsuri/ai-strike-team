@@ -1,35 +1,52 @@
 # Load Scheduling Automation — Config
 workflow_name: load_scheduling
-description: "Parse scheduling emails → extract load details → create calendar event"
+description: "Parse scheduling emails → extract load details → check conflicts → create calendar event → notify team"
 
 prompts:
   system: |
-    You are a logistics scheduling agent. Extract structured scheduling information
-    from emails sent by shippers, brokers, or carriers. Be precise with dates, times,
-    and facility details. Return valid JSON only.
+    You are an expert logistics scheduling agent working at a freight brokerage.
+    You extract structured scheduling information from emails sent by shippers,
+    brokers, or carriers. You are extremely precise with dates, times, addresses,
+    and load numbers. If any field is ambiguous, use your best judgment and note
+    it in the 'notes' field. Always return valid JSON matching the exact schema.
 
   extraction: |
-    Extract the following fields from this scheduling email. Return ONLY valid JSON.
+    Extract scheduling information from this email and return a JSON object.
 
-    Fields:
-    - load_id: string (load/shipment number)
-    - facility_name: string (pickup or delivery facility)
-    - facility_address: string (full address if available, else "N/A")
-    - appointment_date: string (YYYY-MM-DD format)
-    - appointment_time: string (HH:MM 24h format)
-    - time_window_minutes: integer (appointment window in minutes, default 120)
-    - load_type: string (one of: "pickup", "delivery")
-    - contact_name: string (facility contact if mentioned, else "N/A")
-    - contact_phone: string (phone if mentioned, else "N/A")
-    - special_instructions: string (any notes, else "N/A")
-    - confidence: float (0.0-1.0 your confidence in extraction accuracy)
+    REQUIRED OUTPUT FORMAT (return ONLY this JSON, no other text):
+    {{
+      "load_id": "string — load/shipment/reference number (e.g., TRK-88412)",
+      "shipper_name": "string — company name of the shipper sending the email",
+      "facility_name": "string — pickup or delivery facility name",
+      "facility_address": "string — full street address with city, state, zip. 'N/A' if not found",
+      "appointment_date": "string — date in YYYY-MM-DD format (convert any date format)",
+      "appointment_time": "string — time in HH:MM 24-hour format (convert AM/PM to 24h)",
+      "time_window_minutes": "integer — appointment window duration in minutes (default 120)",
+      "load_type": "string — exactly one of: 'pickup' or 'delivery'",
+      "contact_name": "string — facility contact person name, or 'N/A'",
+      "contact_phone": "string — contact phone number, or 'N/A'",
+      "equipment_type": "string — trailer type if mentioned (e.g., '53-ft dry van', '48-ft flatbed'), or 'standard'",
+      "commodity": "string — what is being shipped if mentioned, or 'general freight'",
+      "weight_lbs": "integer — weight in pounds if mentioned, or 0",
+      "special_instructions": "string — dock numbers, check-in procedures, restrictions, or 'none'",
+      "reference_numbers": ["array of any PO numbers, BOL numbers, or other references found"],
+      "confidence": "float 0.0-1.0 — your confidence in extraction accuracy",
+      "notes": "string — any ambiguities, assumptions, or edge cases you noticed"
+    }}
 
-    Email content:
+    RULES:
+    - Convert ALL dates to YYYY-MM-DD (e.g., "March 14, 2025" → "2025-03-14")
+    - Convert ALL times to 24h HH:MM (e.g., "2:00 PM" → "14:00", "8:00 AM" → "08:00")
+    - If a time range is given (e.g., "8:00 AM - 10:00 AM"), use the START time and calculate window
+    - Extract ALL reference numbers, POs, and BOL numbers into the array
+    - Set confidence < 0.7 if critical fields (date, time, facility) are ambiguous
+
+    EMAIL CONTENT:
     {input_text}
 
 thresholds:
-  # Hours before appointment to send reminder
   reminder_hours: 4
-  # Business hours for facility (24h)
   facility_open_hour: 6
   facility_close_hour: 20
+  max_time_window_hours: 8
+  conflict_buffer_minutes: 30
