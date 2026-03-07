@@ -74,6 +74,13 @@ WORKFLOWS = {
         "demo": "shubh/warranty_claims/demo/sample_claim.txt",
         "vertical": "Manufacturing",
     },
+    # Suri's Workflows
+    "rfp_intelligence": {
+        "module": "suri.rfp_intelligence.main",
+        "class": "RFPWorkflow",
+        "demo": "suri/rfp_intelligence/demo/sample_rfp.txt",
+        "vertical": "Consulting",
+    },
     # Wholesale
     "po_email_to_erp": {
         "module": "shubh.po_email_to_erp.main",

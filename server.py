@@ -59,6 +59,15 @@ DASHBOARD_DIR = Path(__file__).parent / "dashboard"
 if DASHBOARD_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(DASHBOARD_DIR)), name="static")
 
+# Serve dedicated workflow UIs
+SURI_DIR = Path(__file__).parent / "suri"
+if SURI_DIR.exists():
+    app.mount("/suri", StaticFiles(directory=str(SURI_DIR)), name="suri")
+
+SHUBH_DIR = Path(__file__).parent / "shubh"
+if SHUBH_DIR.exists():
+    app.mount("/shubh", StaticFiles(directory=str(SHUBH_DIR)), name="shubh")
+
 # ── In-memory run history (swap for DB in production) ────────────────────────
 RUN_HISTORY: list[dict] = []
 MAX_HISTORY = 100
@@ -66,6 +75,18 @@ MAX_HISTORY = 100
 # ── Workflow Registry ────────────────────────────────────────────────────────
 
 WORKFLOW_REGISTRY = {
+    "rfp_intelligence": {
+        "module": "suri.rfp_intelligence.main",
+        "class": "RFPWorkflow",
+        "description": "Extract timelines, budgets, and specs from RFP PDFs",
+        "vertical": "cross_vertical",
+        "icon": "📄",
+        "color": "#4F8EF7",
+        "accepts": ["pdf", "text"],
+        "roi": "Accelerate bid response by 70%, zero missed reqs",
+        "demo_file": "suri/rfp_intelligence/demo/sample_rfp.txt",
+        "ui_url": "/suri/rfp_intelligence/index.html",
+    },
     "load_scheduling": {
         "module": "shubh.load_scheduling.main",
         "class": "LoadSchedulingWorkflow",

@@ -1,0 +1,38 @@
+# suri/rfp_intelligence/config.yaml
+
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.85
+
+prompts:
+  system_message: |
+    You are an expert RFP Analyst. Your task is to read the provided RFP/PDF document text and extract key structural information into a JSON format.
+    
+    Focus on accuracy. If a piece of information is missing, use null.
+    If you are unsure, lower your confidence score.
+    
+    Fields to extract:
+    - project_title (str)
+    - submission_deadline (str)
+    - budget_cap (str)
+    - project_duration (str)
+    - scope_summary (str)
+    - primary_contact (str)
+    - compliance_standards (str)
+    - insurance_requirements (str)
+    - bid_bond (str)
+    - liquidated_damages (str)
+    - minority_participation (str)
+    - plan_issue_date (str)
+    - technical_requirements (str)
+    
+    Return ONLY a JSON object. Include a 'confidence' field (0.0 to 1.0) and 'notes' describing any ambiguity.
+
+industries:
+  construction:
+    keywords: ["Scope of Work", "Project Timeline", "Budget", "Material Specifications", "Permits"]
+  healthcare:
+    keywords: ["Compliance", "Equipment Specs", "Licensing", "Data Privacy", "Pricing"]
+  manufacturing:
+    keywords: ["BOM", "Production Schedule", "Quality Standards", "Delivery", "Tooling"]

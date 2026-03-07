@@ -1,0 +1,44 @@
+# REQUEST FOR PROPOSAL (RFP)
+# Project ID: 2025-BRIDGE-04
+# Title: River Elm Bridge Structural Rehabilitation
+
+## 1. Overview
+The Department of Transportation (DOT) is seeking proposals from qualified engineering firms to perform a comprehensive structural rehabilitation of the River Elm Bridge (ID: EB-104). The bridge is a critical 240-foot four-lane crossing that has shown significant masonry and joint degradation.
+
+## 2. Scope of Work
+The selected contractor will be responsible for:
+- Full structural assessment and load testing.
+- Replacement of all expansion joints (8 total).
+- Concrete resurfacing and waterproofing of the main deck.
+- Installation of new high-visibility LED safety lighting.
+- Scour protection for bridge piers 3 and 4.
+
+## 3. Submission Timeline
+- RFP Issued: September 1, 2025
+- Mandatory Pre-bid Meeting: September 15, 2025
+- **Submission Deadline: November 15, 2025 at 5:00 PM EST**
+- Anticipated Award: December 20, 2025
+- Construction Start: March 15, 2026
+
+## 4. Financial Terms
+- **Estimated Project Budget: $4,200,000**
+- Bid Bond: A 5% bid security is required for all proposals.
+- Payment: Monthly milestone payments based on certified progress.
+
+## 5. Technical Requirements & Qualifications
+- Firms must hold a valid State Grade A Engineering License.
+- Lead project manager must have 15+ years of experience in bridge rehabilitation.
+- All materials must meet DOT Standard Specifications Section 4.2.1.
+- Compliance with the EPA Stormwater Permit for construction activities (NPDES) is mandatory.
+
+## 6. Insurance & Compliance
+- General Liability: $5,000,000 per occurrence.
+- Workers Compensation: Statutory limits.
+- Compliance with FAR 52.204-7 (System for Award Management).
+
+## 7. Contact Information
+Direct all technical inquiries via email to:
+**Jane Doe, Senior Project Engineer**
+Email: jane.doe@cityworks.gov
+Phone: +1 (555) 201-3344
+Website: https://cityworks.gov/procurement
