@@ -43,6 +43,19 @@ class RFPWorkflow(BaseWorkflow):
         log.info("ingesting_rfp_file", path=path)
         return ingest_file(path)
 
+    async def validate_input(self, raw_text: str) -> str | None:
+        """Validate that input contains RFP-related content."""
+        lower = raw_text.lower()
+        keywords = ["rfp", "request for proposal", "bid", "submission", "deadline",
+                    "scope", "budget", "project", "proposal", "contract", "vendor",
+                    "requirements", "specifications", "procurement"]
+        if not any(kw in lower for kw in keywords):
+            return (
+                "This doesn't appear to be an RFP document. "
+                "Expected keywords like 'RFP', 'request for proposal', 'bid', 'submission deadline', etc."
+            )
+        return None
+
     async def extract(self, raw_text: str) -> RFPResult:
         """Call the specialized RFP extractor."""
         return await extract_rfp_data(raw_text)

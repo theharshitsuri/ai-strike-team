@@ -7,7 +7,7 @@ from core.logger import get_logger
 
 log = get_logger(__name__)
 
-async def post_message(text: str, channel: str = None) -> bool:
+async def post_message(text: str, channel: str = None, blocks: list = None) -> bool:
     """Sends a message to a Slack channel."""
     
     token = settings.slack_bot_token
@@ -16,15 +16,18 @@ async def post_message(text: str, channel: str = None) -> bool:
     if not token or not channel:
         log.warning("slack_plugin_unconfigured", message="Missing SLACK_BOT_TOKEN or SLACK_CHANNEL_ID. Simulation mode active.")
         # Simulating success for demo purposes if not configured
-        log.info("slack_payload_simulation", text=text[:50])
+        log.info("slack_payload_simulation", text=text[:50], has_blocks=blocks is not None)
         return True
 
-    log.info("slack_message_sending", channel=channel)
+    log.info("slack_message_sending", channel=channel, has_blocks=blocks is not None)
     
     # In a real implementation, we'd use:
     # import httpx
     # async with httpx.AsyncClient() as client:
-    #     res = await client.post("https://slack.com/api/chat.postMessage", ...)
+    #     payload = {"channel": channel, "text": text}
+    #     if blocks:
+    #         payload["blocks"] = blocks
+    #     res = await client.post("https://slack.com/api/chat.postMessage", json=payload, headers={"Authorization": f"Bearer {token}"})
     
     # Simulating the API turnaround
     import asyncio
