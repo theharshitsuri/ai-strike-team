@@ -24,6 +24,7 @@ import pandas as pd
 
 from core.workflow_base import BaseWorkflow
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.inventory_restock.extractor import forecast_demand, generate_explanation
 from shubh.inventory_restock.validator import RestockResult
 from shubh.inventory_restock.action import save_restock_report, build_restock_slack_alert, generate_restock_markdown_report

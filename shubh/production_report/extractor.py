@@ -65,10 +65,16 @@ def aggregate_production_data(df: pd.DataFrame) -> ProductionMetrics:
 async def generate_summary(metrics: ProductionMetrics) -> dict:
     """Use LLM to generate executive narrative from aggregated metrics."""
     config = _load_config()
+    extraction = config.get("extraction", {})
     prompt = config["prompts"]["summarize"].replace("{metrics_json}", json.dumps(metrics.model_dump(), default=str))
     system = config["prompts"]["system"]
 
-    response = await llm_call(prompt=prompt, system=system)
+    response = await llm_call(
+        prompt=prompt,
+        system=system,
+        model=extraction.get("model", "gpt-4o"),
+        temperature=extraction.get("temperature", 0.3),
+    )
 
     # Parse response
     cleaned = re.sub(r"```(?:json)?\s*", "", response).strip().rstrip("```").strip()

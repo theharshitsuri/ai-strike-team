@@ -2,6 +2,11 @@
 workflow_name: qa_anomaly
 description: "Analyze inspection logs → detect statistical anomalies → generate plain-English summary"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.2
+  confidence_threshold: 0.75
+
 prompts:
   system: |
     You are a manufacturing quality assurance agent. You analyze inspection data,

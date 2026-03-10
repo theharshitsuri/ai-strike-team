@@ -22,6 +22,7 @@ import pandas as pd
 
 from core.workflow_base import BaseWorkflow
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.production_report.extractor import aggregate_production_data, generate_summary
 from shubh.production_report.validator import ProductionMetrics, ProductionReportResult
 from shubh.production_report.action import save_report, generate_markdown_report

@@ -24,6 +24,7 @@ from pathlib import Path
 from core.workflow_base import BaseWorkflow
 from core.ingestion import ingest_file
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.freight_audit.extractor import extract_invoice, extract_rate_confirmation
 from shubh.freight_audit.validator import InvoiceData, FreightAuditResult
 from shubh.freight_audit.action import compare_charges, build_audit_slack_alert, generate_audit_report

@@ -2,6 +2,11 @@
 workflow_name: freight_audit
 description: "Compare carrier invoice vs rate confirmation → flag every mismatch → generate professional audit report"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.85
+
 prompts:
   system: |
     You are an expert freight audit agent. You extract charge line items from

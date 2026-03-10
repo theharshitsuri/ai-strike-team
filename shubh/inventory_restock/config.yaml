@@ -2,6 +2,11 @@
 workflow_name: inventory_restock
 description: "Analyze sales/inventory data → forecast demand → generate reorder recommendations"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.2
+  confidence_threshold: 0.75
+
 prompts:
   system: |
     You are an inventory management agent for wholesale distribution.

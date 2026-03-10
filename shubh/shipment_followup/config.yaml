@@ -2,6 +2,11 @@
 workflow_name: shipment_followup
 description: "Monitor overdue shipments → auto-draft follow-up emails → escalate if unresolved"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.80
+
 prompts:
   system: |
     You are a logistics operations agent at a freight brokerage. You write

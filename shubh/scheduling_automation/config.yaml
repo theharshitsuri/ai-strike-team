@@ -2,6 +2,11 @@
 workflow_name: scheduling_automation
 description: "Parse scheduling requests → check availability → optimize slots → confirm"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.80
+
 prompts:
   system: |
     You are a scheduling automation agent. Parse free-text scheduling requests

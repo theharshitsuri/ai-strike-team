@@ -2,6 +2,11 @@
 workflow_name: production_report
 description: "Daily production CSV → aggregate metrics → LLM executive summary → report"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.3
+  confidence_threshold: 0.75
+
 prompts:
   system: |
     You are a manufacturing production analyst. Generate concise, data-driven

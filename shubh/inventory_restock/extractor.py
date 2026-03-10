@@ -96,13 +96,19 @@ def forecast_demand(df: pd.DataFrame) -> list[SKUForecast]:
 async def generate_explanation(forecasts: list[SKUForecast]) -> dict:
     """Use LLM to generate a readable explanation of the forecast."""
     config = _load_config()
+    extraction = config.get("extraction", {})
     prompt = config["prompts"]["explain_forecast"].replace(
         "{forecast_json}",
         json.dumps([f.model_dump() for f in forecasts], default=str),
     )
     system = config["prompts"]["system"]
 
-    response = await llm_call(prompt=prompt, system=system)
+    response = await llm_call(
+        prompt=prompt,
+        system=system,
+        model=extraction.get("model", "gpt-4o"),
+        temperature=extraction.get("temperature", 0.2),
+    )
 
     cleaned = re.sub(r"```(?:json)?\s*", "", response).strip().rstrip("```").strip()
     match = re.search(r"\{.*\}", cleaned, re.DOTALL)

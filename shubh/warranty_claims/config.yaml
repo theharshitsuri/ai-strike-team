@@ -2,6 +2,11 @@
 workflow_name: warranty_claims
 description: "Parse claim forms → validate against warranty rules → approve/reject/review"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.80
+
 prompts:
   system: |
     You are a warranty claims processing agent. Extract claim details from forms

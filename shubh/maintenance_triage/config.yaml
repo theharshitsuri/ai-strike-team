@@ -2,6 +2,11 @@
 workflow_name: maintenance_triage
 description: "Classify maintenance tickets → assign priority + category → route to correct team"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.70
+
 prompts:
   system: |
     You are a manufacturing maintenance triage agent. Classify maintenance tickets

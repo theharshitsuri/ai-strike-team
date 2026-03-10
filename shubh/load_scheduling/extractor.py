@@ -1,8 +1,9 @@
 """
 LLM extraction logic for Load Scheduling workflow.
-Production-ready with config loading, error handling, and input preprocessing.
+Production-ready: uses model/temperature from config, confidence threshold checking.
 """
 
+import re
 from pathlib import Path
 import yaml
 
@@ -21,58 +22,48 @@ def _load_config() -> dict:
         return yaml.safe_load(f)
 
 
-def _preprocess_email(raw_text: str) -> str:
-    """
-    Clean email text before sending to LLM:
-    - Strip email signature blocks
-    - Remove excessive whitespace
-    - Truncate very long emails (keep first 4000 chars)
-    """
-    import re
-
-    # Remove common email signature delimiters and everything after
-    sig_patterns = [
-        r"\n--\s*\n.*",           # -- signature
-        r"\nSent from my .*",     # Sent from my iPhone
-        r"\n_{3,}.*",             # _____ horizontal rule
-    ]
-    text = raw_text
-    for pat in sig_patterns:
-        text = re.split(pat, text, maxsplit=1, flags=re.DOTALL)[0]
-
-    # Collapse excessive whitespace
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    text = re.sub(r"[ \t]{3,}", "  ", text)
-
-    # Truncate very long emails
-    if len(text) > 4000:
-        text = text[:4000] + "\n[... truncated ...]"
-        log.info("email_truncated", original_length=len(raw_text), truncated_to=4000)
-
-    return text.strip()
+def _preprocess_email(text: str) -> str:
+    """Strip email signatures, collapse whitespace, truncate long emails."""
+    # Remove common signature patterns
+    sig_patterns = [r'\n--\s*\n.*', r'\nSent from my.*', r'\nBest regards,.*',
+                    r'\nThanks,.*', r'\nRegards,.*']
+    for pattern in sig_patterns:
+        text = re.sub(pattern, '', text, flags=re.DOTALL | re.IGNORECASE)
+    # Collapse whitespace
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    text = re.sub(r' {2,}', ' ', text)
+    # Truncate to prevent token overflow
+    return text[:6000] if len(text) > 6000 else text
 
 
 async def extract_schedule(raw_text: str) -> LoadScheduleResult:
-    """
-    Call LLM to extract structured scheduling data from email text.
-    Handles preprocessing, prompt assembly, and response parsing.
-    """
+    """Call LLM to extract scheduling data from email text."""
     config = _load_config()
     prompts = config["prompts"]
+    extraction = config.get("extraction", {})
 
-    # Preprocess input
-    cleaned = _preprocess_email(raw_text)
+    # Preprocess email
+    clean_text = _preprocess_email(raw_text)
 
-    # Assemble prompt
-    prompt = prompts["extraction"].replace("{input_text}", cleaned)
+    prompt = prompts["extraction"].replace("{input_text}", clean_text)
     system = prompts["system"]
 
-    log.info("extracting_schedule", input_length=len(cleaned))
-    response = await llm_call(prompt=prompt, system=system)
+    log.info("extracting_schedule", input_length=len(clean_text))
+    response = await llm_call(
+        prompt=prompt,
+        system=system,
+        model=extraction.get("model", "gpt-4o"),
+        temperature=extraction.get("temperature", 0.1),
+    )
     result = parse_llm_json(response, LoadScheduleResult)
-    log.info("extraction_complete",
-             load_id=result.load_id,
-             facility=result.facility_name,
-             date=result.appointment_date,
-             confidence=result.confidence)
+
+    # Confidence threshold check (suri pattern)
+    threshold = extraction.get("confidence_threshold", 0.80)
+    if result.confidence < threshold:
+        result.needs_human_review = True
+        log.warning("low_confidence_extraction", confidence=result.confidence, threshold=threshold)
+
+    log.info("schedule_extraction_complete",
+             load_id=result.load_id, confidence=result.confidence,
+             facility=result.facility_name, date=result.date)
     return result

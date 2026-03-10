@@ -2,6 +2,11 @@
 workflow_name: po_email_to_erp
 description: "Parse purchase order emails/attachments → extract line items → validate → push to ERP"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.85
+
 prompts:
   system: |
     You are a purchase order processing agent for wholesale distribution.

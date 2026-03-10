@@ -22,6 +22,7 @@ from pathlib import Path
 from core.workflow_base import BaseWorkflow
 from core.ingestion import ingest_file
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.maintenance_triage.extractor import classify_ticket
 from shubh.maintenance_triage.validator import MaintenanceTicketResult
 from shubh.maintenance_triage.action import save_routed_ticket, build_slack_notification, generate_triage_report

@@ -22,6 +22,7 @@ from pathlib import Path
 from core.workflow_base import BaseWorkflow
 from core.ingestion import ingest_file
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.detention_tracking.extractor import extract_detention
 from shubh.detention_tracking.validator import DetentionResult, DetentionInvoice
 from shubh.detention_tracking.action import calculate_detention, build_slack_alert, generate_invoice_report
@@ -60,8 +61,9 @@ class DetentionTrackingWorkflow(BaseWorkflow):
         # Calculate detention fees
         invoice = calculate_detention(result)
 
-        # Build Slack alert
+        # Build & send Slack alert
         slack = build_slack_alert(invoice)
+        await slack_post(slack["text"], channel=slack.get("channel"), blocks=slack.get("blocks"))
 
         # Generate professional invoice report
         report = generate_invoice_report(invoice)

@@ -1,5 +1,6 @@
 """
 LLM extraction for PO Email → ERP Entry.
+Production-ready: uses model/temperature from config, confidence threshold checking.
 """
 
 from pathlib import Path
@@ -23,11 +24,24 @@ def _load_config() -> dict:
 async def extract_purchase_order(raw_text: str) -> PurchaseOrderResult:
     """Extract structured PO data from email/doc text."""
     config = _load_config()
+    extraction = config.get("extraction", {})
     prompt = config["prompts"]["extraction"].replace("{input_text}", raw_text)
     system = config["prompts"]["system"]
 
     log.info("extracting_po", input_length=len(raw_text))
-    response = await llm_call(prompt=prompt, system=system)
+    response = await llm_call(
+        prompt=prompt,
+        system=system,
+        model=extraction.get("model", "gpt-4o"),
+        temperature=extraction.get("temperature", 0.1),
+    )
     result = parse_llm_json(response, PurchaseOrderResult)
+
+    # Confidence threshold check
+    threshold = extraction.get("confidence_threshold", 0.85)
+    if result.confidence < threshold:
+        result.needs_human_review = True
+        log.warning("low_confidence_po", confidence=result.confidence, threshold=threshold)
+
     log.info("po_extracted", po_number=result.po_number, items=len(result.line_items))
     return result

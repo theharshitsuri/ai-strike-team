@@ -24,6 +24,7 @@ from pathlib import Path
 from core.workflow_base import BaseWorkflow
 from core.ingestion import ingest_file
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.load_scheduling.extractor import extract_schedule
 from shubh.load_scheduling.validator import LoadScheduleResult
 from shubh.load_scheduling.action import (
@@ -79,8 +80,9 @@ class LoadSchedulingWorkflow(BaseWorkflow):
         # Create calendar event
         event = create_calendar_event(result)
 
-        # Build Slack notification
+        # Build & send Slack notification
         slack_msg = build_slack_message(result)
+        await slack_post(slack_msg["text"], channel=slack_msg.get("channel"), blocks=slack_msg.get("blocks"))
 
         # Draft confirmation email
         confirmation = build_confirmation_email(result)

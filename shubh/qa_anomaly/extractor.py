@@ -90,13 +90,19 @@ def detect_anomalies_statistical(df: pd.DataFrame) -> list[AnomalyFlag]:
 async def summarize_anomalies(anomalies: list[AnomalyFlag], specs: dict) -> dict:
     """Use LLM to generate a plain-English summary of detected anomalies."""
     config = _load_config()
+    extraction = config.get("extraction", {})
     prompt = config["prompts"]["summarize_anomalies"].format(
         anomalies_json=json.dumps([a.model_dump() for a in anomalies[:20]], default=str),
         specs_json=json.dumps(specs),
     )
     system = config["prompts"]["system"]
 
-    response = await llm_call(prompt=prompt, system=system)
+    response = await llm_call(
+        prompt=prompt,
+        system=system,
+        model=extraction.get("model", "gpt-4o"),
+        temperature=extraction.get("temperature", 0.2),
+    )
     # Parse the response — expected fields: summary, severity, recommended_actions, confidence
     import re
     cleaned = re.sub(r"```(?:json)?\s*", "", response).strip().rstrip("```").strip()

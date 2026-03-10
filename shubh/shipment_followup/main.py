@@ -21,6 +21,7 @@ from pathlib import Path
 from core.workflow_base import BaseWorkflow
 from core.ingestion import ingest_file
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.shipment_followup.extractor import extract_shipment_status, generate_followup_email
 from shubh.shipment_followup.validator import ShipmentStatus, FollowUpEmail
 from shubh.shipment_followup.action import save_followup_email, build_escalation_slack_message, generate_followup_report
@@ -77,6 +78,7 @@ class ShipmentFollowUpWorkflow(BaseWorkflow):
         # Escalate if needed
         if email.should_escalate:
             slack_msg = build_escalation_slack_message(result, email)
+            await slack_post(slack_msg["text"], channel=slack_msg.get("channel"), blocks=slack_msg.get("blocks"))
             output["escalation"] = slack_msg
             log.warning("shipment_escalated", load_id=result.load_id, attempt=attempt, hours_overdue=result.hours_overdue)
 

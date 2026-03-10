@@ -2,6 +2,11 @@
 workflow_name: load_scheduling
 description: "Parse scheduling emails → extract load details → check conflicts → create calendar event → notify team"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.80
+
 prompts:
   system: |
     You are an expert logistics scheduling agent working at a freight brokerage.

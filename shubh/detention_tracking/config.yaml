@@ -2,6 +2,11 @@
 workflow_name: detention_tracking
 description: "Track arrival/departure timestamps → calculate detention fees → generate professional invoice"
 
+extraction:
+  model: "gpt-4o"
+  temperature: 0.1
+  confidence_threshold: 0.80
+
 prompts:
   system: |
     You are an expert logistics detention tracking agent. You extract arrival and

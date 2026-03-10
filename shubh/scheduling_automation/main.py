@@ -22,6 +22,7 @@ from pathlib import Path
 from core.workflow_base import BaseWorkflow
 from core.ingestion import ingest_file
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.scheduling_automation.extractor import extract_schedule_request, generate_confirmation
 from shubh.scheduling_automation.validator import ScheduleRequest, ScheduleConfirmation
 from shubh.scheduling_automation.action import check_availability, save_confirmation, generate_scheduling_report

@@ -23,6 +23,7 @@ from pathlib import Path
 from core.workflow_base import BaseWorkflow
 from core.ingestion import ingest_file
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.warranty_claims.extractor import extract_claim
 from shubh.warranty_claims.validator import WarrantyClaimData, WarrantyDecision
 from shubh.warranty_claims.action import evaluate_claim, generate_claim_report, build_claim_slack_alert, draft_customer_response

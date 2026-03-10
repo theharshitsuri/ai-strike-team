@@ -23,6 +23,7 @@ import yaml
 
 from core.workflow_base import BaseWorkflow
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.qa_anomaly.extractor import detect_anomalies_statistical, summarize_anomalies
 from shubh.qa_anomaly.validator import QAAnomalyResult
 from shubh.qa_anomaly.action import save_anomaly_report, build_alert_slack_message, generate_qa_markdown_report

@@ -23,6 +23,7 @@ from pathlib import Path
 from core.workflow_base import BaseWorkflow
 from core.ingestion import ingest_file
 from core.logger import get_logger
+from core.plugins.slack import post_message as slack_post
 from shubh.po_email_to_erp.extractor import extract_purchase_order
 from shubh.po_email_to_erp.validator import PurchaseOrderResult
 from shubh.po_email_to_erp.action import validate_and_prepare_erp, generate_po_report, build_po_slack_alert
