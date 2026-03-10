@@ -32,7 +32,7 @@ def save_routed_ticket(result: MaintenanceTicketResult) -> dict:
         "routed_at": datetime.utcnow().isoformat(),
     }
     out_path = OUTPUT_DIR / f"ticket_{result.ticket_id}.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(ticket_data, f, indent=2)
     log.info("ticket_routed", ticket_id=result.ticket_id, team=result.assigned_team, priority=result.priority)
     return ticket_data
@@ -102,7 +102,7 @@ def generate_triage_report(result: MaintenanceTicketResult) -> str:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"triage_report_{result.ticket_id}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report

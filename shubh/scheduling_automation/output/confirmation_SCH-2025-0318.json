@@ -1,0 +1,20 @@
+{
+  "confidence": 0.93,
+  "needs_human_review": false,
+  "raw_input_snippet": null,
+  "extracted_at": "2026-03-10 17:19:30.473111",
+  "notes": null,
+  "request_id": "SCH-2025-0318",
+  "confirmed_date": "2025-03-18",
+  "confirmed_time": "10:00",
+  "duration_minutes": 120,
+  "location": "200 Main Street, Suite 400, Denver, CO 80202",
+  "participants": [
+    "Rachel Kim",
+    "HVAC Technician"
+  ],
+  "confirmation_subject": "",
+  "confirmation_body": "",
+  "conflicts_found": 0,
+  "slot_optimized": false
+}

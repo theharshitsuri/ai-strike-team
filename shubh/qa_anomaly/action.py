@@ -19,7 +19,7 @@ def save_anomaly_report(result: QAAnomalyResult) -> dict:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / f"anomaly_report_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
     data = result.model_dump()
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, default=str)
     log.info("anomaly_report_saved", path=str(out_path), anomalies=result.total_anomalies)
     return {"path": str(out_path), "anomalies": result.total_anomalies, "severity": result.severity}
@@ -51,10 +51,10 @@ def generate_qa_markdown_report(result: QAAnomalyResult) -> str:
 
     anomaly_rows = ""
     for i, a in enumerate(result.anomalies[:20], 1):
-        col = a.get("column", "N/A")
-        value = a.get("value", "N/A")
-        z = a.get("z_score", 0)
-        reason = a.get("reason", "Out of range")
+        col = a.column if hasattr(a, 'column') else "N/A"
+        value = a.value if hasattr(a, 'value') else "N/A"
+        z = a.z_score if hasattr(a, 'z_score') else 0
+        reason = f"Deviation: {a.deviation_pct:.1f}%" if hasattr(a, 'deviation_pct') else "Out of range"
         anomaly_rows += f"| {i} | {col} | {value} | {z:.1f} | {reason} |\n"
 
     report = f"""# {severity_emoji} QA Anomaly Detection Report
@@ -90,7 +90,7 @@ def generate_qa_markdown_report(result: QAAnomalyResult) -> str:
     # Save report
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"qa_report_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report

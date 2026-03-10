@@ -1,0 +1,77 @@
+{
+  "confidence": 0.96,
+  "needs_human_review": false,
+  "raw_input_snippet": null,
+  "extracted_at": "2026-03-10 17:06:37.831232",
+  "notes": null,
+  "po_number": "WD-2025-1140",
+  "customer_name": "MidWest Supply Co.",
+  "line_items": [
+    {
+      "sku": "SKU-1001",
+      "description": "Industrial Bolt Pack (100ct)",
+      "quantity": 200,
+      "unit_price": 24.99,
+      "total": 4998.0
+    },
+    {
+      "sku": "SKU-1002",
+      "description": "Heavy Duty Bracket Set",
+      "quantity": 50,
+      "unit_price": 49.99,
+      "total": 2499.5
+    },
+    {
+      "sku": "WHL-2001",
+      "description": "Hydraulic Hose Assembly",
+      "quantity": 30,
+      "unit_price": 89.99,
+      "total": 2699.7
+    },
+    {
+      "sku": "SKU-1003",
+      "description": "Safety Pin Assortment",
+      "quantity": 500,
+      "unit_price": 12.5,
+      "total": 6250.0
+    }
+  ],
+  "validations": [
+    {
+      "sku": "SKU-1001",
+      "sku_valid": true,
+      "price_valid": true,
+      "catalog_price": 24.99,
+      "price_difference_pct": 0.0,
+      "status": "ok"
+    },
+    {
+      "sku": "SKU-1002",
+      "sku_valid": true,
+      "price_valid": true,
+      "catalog_price": 49.99,
+      "price_difference_pct": 0.0,
+      "status": "ok"
+    },
+    {
+      "sku": "WHL-2001",
+      "sku_valid": true,
+      "price_valid": true,
+      "catalog_price": 89.99,
+      "price_difference_pct": 0.0,
+      "status": "ok"
+    },
+    {
+      "sku": "SKU-1003",
+      "sku_valid": true,
+      "price_valid": true,
+      "catalog_price": 12.5,
+      "price_difference_pct": 0.0,
+      "status": "ok"
+    }
+  ],
+  "total": 16447.2,
+  "all_valid": true,
+  "erp_payload_saved": false,
+  "issues": []
+}

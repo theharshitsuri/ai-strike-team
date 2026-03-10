@@ -1,0 +1,27 @@
+{
+  "summary": "[PICKUP] Load TRK-88412 \u2014 Johnson Distribution Center",
+  "location": "1450 Industrial Blvd, Memphis, TN 38118",
+  "description": "Load ID: TRK-88412\nShipper: Acme Freight\nType: PICKUP\nEquipment: 48-foot trailer\nCommodity: general freight\nContact: Mike Thompson ((901) 555-0142)\nInstructions: Dock 7, south entrance. Driver must check in at guard shack first.",
+  "start": {
+    "dateTime": "2025-03-14T08:00:00",
+    "timeZone": "America/New_York"
+  },
+  "end": {
+    "dateTime": "2025-03-14T10:00:00",
+    "timeZone": "America/New_York"
+  },
+  "reminders": {
+    "useDefault": false,
+    "overrides": [
+      {
+        "method": "popup",
+        "minutes": 240
+      },
+      {
+        "method": "popup",
+        "minutes": 60
+      }
+    ]
+  },
+  "colorId": "9"
+}

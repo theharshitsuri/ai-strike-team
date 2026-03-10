@@ -164,7 +164,7 @@ def generate_invoice_report(invoice: DetentionInvoice) -> str:
     # Save report
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"detention_report_{invoice.load_id}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report

@@ -20,7 +20,7 @@ def save_report(result: ProductionReportResult) -> dict:
 
     filename = f"production_report_{result.metrics.report_date}.json"
     out_path = OUTPUT_DIR / filename
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result.model_dump(), f, indent=2, default=str)
 
     log.info("production_report_saved", path=str(out_path))
@@ -65,7 +65,7 @@ def generate_markdown_report(result: ProductionReportResult) -> str:
     # Save markdown report
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     md_path = OUTPUT_DIR / f"production_report_{m.report_date}.md"
-    with open(md_path, "w") as f:
+    with open(md_path, "w", encoding="utf-8") as f:
         f.write(md)
 
     return md

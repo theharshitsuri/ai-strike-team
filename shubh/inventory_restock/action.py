@@ -17,7 +17,7 @@ def save_restock_report(result: RestockResult) -> dict:
     """Save restock recommendations."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / "restock_recommendations.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result.model_dump(), f, indent=2, default=str)
     log.info("restock_report_saved", path=str(out_path))
     return {"path": str(out_path)}
@@ -74,6 +74,6 @@ def generate_restock_markdown_report(result: RestockResult) -> str:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"restock_report_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
     return report

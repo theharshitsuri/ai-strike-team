@@ -92,7 +92,7 @@ def save_confirmation(confirmation: ScheduleConfirmation) -> dict:
     """Save scheduling confirmation."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / f"confirmation_{confirmation.request_id}.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(confirmation.model_dump(), f, indent=2, default=str)
     log.info("confirmation_saved", request_id=confirmation.request_id, path=str(out_path))
     return {"path": str(out_path)}
@@ -126,6 +126,6 @@ def generate_scheduling_report(request: ScheduleRequest, confirmation: ScheduleC
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"scheduling_report_{confirmation.request_id}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
     return report

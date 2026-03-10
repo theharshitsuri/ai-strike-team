@@ -1,0 +1,38 @@
+{
+  "confidence": 0.93,
+  "needs_human_review": false,
+  "raw_input_snippet": "         date  shift line  output_units  downtime_minutes  pass_count  fail_count  scrap_units\n0  2025-03-14      1    A           180                15         175           5            3\n1  2025-03",
+  "extracted_at": "2026-03-10 17:05:16.072644",
+  "notes": null,
+  "metrics": {
+    "confidence": 1.0,
+    "needs_human_review": false,
+    "raw_input_snippet": null,
+    "extracted_at": "2026-03-10 17:05:15.552168",
+    "notes": null,
+    "report_date": "2025-03-14",
+    "total_output_units": 1080,
+    "target_output_units": 1000,
+    "output_variance_pct": 8.0,
+    "total_downtime_minutes": 120.0,
+    "downtime_pct": 4.17,
+    "quality_pass_count": 1052,
+    "quality_fail_count": 28,
+    "quality_pass_rate_pct": 97.41,
+    "scrap_units": 19,
+    "scrap_rate_pct": 1.76,
+    "lines_active": 3,
+    "shifts_reported": 2
+  },
+  "executive_summary": "",
+  "highlights": [
+    "Line B achieved highest output (365 units)",
+    "Line C had 45 min downtime in Shift 1"
+  ],
+  "concerns": [
+    "Line C downtime needs investigation",
+    "Scrap rate on Line C above target"
+  ],
+  "recommendations": [],
+  "overall_grade": "satisfactory"
+}

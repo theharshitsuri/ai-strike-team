@@ -1,0 +1,9 @@
+{
+  "to": "dispatch@midwestexpress.com",
+  "subject": "Urgent: Status Update Required - Load FRT-44102",
+  "body": "Dear MidWest Express Trucking Team,\n\nWe are writing to request an urgent status update on Load FRT-44102, which was scheduled for delivery on 2025-03-12.\n\nOur records indicate the shipment has not arrived and we have not received any tracking updates since departure from Chicago, IL.\n\nPlease provide:\n1. Current location of the shipment\n2. Expected delivery time\n3. Any issues causing the delay\n\nThis shipment is time-sensitive for our customer, Nashville Distribution Center.\n\nPlease respond at your earliest convenience.\n\nBest regards,\nLogistics Team",
+  "urgency": "urgent",
+  "load_id": "FRT-44102",
+  "carrier": "MidWest Express Trucking",
+  "generated_at": "2026-03-10T17:20:33.609384"
+}

@@ -109,7 +109,7 @@ def compare_charges(invoice: InvoiceData, rate_con: RateConData) -> FreightAudit
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / f"audit_{invoice.load_id}.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result.model_dump(), f, indent=2, default=str)
     log.info("audit_complete", load_id=invoice.load_id, verdict=verdict,
              overcharge=overcharge_total, total_diff=total_diff)
@@ -183,7 +183,7 @@ def generate_audit_report(audit: FreightAuditResult) -> str:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"audit_report_{audit.load_id}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report

@@ -58,7 +58,7 @@ def create_calendar_event(result: LoadScheduleResult) -> dict:
     # Save to output
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / f"event_{result.load_id}.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(event, f, indent=2)
     log.info("calendar_event_created", load_id=result.load_id, path=str(out_path))
 
@@ -192,7 +192,7 @@ def generate_report(result: LoadScheduleResult, event: dict, conflicts: list) ->
     # Save report
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"report_{result.load_id}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report

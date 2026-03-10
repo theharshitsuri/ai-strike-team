@@ -75,7 +75,7 @@ def evaluate_claim(claim: WarrantyClaimData) -> WarrantyDecision:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / f"claim_decision_{claim.claim_id}.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(warranty_decision.model_dump(), f, indent=2, default=str)
     log.info("claim_evaluated", claim_id=claim.claim_id, decision=decision, days=days)
 
@@ -119,7 +119,7 @@ def generate_claim_report(claim: WarrantyClaimData, decision: WarrantyDecision) 
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"claim_report_{claim.claim_id}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report

@@ -65,5 +65,5 @@ async def extract_schedule(raw_text: str) -> LoadScheduleResult:
 
     log.info("schedule_extraction_complete",
              load_id=result.load_id, confidence=result.confidence,
-             facility=result.facility_name, date=result.date)
+             facility=result.facility_name, date=result.appointment_date)
     return result

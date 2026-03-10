@@ -1,0 +1,52 @@
+{
+  "confidence": 0.96,
+  "needs_human_review": false,
+  "raw_input_snippet": null,
+  "extracted_at": "2026-03-10 17:20:51.687541",
+  "notes": null,
+  "load_id": "FRT-44500",
+  "carrier_name": "Heartland Transport LLC",
+  "invoice_number": "INV-2025-8834",
+  "invoice_total": 4023.0,
+  "rate_con_total": 3741.0,
+  "total_difference": 282.0,
+  "pct_difference": 7.5,
+  "mismatches": [
+    {
+      "charge_type": "detention",
+      "invoice_amount": 225.0,
+      "rate_con_amount": 150.0,
+      "difference": 75.0,
+      "pct_difference": 50.0,
+      "status": "over"
+    },
+    {
+      "charge_type": "fuel_surcharge",
+      "invoice_amount": 798.0,
+      "rate_con_amount": 741.0,
+      "difference": 57.0,
+      "pct_difference": 7.7,
+      "status": "over"
+    },
+    {
+      "charge_type": "linehaul",
+      "invoice_amount": 2850.0,
+      "rate_con_amount": 2850.0,
+      "difference": 0.0,
+      "pct_difference": 0.0,
+      "status": "match"
+    },
+    {
+      "charge_type": "lumper_fee",
+      "invoice_amount": 150.0,
+      "rate_con_amount": 0.0,
+      "difference": 150.0,
+      "pct_difference": 0.0,
+      "status": "missing_from_ratecon"
+    }
+  ],
+  "verdict": "escalated",
+  "overcharge_amount": 282.0,
+  "undercharge_amount": 0.0,
+  "requires_escalation": true
+}

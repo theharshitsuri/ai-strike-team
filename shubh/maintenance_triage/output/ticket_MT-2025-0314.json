@@ -1,0 +1,17 @@
+{
+  "ticket_id": "MT-2025-0314",
+  "equipment_id": "HP-042",
+  "category": "mechanical",
+  "priority": "critical",
+  "assigned_team": "safety",
+  "description": "Hydraulic press on Assembly Line 3 making grinding noise since morning. Hydraulic fluid leaking around main cylinder seal.",
+  "root_cause_guess": "Main cylinder seal failure due to wear",
+  "estimated_repair_hours": 3.0,
+  "parts_needed": [
+    "Hydraulic cylinder seal kit",
+    "Hydraulic fluid"
+  ],
+  "safety_risk": true,
+  "production_impact": "partial",
+  "routed_at": "2026-03-10T17:20:55.316270"
+}

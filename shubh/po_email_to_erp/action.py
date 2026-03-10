@@ -82,7 +82,7 @@ def validate_and_prepare_erp(po: PurchaseOrderResult) -> ERPEntryResult:
     # Save ERP payload
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / f"erp_payload_{po.po_number}.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result.model_dump(), f, indent=2, default=str)
     result.erp_payload_saved = True
 
@@ -124,7 +124,7 @@ def generate_po_report(po: PurchaseOrderResult, erp: ERPEntryResult) -> str:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"po_report_{po.po_number}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
     return report
 

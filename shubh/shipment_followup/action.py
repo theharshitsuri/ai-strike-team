@@ -29,7 +29,7 @@ def save_followup_email(email: FollowUpEmail, status: ShipmentStatus) -> dict:
     }
 
     out_path = OUTPUT_DIR / f"followup_{status.load_id}.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
     log.info("followup_email_saved", load_id=status.load_id, path=str(out_path))
 
@@ -93,7 +93,7 @@ def generate_followup_report(status: ShipmentStatus, email: FollowUpEmail, attem
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = OUTPUT_DIR / f"followup_report_{status.load_id}.md"
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report
