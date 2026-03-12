@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strike Team — Workflow Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #222238;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-active: rgba(255, 255, 255, 0.15);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --accent-blue: #3B82F6;
+            --accent-purple: #8B5CF6;
+            --accent-green: #10B981;
+            --accent-orange: #F97316;
+            --accent-red: #EF4444;
+            --accent-cyan: #06B6D4;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app { display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo h1 {
+            font-size: 18px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-logo span {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .workflow-list { padding: 12px; }
+
+        .workflow-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 4px;
+            border: 1px solid transparent;
+        }
+
+        .workflow-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border);
+        }
+
+        .workflow-item.active {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: var(--accent-blue);
+        }
+
+        .workflow-item .icon { font-size: 20px; }
+        .workflow-item .name { font-size: 13px; font-weight: 500; }
+        .workflow-item .vertical { font-size: 10px; color: var(--text-muted); }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 28px 32px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+        .page-header p { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
+
+        /* Demo Panel */
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-header h3 {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-body { padding: 20px; }
+
+        /* Steps */
+        .steps-container { margin-bottom: 24px; }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            opacity: 0.5;
+        }
+
+        .step.active {
+            opacity: 1;
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .step.completed {
+            opacity: 1;
+            border-color: var(--accent-green);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step.active .step-number {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            border-color: var(--accent-green);
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .step-content { flex: 1; }
+        .step-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .step-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Input/Output */
+        .code-block {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block.input { color: var(--text-secondary); }
+        .code-block.output { color: var(--accent-green); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ROI Card */
+        .roi-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .roi-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+        }
+
+        .roi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .roi-item { text-align: center; }
+        .roi-value { font-size: 24px; font-weight: 800; color: var(--accent-green); }
+        .roi-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.running {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .status-badge.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        .status-badge.idle {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Full Width Panel */
+        .full-width { grid-column: 1 / -1; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 3px; }
+
+        /* Pulse animation for active step */
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+        }
+
+        .step.active { animation: pulse 2s infinite; }
+
+        /* JSON Highlighting */
+        .json-key { color: #7dd3fc; }
+        .json-string { color: #86efac; }
+        .json-number { color: #fcd34d; }
+        .json-boolean { color: #f472b6; }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h1>⚡ AI Strike Team</h1>
+                <span>Workflow Demo Center</span>
+            </div>
+            <div class="workflow-list" id="workflow-list"></div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h2 id="workflow-title">Select a Workflow</h2>
+                    <p id="workflow-desc">Choose a workflow from the sidebar to see how it works</p>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <span class="status-badge idle" id="status-badge">⏸ Idle</span>
+                    <button class="btn btn-primary" id="run-btn" onclick="runDemo()" disabled>
+                        ▶ Run Demo
+                    </button>
+                </div>
+            </div>
+
+            <div class="demo-container">
+                <!-- Steps Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>📋 Workflow Steps</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="steps-container" id="steps-container">
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                Select a workflow to see its steps
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>📥 Input Data</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);" id="input-type">Demo file</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="code-block input" id="input-display">
+Select a workflow to see sample input data
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Panel -->
+                <div class="panel full-width">
+                    <div class="panel-header">
+                        <h3>📤 Workflow Output</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);" id="output-time"></span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="code-block output" id="output-display" style="max-height: 400px;">
+Run a workflow to see the output here
+                        </div>
+                        
+                        <div class="roi-card" id="roi-card" style="display: none;">
+                            <h4>💰 ROI Summary</h4>
+                            <div class="roi-grid">
+                                <div class="roi-item">
+                                    <div class="roi-value" id="roi-time">-</div>
+                                    <div class="roi-label">Time Saved</div>
+                                </div>
+                                <div class="roi-item">
+                                    <div class="roi-value" id="roi-cost">-</div>
+                                    <div class="roi-label">Cost Saved</div>
+                                </div>
+                                <div class="roi-item">
+                                    <div class="roi-value" id="roi-speed">-</div>
+                                    <div class="roi-label">Speed Multiplier</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Workflow definitions with demo data and mock outputs
+        const WORKFLOWS = {
+            detention_tracking: {
+                name: "Detention Tracking",
+                icon: "⏱️",
+                vertical: "Logistics",
+                description: "Track facility detention time and auto-generate invoices",
+                steps: [
+                    { title: "Ingest", desc: "Load detention record (arrival/departure times, facility info)" },
+                    { title: "Extract", desc: "LLM extracts timestamps, facility name, driver info" },
+                    { title: "Calculate", desc: "Compute billable hours based on free time rules" },
+                    { title: "Act", desc: "Generate invoice, send Slack alert, create report" }
+                ],
+                demoInput: `Load: TRK-90221
+Carrier: FastHaul Logistics
+Driver: James Walker
+
+Check-in at facility: ABC Manufacturing, Dock 4
+Arrived: March 12, 2025 at 7:45 AM
+Departed: March 12, 2025 at 1:30 PM
+
+Reason for extended stay: Waiting for forklift availability
+Notes: Driver waited 2 hours past scheduled window`,
+                demoOutput: {
+                    status: "success",
+                    workflow: "detention_tracking",
+                    confidence: 0.95,
+                    result: {
+                        load_id: "TRK-90221",
+                        facility_name: "ABC Manufacturing",
+                        arrival_time: "2025-03-12T07:45:00",
+                        departure_time: "2025-03-12T13:30:00",
+                        total_time_minutes: 345,
+                        free_time_minutes: 120,
+                        billable_hours: 3.75,
+                        rate_per_hour: 75.00,
+                        total_charge: 281.25,
+                        status: "billable"
+                    },
+                    output: {
+                        summary: "Load TRK-90221: 345 min at facility, 3.75 hrs billable @ $75/hr = $281.25",
+                        slack_alert: { channel: "logistics-detention", sent: true }
+                    },
+                    roi: { time_saved_min: 20, cost_saved: 9.99, speed_multiplier: "1157x" }
+                }
+            },
+            freight_audit: {
+                name: "Freight Audit",
+                icon: "📊",
+                vertical: "Logistics",
+                description: "Compare carrier invoices against rate confirmations",
+                steps: [
+                    { title: "Ingest", desc: "Load carrier invoice and rate confirmation documents" },
+                    { title: "Extract Invoice", desc: "LLM extracts line items from invoice (linehaul, fuel, detention)" },
+                    { title: "Extract Rate Con", desc: "LLM extracts agreed rates from rate confirmation" },
+                    { title: "Compare & Audit", desc: "Match line items, flag discrepancies, calculate variance" },
+                    { title: "Act", desc: "Generate audit report, escalate if overcharge > $100" }
+                ],
+                demoInput: `===INVOICE===
+CARRIER INVOICE
+Invoice #: INV-2025-8834
+Date: 2025-03-15
+Carrier: Heartland Transport LLC
+Load: FRT-44500
+
+Charges:
+  Linehaul                 $2,850.00
+  Fuel Surcharge (28%)       $798.00
+  Detention (3 hrs)          $225.00
+  Lumper Fee                 $150.00
+  ─────────────────────────────────
+  TOTAL                    $4,023.00
+
+===RATE CONFIRMATION===
+Load: FRT-44500
+Agreed Rate: $2,850.00 all-in
+Fuel Surcharge: 26% ($741.00)
+Detention: $75/hr after 2hr free`,
+                demoOutput: {
+                    status: "success",
+                    workflow: "freight_audit",
+                    confidence: 0.96,
+                    result: {
+                        load_id: "FRT-44500",
+                        invoice_total: 4023.00,
+                        rate_con_total: 3741.00,
+                        total_difference: 282.00,
+                        pct_difference: 7.5,
+                        mismatches: [
+                            { charge: "detention", invoice: 225, rate_con: 150, diff: 75 },
+                            { charge: "fuel_surcharge", invoice: 798, rate_con: 741, diff: 57 },
+                            { charge: "lumper_fee", invoice: 150, rate_con: 0, diff: 150 }
+                        ],
+                        verdict: "ESCALATED",
+                        requires_escalation: true
+                    },
+                    output: {
+                        summary: "Invoice $4,023 vs Rate Con $3,741 = $282 overcharge → ESCALATED",
+                        slack_alert: { channel: "freight-audit", sent: true }
+                    },
+                    roi: { time_saved_min: 30, cost_saved: 17.49, speed_multiplier: "1707x" }
+                }
+            },
+            inventory_restock: {
+                name: "Inventory Restock",
+                icon: "📦",
+                vertical: "Wholesale",
+                description: "Forecast demand and generate restock recommendations",
+                steps: [
+                    { title: "Ingest", desc: "Load inventory CSV with stock levels and weekly forecasts" },
+                    { title: "Analyze", desc: "Calculate avg demand, weeks of stock, reorder points" },
+                    { title: "Classify", desc: "LLM categorizes urgency: immediate, soon, planned, no action" },
+                    { title: "Act", desc: "Generate restock report, send Slack alerts for urgent items" }
+                ],
+                demoInput: `sku,description,current_stock,week_1,week_2,week_3,week_4
+SKU-1001,Industrial Bolt Pack,1200,280,310,295,320
+SKU-1002,Heavy Duty Bracket Set,85,38,42,45,40
+SKU-1003,Safety Pin Assortment,3500,180,195,210,195
+WHL-2001,Hydraulic Hose Assembly,12,8,9,7,9
+WHL-2002,Copper Fitting Kit,450,60,65,58,67
+DST-3001,Control Valve Assembly,25,5,6,5,6`,
+                demoOutput: {
+                    status: "success",
+                    workflow: "inventory_restock",
+                    confidence: 0.92,
+                    result: {
+                        total_skus_analyzed: 6,
+                        immediate_reorders: 0,
+                        soon_reorders: 2,
+                        planned_reorders: 1,
+                        no_action: 3,
+                        urgency_level: "SOON",
+                        forecasts: [
+                            { sku: "SKU-1002", stock: 85, weeks_left: 2.1, order_qty: 206, urgency: "soon" },
+                            { sku: "WHL-2001", stock: 12, weeks_left: 1.4, order_qty: 42, urgency: "soon" }
+                        ]
+                    },
+                    output: {
+                        summary: "6 SKUs analyzed: 2 need reorder soon, 1 planned",
+                        slack_alert: { channel: "inventory-alerts", sent: true }
+                    },
+                    roi: { time_saved_min: 60, cost_saved: 34.99, speed_multiplier: "6561x" }
+                }
+            },
+            load_scheduling: {
+                name: "Load Scheduling",
+                icon: "📅",
+                vertical: "Logistics",
+                description: "Parse scheduling emails and create calendar events",
+                steps: [
+                    { title: "Ingest", desc: "Load scheduling request email" },
+                    { title: "Extract", desc: "LLM extracts facility, date, time, contact, instructions" },
+                    { title: "Validate", desc: "Check for time conflicts, validate date format" },
+                    { title: "Act", desc: "Create calendar event, send Slack notification, draft confirmation" }
+                ],
+                demoInput: `Subject: Scheduling Request — Load #TRK-88412
+From: dispatch@acmefreight.com
+
+Hi Team,
+
+Please schedule the following pickup:
+
+Load Number: TRK-88412
+Facility: Johnson Distribution Center
+Address: 1450 Industrial Blvd, Memphis, TN 38118
+Date: March 14, 2025
+Time: 8:00 AM (2-hour window)
+Contact: Mike Thompson, (901) 555-0142
+
+Special Instructions:
+- Use Dock 7, south entrance
+- Driver must check in at guard shack first
+
+Thanks,
+Dispatch Team`,
+                demoOutput: {
+                    status: "success",
+                    workflow: "load_scheduling",
+                    confidence: 0.94,
+                    result: {
+                        load_id: "TRK-88412",
+                        facility_name: "Johnson Distribution Center",
+                        appointment_date: "2025-03-14",
+                        appointment_time: "08:00",
+                        time_window_minutes: 120,
+                        load_type: "pickup",
+                        contact_name: "Mike Thompson",
+                        contact_phone: "(901) 555-0142"
+                    },
+                    output: {
+                        summary: "Scheduled pickup for Load TRK-88412 at Johnson Distribution Center on 2025-03-14 @ 08:00",
+                        calendar_event: { created: true },
+                        slack_notification: { channel: "logistics-scheduling", sent: true }
+                    },
+                    roi: { time_saved_min: 12, cost_saved: 4.99, speed_multiplier: "702x" }
+                }
+            },
+            maintenance_triage: {
+                name: "Maintenance Triage",
+                icon: "🔧",
+                vertical: "Manufacturing",
+                description: "Classify maintenance tickets and route to appropriate teams",
+                steps: [
+                    { title: "Ingest", desc: "Load maintenance ticket text" },
+                    { title: "Classify", desc: "LLM determines category, priority, safety risk" },
+                    { title: "Analyze", desc: "Estimate repair time, identify parts needed" },
+                    { title: "Route", desc: "Assign to team, escalate if safety risk, send Slack alert" }
+                ],
+                demoInput: `Ticket submitted by: Floor Supervisor, Line 3
+Date: 2025-03-14 14:22
+
+Subject: Hydraulic press making grinding noise — possible seal failure
+
+The hydraulic press on Assembly Line 3 (Equipment ID: HP-042) has been 
+making a grinding noise since this morning. We've also noticed hydraulic 
+fluid leaking around the main cylinder seal.
+
+This is affecting production — we're running at 60% capacity on this line.
+There's also a safety concern as the floor is slippery near the machine.
+
+Location: Building A, Assembly Line 3, Station 7
+Priority requested: URGENT`,
+                demoOutput: {
+                    status: "success",
+                    workflow: "maintenance_triage",
+                    confidence: 0.92,
+                    result: {
+                        ticket_id: "MT-2025-0314",
+                        category: "mechanical",
+                        priority: "CRITICAL",
+                        equipment_id: "HP-042",
+                        safety_risk: true,
+                        production_impact: "partial",
+                        assigned_team: "safety",
+                        estimated_repair_hours: 3.0,
+                        parts_needed: ["Hydraulic cylinder seal kit", "Hydraulic fluid"]
+                    },
+                    output: {
+                        summary: "🚨 [CRITICAL] mechanical — Routed to safety team. Est. 3.0h repair.",
+                        slack_alert: { channel: "maintenance-safety", sent: true }
+                    },
+                    roi: { time_saved_min: 8, cost_saved: 4.00, speed_multiplier: "909x" }
+                }
+            },
+            shipment_followup: {
+                name: "Shipment Follow-up",
+                icon: "📧",
+                vertical: "Logistics",
+                description: "Track overdue shipments and auto-draft follow-up emails",
+                steps: [
+                    { title: "Ingest", desc: "Load shipment tracking data" },
+                    { title: "Extract", desc: "LLM extracts status, carrier, route, overdue hours" },
+                    { title: "Generate Email", desc: "Draft tone-appropriate follow-up based on attempt #" },
+                    { title: "Act", desc: "Save email draft, escalate if critical, send Slack alert" }
+                ],
+                demoInput: `Load ID: FRT-44102
+Carrier: MidWest Express Trucking
+Route: Chicago, IL → Nashville, TN
+Expected Delivery: 2025-03-12
+Last Status Update: In transit — departed Chicago terminal at 6:00 AM on March 11, 2025
+Current Date/Time: 2025-03-13 14:00
+
+Notes: No driver check-in since departure. GPS signal lost near Indianapolis. 
+Dispatcher at MidWest Express has not responded to 2 voicemails.
+This is the 2nd follow-up attempt.`,
+                demoOutput: {
+                    status: "success",
+                    workflow: "shipment_followup",
+                    confidence: 0.89,
+                    result: {
+                        load_id: "FRT-44102",
+                        carrier: "MidWest Express Trucking",
+                        origin: "Chicago, IL",
+                        destination: "Nashville, TN",
+                        hours_overdue: 32,
+                        is_overdue: true,
+                        current_status: "in_transit_-_no_update"
+                    },
+                    output: {
+                        summary: "Follow-up #3 for Load FRT-44102 — urgent — 32h overdue",
+                        email: {
+                            subject: "Urgent: Status Update Required - Load FRT-44102",
+                            urgency: "urgent",
+                            should_escalate: true
+                        },
+                        escalation: { channel: "logistics-escalations", sent: true }
+                    },
+                    roi: { time_saved_min: 15, cost_saved: 6.24, speed_multiplier: "586x" }
+                }
+            },
+            warranty_claims: {
+                name: "Warranty Claims",
+                icon: "🛡️",
+                vertical: "Wholesale",
+                description: "Process warranty claims and auto-approve/reject based on rules",
+                steps: [
+                    { title: "Ingest", desc: "Load warranty claim form" },
+                    { title: "Extract", desc: "LLM extracts product, purchase date, defect type, claim value" },
+                    { title: "Evaluate", desc: "Check warranty period, product validity, claim rules" },
+                    { title: "Act", desc: "Approve/reject claim, generate customer response, send Slack alert" }
+                ],
+                demoInput: `WARRANTY CLAIM FORM
+Claim #: WC-2025-0891
+
+Customer: David Martinez
+Email: d.martinez@email.com
+
+Product: PRD-X450 Heavy Duty Drill
+Serial Number: SN-HDD-2024-07821
+Purchase Date: 2025-01-10
+
+Date of Issue: 2025-03-14
+Issue Description: Motor stopped working after 2 months of normal use. 
+The trigger works but the motor does not engage.
+
+Defect Type: Manufacturing defect
+Requested Resolution: Replacement
+
+Attachments: Receipt, photos of product`,
+                demoOutput: {
+                    status: "success",
+                    workflow: "warranty_claims",
+                    confidence: 0.94,
+                    result: {
+                        claim_id: "WC-2025-0891",
+                        product_name: "PRD-X450 Heavy Duty Drill",
+                        purchase_date: "2025-01-10",
+                        days_since_purchase: 63,
+                        warranty_period_days: 365,
+                        within_warranty: true,
+                        defect_type: "manufacturing",
+                        claim_value: 149.99,
+                        decision: "APPROVED",
+                        reason: "Valid warranty claim - manufacturing defect within warranty period"
+                    },
+                    output: {
+                        summary: "✅ Claim WC-2025-0891: APPROVED — Valid warranty (63 days old)",
+                        customer_response: { sent: true },
+                        slack_alert: { channel: "warranty-claims", sent: true }
+                    },
+                    roi: { time_saved_min: 20, cost_saved: 9.33, speed_multiplier: "2223x" }
+                }
+            },
+            rfp_intelligence: {
+                name: "RFP Intelligence",
+                icon: "📑",
+                vertical: "Cross-Vertical",
+                description: "Parse RFP documents and extract key requirements",
+                steps: [
+                    { title: "Ingest", desc: "Load RFP document (PDF, DOCX, or text)" },
+                    { title: "Extract", desc: "LLM extracts project title, deadline, budget, requirements" },
+                    { title: "Analyze", desc: "Identify compliance standards, insurance requirements" },
+                    { title: "Act", desc: "Create CRM lead, post summary to Slack" }
+                ],
+                demoInput: `# REQUEST FOR PROPOSAL (RFP)
+# Project ID: 2025-BRIDGE-04
+# Title: River Elm Bridge Structural Rehabilitation
+
+## 1. Overview
+The Department of Transportation (DOT) is seeking proposals from qualified 
+contractors for the structural rehabilitation of the River Elm Bridge.
+
+## 2. Submission Deadline
+November 15, 2025 at 5:00 PM EST
+
+## 3. Budget
+Maximum budget cap: $4,200,000
+
+## 4. Scope of Work
+- Structural assessment and engineering analysis
+- Joint replacement and expansion joint repair
+- Deck resurfacing (approx. 12,000 sq ft)
+- Safety lighting installation
+
+## 5. Requirements
+- State Grade A Engineering License required
+- Minimum 15 years experience in bridge rehabilitation
+- $5,000,000 General Liability Insurance
+- 5% bid security required`,
+                demoOutput: {
+                    status: "success",
+                    workflow: "rfp_intelligence",
+                    confidence: 0.98,
+                    result: {
+                        project_title: "River Elm Bridge Structural Rehabilitation",
+                        submission_deadline: "November 15, 2025 at 5:00 PM EST",
+                        budget_cap: "$4,200,000",
+                        scope_summary: "Structural assessment, joint replacement, deck resurfacing, safety lighting",
+                        technical_requirements: "State Grade A Engineering License, 15+ years experience",
+                        insurance_requirements: "$5,000,000 General Liability",
+                        bid_bond: "5% bid security required"
+                    },
+                    output: {
+                        summary: "Successfully processed River Elm Bridge Structural Rehabilitation",
+                        actions: [
+                            { target: "CRM", action: "Create Lead", status: "success" },
+                            { target: "Slack", action: "Post Summary", status: "success" }
+                        ]
+                    },
+                    roi: { time_saved_min: 15, cost_saved: 6.24, speed_multiplier: "493x" }
+                }
+            }
+        };
+
+        let currentWorkflow = null;
+        let isRunning = false;
+
+        // Initialize
+        function init() {
+            renderWorkflowList();
+        }
+
+        function renderWorkflowList() {
+            const list = document.getElementById('workflow-list');
+            list.innerHTML = Object.entries(WORKFLOWS).map(([key, wf]) => `
+                <div class="workflow-item" data-wf="${key}" onclick="selectWorkflow('${key}')">
+                    <span class="icon">${wf.icon}</span>
+                    <div>
+                        <div class="name">${wf.name}</div>
+                        <div class="vertical">${wf.vertical}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectWorkflow(key) {
+            currentWorkflow = key;
+            const wf = WORKFLOWS[key];
+
+            // Update sidebar selection
+            document.querySelectorAll('.workflow-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.workflow-item[data-wf="${key}"]`).classList.add('active');
+
+            // Update header
+            document.getElementById('workflow-title').textContent = `${wf.icon} ${wf.name}`;
+            document.getElementById('workflow-desc').textContent = wf.description;
+
+            // Render steps
+            renderSteps(wf.steps);
+
+            // Show input
+            document.getElementById('input-display').textContent = wf.demoInput;
+            document.getElementById('input-type').textContent = 'Demo input';
+
+            // Reset output
+            document.getElementById('output-display').textContent = 'Click "Run Demo" to execute the workflow';
+            document.getElementById('output-time').textContent = '';
+            document.getElementById('roi-card').style.display = 'none';
+
+            // Enable run button
+            document.getElementById('run-btn').disabled = false;
+            document.getElementById('status-badge').className = 'status-badge idle';
+            document.getElementById('status-badge').innerHTML = '⏸ Ready';
+        }
+
+        function renderSteps(steps) {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = steps.map((step, i) => `
+                <div class="step" id="step-${i}">
+                    <div class="step-number">${i + 1}</div>
+                    <div class="step-content">
+                        <div class="step-title">${step.title}</div>
+                        <div class="step-desc">${step.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function runDemo() {
+            if (!currentWorkflow || isRunning) return;
+
+            const wf = WORKFLOWS[currentWorkflow];
+            isRunning = true;
+
+            // Update UI
+            document.getElementById('run-btn').disabled = true;
+            document.getElementById('run-btn').innerHTML = '<span class="spinner"></span> Running...';
+            document.getElementById('status-badge').className = 'status-badge running';
+            document.getElementById('status-badge').innerHTML = '<span class="spinner"></span> Running';
+            document.getElementById('output-display').textContent = '⏳ Processing...';
+
+            // Reset steps
+            document.querySelectorAll('.step').forEach(el => {
+                el.classList.remove('active', 'completed');
+            });
+
+            // Animate through steps
+            for (let i = 0; i < wf.steps.length; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                stepEl.classList.add('active');
+                
+                // Update output with step progress
+                document.getElementById('output-display').textContent = 
+                    `⏳ Step ${i + 1}/${wf.steps.length}: ${wf.steps[i].title}...`;
+
+                await sleep(800 + Math.random() * 400);
+
+                stepEl.classList.remove('active');
+                stepEl.classList.add('completed');
+                stepEl.querySelector('.step-number').textContent = '✓';
+            }
+
+            // Show output
+            const output = wf.demoOutput;
+            document.getElementById('output-display').innerHTML = syntaxHighlight(JSON.stringify(output, null, 2));
+            document.getElementById('output-time').textContent = `Completed in ${(Math.random() * 0.5 + 0.5).toFixed(2)}s`;
+
+            // Show ROI
+            document.getElementById('roi-card').style.display = 'block';
+            document.getElementById('roi-time').textContent = `${output.roi.time_saved_min} min`;
+            document.getElementById('roi-cost').textContent = `$${output.roi.cost_saved}`;
+            document.getElementById('roi-speed').textContent = output.roi.speed_multiplier;
+
+            // Update status
+            document.getElementById('status-badge').className = 'status-badge success';
+            document.getElementById('status-badge').innerHTML = '✅ Success';
+            document.getElementById('run-btn').innerHTML = '▶ Run Demo';
+            document.getElementById('run-btn').disabled = false;
+
+            isRunning = false;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+{
+  "confidence": 0.91,
+  "needs_human_review": false,
+  "raw_input_snippet": "   batch_id         timestamp  temperature  pressure  thickness  weight\n0      B001  2025-03-14 08:00          372      31.2       2.24     499\n1      B002  2025-03-14 08:15          375      30.8    ",
+  "extracted_at": "2026-03-12 15:20:36.877392",
+  "notes": null,
+  "total_rows": 15,
+  "total_anomalies": 4,
+  "anomalies": [
+    {
+      "row_index": 5,
+      "column": "temperature",
+      "value": 415.0,
+      "expected_min": 350.0,
+      "expected_max": 400.0,
+      "z_score": 3.53,
+      "deviation_pct": 0.0375,
+      "severity": "medium"
+    },
+    {
+      "row_index": 6,
+      "column": "pressure",
+      "value": 38.5,
+      "expected_min": 28.0,
+      "expected_max": 35.0,
+      "z_score": 3.58,
+      "deviation_pct": 0.1,
+      "severity": "medium"
+    },
+    {
+      "row_index": 7,
+      "column": "thickness",
+      "value": 1.85,
+      "expected_min": 2.0,
+      "expected_max": 2.5,
+      "z_score": 3.57,
+      "deviation_pct": 0.075,
+      "severity": "medium"
+    },
+    {
+      "row_index": 8,
+      "column": "weight",
+      "value": 520.0,
+      "expected_min": 495.0,
+      "expected_max": 505.0,
+      "z_score": 3.46,
+      "deviation_pct": 0.0297,
+      "severity": "medium"
+    }
+  ],
+  "columns_checked": [
+    "temperature",
+    "pressure",
+    "thickness",
+    "weight"
+  ],
+  "summary": "4 anomalies detected across 15 batches. Temperature spike in B006 and thickness deviation in B008 require immediate attention.",
+  "severity": "low",
+  "recommended_actions": []
+}

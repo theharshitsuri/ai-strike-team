@@ -2,7 +2,7 @@
   "confidence": 0.5,
   "needs_human_review": false,
   "raw_input_snippet": "        sku              description  current_stock  week_1  week_2  week_3  week_4\n0  SKU-1001     Industrial Bolt Pack           1200     280     310     295     320\n1  SKU-1002   Heavy Duty Bracket",
-  "extracted_at": "2026-03-10 17:20:55.080071",
+  "extracted_at": "2026-03-12 15:20:27.614453",
   "notes": null,
   "total_skus_analyzed": 6,
   "immediate_reorders": 0,
