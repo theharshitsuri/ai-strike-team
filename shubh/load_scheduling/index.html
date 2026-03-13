@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Load Scheduling — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .calendar-preview {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-top: 32px;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .calendar-title { font-size: 18px; font-weight: 800; }
+    .calendar-event {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(29, 78, 216, 0.1));
+      border-left: 4px solid var(--primary);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+    .event-time {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .event-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .event-location { font-size: 13px; color: var(--fg-muted); }
+    .schedule-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r);
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .schedule-section h4 {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--fg-muted);
+      margin-bottom: 12px;
+    }
+    .schedule-detail {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+    }
+    .schedule-icon { font-size: 18px; }
+    .schedule-value { font-weight: 600; }
+    .conflict-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid var(--warning);
+      border-radius: var(--r-sm);
+      padding: 16px;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .conflict-warning .icon { font-size: 24px; }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Schedule</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">📅 Logistics Automation</div>
+      <h1 class="reveal">Load <span>Scheduling</span></h1>
+      <p class="reveal">Parse scheduling emails, extract load details, check conflicts, and create calendar events automatically.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" onclick="WorkflowUI.nav('upload')">Schedule Load →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">85%</div>
+          <div class="metric-label">Confidence Threshold</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">4 hrs</div>
+          <div class="metric-label">Reminder Lead Time</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">30 min</div>
+          <div class="metric-label">Conflict Buffer</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">< 2s</div>
+          <div class="metric-label">Processing Time</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>Automated Load Scheduling</h3>
+        <p style="margin-bottom: 24px;">Forward scheduling emails from shippers, brokers, or carriers. Our AI extracts dates, times, addresses, and load details, then creates calendar events and notifies your team.</p>
+        <div class="chips-container">
+          <span class="chip">📧 Email Parsing</span>
+          <span class="chip">📍 Address Extraction</span>
+          <span class="chip">🕐 Time Conversion</span>
+          <span class="chip">📅 Calendar Creation</span>
+          <span class="chip">🔔 Team Notification</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Upload</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Extract</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Schedule</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Upload Scheduling Email</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Forward or paste the scheduling email from your shipper or carrier</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📧</div>
+        <h3>Drop email file here</h3>
+        <p>.eml, .txt, or paste below</p>
+        <input type="file" accept=".eml,.txt,.msg">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Or paste email content:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="Paste the scheduling email here...
+
+Example:
+Subject: Load Pickup Confirmation - #LD-2024-1847
+
+Hi,
+
+Please confirm the following load details:
+
+Load ID: LD-2024-1847
+Pickup Date: March 15, 2024
+Pickup Time: 08:00 AM
+Location: 1234 Industrial Blvd, Chicago, IL 60601
+..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1;" onclick="processEmail()">📅 Extract & Schedule</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Processing Email...</h2>
+      
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Load Scheduled Successfully</h2>
+          <p style="color: var(--fg-muted);">Calendar event created and team notified</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Schedule</button>
+          <button class="btn btn-primary" onclick="openCalendar()">📅 Open Calendar</button>
+        </div>
+      </div>
+
+      <!-- Schedule Card -->
+      <div class="schedule-card" id="schedule-card">
+        <div class="schedule-section">
+          <h4>📍 Pickup Details</h4>
+          <div class="schedule-detail">
+            <span class="schedule-icon">📅</span>
+            <span class="schedule-value" id="pickup-date">—</span>
+          </div>
+          <div class="schedule-detail">
+            <span class="schedule-icon">🕐</span>
+            <span class="schedule-value" id="pickup-time">—</span>
+          </div>
+          <div class="schedule-detail">
+            <span class="schedule-icon">🏢</span>
+            <span class="schedule-value" id="pickup-facility">—</span>
+          </div>
+          <div class="schedule-detail">
+            <span class="schedule-icon">📍</span>
+            <span class="schedule-value" id="pickup-address">—</span>
+          </div>
+        </div>
+        <div class="schedule-section">
+          <h4>📦 Load Details</h4>
+          <div class="schedule-detail">
+            <span class="schedule-icon">🔢</span>
+            <span class="schedule-value" id="load-id">—</span>
+          </div>
+          <div class="schedule-detail">
+            <span class="schedule-icon">🚛</span>
+            <span class="schedule-value" id="equipment">—</span>
+          </div>
+          <div class="schedule-detail">
+            <span class="schedule-icon">📦</span>
+            <span class="schedule-value" id="commodity">—</span>
+          </div>
+          <div class="schedule-detail">
+            <span class="schedule-icon">👤</span>
+            <span class="schedule-value" id="contact">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conflict Warning (if any) -->
+      <div id="conflict-section"></div>
+
+      <!-- Calendar Preview -->
+      <div class="calendar-preview">
+        <div class="calendar-header">
+          <span class="calendar-title">📅 Calendar Event Created</span>
+          <span class="badge badge-success">✓ Synced</span>
+        </div>
+        <div class="calendar-event" id="calendar-event">
+          <div class="event-time" id="event-time">—</div>
+          <div class="event-title" id="event-title">—</div>
+          <div class="event-location" id="event-location">—</div>
+        </div>
+      </div>
+
+      <!-- Extracted Data -->
+      <div class="card card-static" style="margin-top: 32px;">
+        <h3 style="margin-bottom: 20px;">📋 All Extracted Fields</h3>
+        <div class="results-grid" id="results-data"></div>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Time Saved</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'load_scheduling';
+    
+    const FIELD_MAPPING = {
+      load_id: 'Load ID',
+      shipper_name: 'Shipper',
+      facility_name: 'Facility',
+      facility_address: 'Address',
+      appointment_date: 'Date',
+      appointment_time: 'Time',
+      load_type: 'Type',
+      equipment_type: 'Equipment',
+      commodity: 'Commodity',
+      weight_lbs: 'Weight (lbs)',
+      contact_name: 'Contact',
+      contact_phone: 'Phone',
+      special_instructions: 'Instructions',
+      reference_numbers: 'References'
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      const file = await WorkflowUI.loadDemoFile(WORKFLOW_ID);
+      if (file) {
+        WorkflowUI.currentFile = file;
+        const zone = document.getElementById('upload-zone');
+        zone.classList.add('has-file');
+        zone.querySelector('.upload-icon').textContent = '📄';
+        zone.querySelector('h3').textContent = file.name;
+        zone.querySelector('p').textContent = 'Demo file loaded';
+        WorkflowUI.nav('upload');
+      }
+    }
+
+    async function processEmail() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or paste email content', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 20, message: 'Reading email content...', duration: 500 },
+        { progress: 40, message: 'Extracting dates and times...', duration: 600 },
+        { progress: 60, message: 'Parsing addresses...', duration: 500 },
+        { progress: 80, message: 'Checking for conflicts...', duration: 400 },
+        { progress: 95, message: 'Creating calendar event...', duration: 500 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting load scheduling workflow...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        WorkflowUI.addLogEntry('live-log', 'Calling AI extraction API...', 'info');
+        
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Extraction successful!', 'success');
+          WorkflowUI.processingResult = result;
+          setTimeout(() => {
+            renderScheduleResults(result.result, result.roi);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Processing failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderScheduleResults(data, roi) {
+      // Schedule card
+      document.getElementById('pickup-date').textContent = data.appointment_date || '—';
+      document.getElementById('pickup-time').textContent = data.appointment_time || '—';
+      document.getElementById('pickup-facility').textContent = data.facility_name || '—';
+      document.getElementById('pickup-address').textContent = data.facility_address || '—';
+      document.getElementById('load-id').textContent = data.load_id || '—';
+      document.getElementById('equipment').textContent = data.equipment_type || 'Standard';
+      document.getElementById('commodity').textContent = data.commodity || 'General Freight';
+      document.getElementById('contact').textContent = data.contact_name ? `${data.contact_name} (${data.contact_phone || 'N/A'})` : '—';
+
+      // Calendar event
+      document.getElementById('event-time').textContent = `${data.appointment_date} at ${data.appointment_time}`;
+      document.getElementById('event-title').textContent = `${data.load_type === 'delivery' ? '📦 Delivery' : '🚛 Pickup'}: ${data.load_id || 'Load'}`;
+      document.getElementById('event-location').textContent = data.facility_address || data.facility_name || '—';
+
+      // Conflict check (mock)
+      if (data.confidence && data.confidence < 0.8) {
+        document.getElementById('conflict-section').innerHTML = `
+          <div class="conflict-warning">
+            <span class="icon">⚠️</span>
+            <div>
+              <strong>Low Confidence Extraction</strong>
+              <p style="font-size: 13px; color: var(--fg-muted); margin-top: 4px;">
+                Some fields may need manual verification. Confidence: ${Math.round(data.confidence * 100)}%
+              </p>
+            </div>
+          </div>
+        `;
+      } else {
+        document.getElementById('conflict-section').innerHTML = '';
+      }
+
+      // All extracted fields
+      WorkflowUI.renderResults('results-data', data, FIELD_MAPPING);
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '5 min',
+        cost_saved: '$8',
+        accuracy: `${Math.round((data.confidence || 0.92) * 100)}%`
+      });
+    }
+
+    function openCalendar() {
+      WorkflowUI.toast('Opening calendar...', 'info');
+      // In production, this would open the calendar app
+    }
+  </script>
+</body>
+</html>

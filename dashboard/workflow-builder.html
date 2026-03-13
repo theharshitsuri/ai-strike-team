@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strike Team — Workflow Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="workflow-builder.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1>⚡ AI Strike Team</h1>
+                <div class="workflow-name-container">
+                    <input type="text" id="workflow-name" value="Untitled Workflow" class="workflow-name-input">
+                    <span class="edit-icon">✏️</span>
+                </div>
+            </div>
+            <div class="topbar-center">
+                <div class="company-selector">
+                    <label>Company:</label>
+                    <select id="company-select">
+                        <option value="">— Select Company —</option>
+                    </select>
+                    <button class="btn btn-sm" onclick="loadCompanyConfig()">Apply Config</button>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <button class="btn btn-secondary" onclick="saveWorkflow()">💾 Save</button>
+                <button class="btn btn-secondary" onclick="exportWorkflow()">📤 Export</button>
+                <button class="btn btn-primary" onclick="runWorkflow()">▶️ Run</button>
+                <button class="btn btn-accent" onclick="shareWorkflow()">🔗 Share</button>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <!-- Left Panel: Node Library -->
+            <aside class="node-library">
+                <div class="panel-header">
+                    <h3>📦 Nodes</h3>
+                    <input type="text" placeholder="Search..." class="search-input" id="node-search">
+                </div>
+                
+                <div class="node-category">
+                    <div class="category-header">Triggers</div>
+                    <div class="node-item" draggable="true" data-type="trigger-email">
+                        <span class="node-icon">📧</span>
+                        <span class="node-label">Email Received</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="trigger-webhook">
+                        <span class="node-icon">🔗</span>
+                        <span class="node-label">Webhook</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="trigger-schedule">
+                        <span class="node-icon">⏰</span>
+                        <span class="node-label">Schedule</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="trigger-file">
+                        <span class="node-icon">📁</span>
+                        <span class="node-label">File Upload</span>
+                    </div>
+                </div>
+
+                <div class="node-category">
+                    <div class="category-header">AI Processing</div>
+                    <div class="node-item" draggable="true" data-type="ai-extract">
+                        <span class="node-icon">🧠</span>
+                        <span class="node-label">LLM Extract</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="ai-classify">
+                        <span class="node-icon">🏷️</span>
+                        <span class="node-label">Classify</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="ai-summarize">
+                        <span class="node-icon">📝</span>
+                        <span class="node-label">Summarize</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="ai-generate">
+                        <span class="node-icon">✨</span>
+                        <span class="node-label">Generate Text</span>
+                    </div>
+                </div>
+
+                <div class="node-category">
+                    <div class="category-header">Logic</div>
+                    <div class="node-item" draggable="true" data-type="logic-condition">
+                        <span class="node-icon">🔀</span>
+                        <span class="node-label">If/Else</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="logic-switch">
+                        <span class="node-icon">🎚️</span>
+                        <span class="node-label">Switch</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="logic-loop">
+                        <span class="node-icon">🔄</span>
+                        <span class="node-label">Loop</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="logic-merge">
+                        <span class="node-icon">🔗</span>
+                        <span class="node-label">Merge</span>
+                    </div>
+                </div>
+
+                <div class="node-category">
+                    <div class="category-header">Actions</div>
+                    <div class="node-item" draggable="true" data-type="action-slack">
+                        <span class="node-icon">💬</span>
+                        <span class="node-label">Slack Message</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="action-email">
+                        <span class="node-icon">📤</span>
+                        <span class="node-label">Send Email</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="action-webhook">
+                        <span class="node-icon">🌐</span>
+                        <span class="node-label">HTTP Request</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="action-database">
+                        <span class="node-icon">🗄️</span>
+                        <span class="node-label">Database</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="action-erp">
+                        <span class="node-icon">📊</span>
+                        <span class="node-label">ERP/CRM</span>
+                    </div>
+                </div>
+
+                <div class="node-category">
+                    <div class="category-header">Outputs</div>
+                    <div class="node-item" draggable="true" data-type="output-report">
+                        <span class="node-icon">📄</span>
+                        <span class="node-label">Generate Report</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="output-invoice">
+                        <span class="node-icon">💰</span>
+                        <span class="node-label">Create Invoice</span>
+                    </div>
+                    <div class="node-item" draggable="true" data-type="output-calendar">
+                        <span class="node-icon">📅</span>
+                        <span class="node-label">Calendar Event</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas -->
+            <main class="canvas-container">
+                <div class="canvas-toolbar">
+                    <button class="toolbar-btn" onclick="zoomIn()" title="Zoom In">🔍+</button>
+                    <button class="toolbar-btn" onclick="zoomOut()" title="Zoom Out">🔍-</button>
+                    <button class="toolbar-btn" onclick="resetZoom()" title="Reset">⟲</button>
+                    <span class="zoom-level" id="zoom-level">100%</span>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" onclick="undo()" title="Undo">↩️</button>
+                    <button class="toolbar-btn" onclick="redo()" title="Redo">↪️</button>
+                    <button class="toolbar-btn" onclick="deleteSelected()" title="Delete">🗑️</button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" onclick="autoLayout()" title="Auto Layout">📐</button>
+                </div>
+                <div class="canvas" id="canvas">
+                    <svg class="connections-layer" id="connections-svg"></svg>
+                    <div class="nodes-layer" id="nodes-layer"></div>
+                </div>
+            </main>
+
+            <!-- Right Panel: Properties -->
+            <aside class="properties-panel" id="properties-panel">
+                <div class="panel-header">
+                    <h3>⚙️ Properties</h3>
+                </div>
+                <div class="properties-content" id="properties-content">
+                    <div class="empty-state">
+                        <span class="empty-icon">👆</span>
+                        <p>Select a node to configure</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Bottom Panel: Execution Log -->
+        <div class="execution-panel" id="execution-panel">
+            <div class="panel-header">
+                <h3>📋 Execution Log</h3>
+                <div class="panel-actions">
+                    <button class="btn btn-sm" onclick="clearLog()">Clear</button>
+                    <button class="btn btn-sm" onclick="toggleExecutionPanel()">▼</button>
+                </div>
+            </div>
+            <div class="execution-log" id="execution-log">
+                <div class="log-empty">Run the workflow to see execution logs</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates Modal -->
+    <div class="modal-backdrop" id="templates-modal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h2>📋 Workflow Templates</h2>
+                <button class="modal-close" onclick="hideTemplates()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="templates-grid" id="templates-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal-backdrop" id="share-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🔗 Share Workflow</h2>
+                <button class="modal-close" onclick="hideShare()">×</button>
+            </div>
+            <div class="modal-body" id="share-content"></div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="workflow-builder.js"></script>
+</body>
+</html>

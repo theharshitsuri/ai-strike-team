@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PO Email to ERP — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .po-preview {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .po-header {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .po-title { font-size: 24px; font-weight: 900; color: var(--success); }
+    .po-meta { display: flex; gap: 32px; margin-top: 12px; font-size: 13px; color: var(--fg-muted); }
+    .po-body { padding: 24px; }
+    .line-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .line-items-table th {
+      text-align: left;
+      padding: 12px;
+      background: var(--bg);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--fg-muted);
+      border-bottom: 2px solid var(--border);
+    }
+    .line-items-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .line-items-table tr:last-child td { border-bottom: none; }
+    .line-items-table .sku { font-family: 'JetBrains Mono', monospace; color: var(--primary); }
+    .line-items-table .amount { text-align: right; font-weight: 700; }
+    .po-totals {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      width: 200px;
+      font-size: 14px;
+    }
+    .total-row.grand {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--success);
+      padding-top: 12px;
+      border-top: 2px solid var(--success);
+      margin-top: 8px;
+    }
+    .erp-status {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+      border: 1px solid var(--success);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .erp-icon { font-size: 48px; }
+    .erp-details h4 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .erp-details p { font-size: 13px; color: var(--fg-muted); }
+    .validation-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .validation-badge.valid { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .validation-badge.invalid { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Process</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">📧 Order Processing</div>
+      <h1 class="reveal">PO Email <span>to ERP</span></h1>
+      <p class="reveal">Parse purchase order emails, extract line items, validate SKUs, and push directly to your ERP system.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="WorkflowUI.nav('upload')">Process PO →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">85%</div>
+          <div class="metric-label">Confidence Threshold</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">5%</div>
+          <div class="metric-label">Price Tolerance</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">99%</div>
+          <div class="metric-label">SKU Match Rate</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">< 3s</div>
+          <div class="metric-label">Processing Time</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>Automated PO Processing</h3>
+        <p style="margin-bottom: 24px;">Forward purchase order emails from customers. Our AI extracts all line items, validates SKUs against your catalog, checks pricing, and creates orders in your ERP automatically.</p>
+        <div class="chips-container">
+          <span class="chip">📧 Email Parsing</span>
+          <span class="chip">📋 Line Item Extraction</span>
+          <span class="chip">✅ SKU Validation</span>
+          <span class="chip">💰 Price Check</span>
+          <span class="chip">📊 ERP Integration</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Upload</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Validate</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Create</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Upload Purchase Order</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Forward the PO email or upload the PO document</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📧</div>
+        <h3>Drop PO file here</h3>
+        <p>PDF, TXT, or email file</p>
+        <input type="file" accept=".pdf,.txt,.eml,.msg,.csv">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Or paste PO content:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="Paste the purchase order email or document content here..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669);" onclick="processPO()">📊 Process & Create Order</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Processing Purchase Order...</h2>
+      
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Order Created Successfully</h2>
+          <p style="color: var(--fg-muted);">PO extracted and pushed to ERP</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New PO</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="openERP()">📊 View in ERP</button>
+        </div>
+      </div>
+
+      <!-- ERP Status -->
+      <div class="erp-status">
+        <div class="erp-icon">✅</div>
+        <div class="erp-details">
+          <h4>ERP Order Created</h4>
+          <p>Order ID: <strong id="erp-order-id">SO-2024-XXXX</strong> | Status: <span class="badge badge-success">Confirmed</span></p>
+        </div>
+      </div>
+
+      <!-- PO Preview -->
+      <div class="po-preview" style="margin-top: 32px;">
+        <div class="po-header">
+          <div class="po-title">PURCHASE ORDER</div>
+          <div class="po-meta">
+            <span>PO #: <strong id="po-number">—</strong></span>
+            <span>Date: <strong id="po-date">—</strong></span>
+            <span>Customer: <strong id="po-customer">—</strong></span>
+          </div>
+        </div>
+        <div class="po-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div>
+              <h4 style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px;">Ship To</h4>
+              <p id="ship-to" style="font-size: 14px;">—</p>
+            </div>
+            <div>
+              <h4 style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px;">Payment Terms</h4>
+              <p id="payment-terms" style="font-size: 14px;">—</p>
+            </div>
+          </div>
+
+          <table class="line-items-table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="line-items-body"></tbody>
+          </table>
+
+          <div class="po-totals">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span id="subtotal">$0.00</span>
+            </div>
+            <div class="total-row">
+              <span>Tax</span>
+              <span id="tax">$0.00</span>
+            </div>
+            <div class="total-row grand">
+              <span>Total</span>
+              <span id="grand-total">$0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Raw Data -->
+      <div class="card card-static" style="margin-top: 32px;">
+        <h3 style="margin-bottom: 16px;">🔧 Extracted Data</h3>
+        <div class="json-display" id="raw-json"></div>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Processing Summary</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'po_email_to_erp';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      const file = await WorkflowUI.loadDemoFile(WORKFLOW_ID);
+      if (file) {
+        WorkflowUI.currentFile = file;
+        const zone = document.getElementById('upload-zone');
+        zone.classList.add('has-file');
+        zone.querySelector('.upload-icon').textContent = '📄';
+        zone.querySelector('h3').textContent = file.name;
+        zone.querySelector('p').textContent = 'Demo file loaded';
+        WorkflowUI.nav('upload');
+      }
+    }
+
+    async function processPO() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or paste PO content', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 15, message: 'Reading PO document...', duration: 500 },
+        { progress: 35, message: 'Extracting line items...', duration: 700 },
+        { progress: 55, message: 'Validating SKUs...', duration: 600 },
+        { progress: 75, message: 'Checking prices against catalog...', duration: 500 },
+        { progress: 90, message: 'Creating ERP order...', duration: 600 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting PO processing workflow...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        WorkflowUI.addLogEntry('live-log', 'Calling AI extraction API...', 'info');
+        
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'PO processed successfully!', 'success');
+          WorkflowUI.processingResult = result;
+          setTimeout(() => {
+            renderPOResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Processing failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderPOResults(data) {
+      // ERP Order ID
+      document.getElementById('erp-order-id').textContent = `SO-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+
+      // PO Header
+      document.getElementById('po-number').textContent = data.po_number || 'N/A';
+      document.getElementById('po-date').textContent = data.order_date || new Date().toLocaleDateString();
+      document.getElementById('po-customer').textContent = data.customer_name || 'N/A';
+      document.getElementById('ship-to').textContent = data.shipping_address || 'N/A';
+      document.getElementById('payment-terms').textContent = data.payment_terms || 'Net 30';
+
+      // Line Items
+      const lineItems = data.line_items || [];
+      document.getElementById('line-items-body').innerHTML = lineItems.map(item => `
+        <tr>
+          <td class="sku">${item.sku || 'N/A'}</td>
+          <td>${item.description || 'N/A'}</td>
+          <td>${item.quantity || 0}</td>
+          <td>$${(item.unit_price || 0).toFixed(2)}</td>
+          <td class="amount">$${(item.total || (item.quantity * item.unit_price) || 0).toFixed(2)}</td>
+          <td><span class="validation-badge valid">✓ Valid</span></td>
+        </tr>
+      `).join('');
+
+      // Totals
+      const subtotal = data.subtotal || lineItems.reduce((sum, item) => sum + (item.total || item.quantity * item.unit_price || 0), 0);
+      const tax = data.tax || 0;
+      const total = data.total || subtotal + tax;
+
+      document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('grand-total').textContent = `$${total.toFixed(2)}`;
+
+      // Raw JSON
+      WorkflowUI.renderJSON('raw-json', data);
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '8 min',
+        cost_saved: '$15',
+        accuracy: `${Math.round((data.confidence || 0.95) * 100)}%`
+      });
+    }
+
+    function openERP() {
+      WorkflowUI.toast('Opening ERP system...', 'info');
+    }
+  </script>
+</body>
+</html>

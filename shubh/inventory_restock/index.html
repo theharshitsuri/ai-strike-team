@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Restock — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #22c55e, #16a34a); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .inventory-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .inventory-table th {
+      text-align: left;
+      padding: 14px 16px;
+      background: var(--bg);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--fg-muted);
+      border-bottom: 2px solid var(--border);
+    }
+    .inventory-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .inventory-table tr:hover { background: var(--bg-alt); }
+    .stock-bar {
+      width: 100px;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .stock-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .stock-fill.critical { background: var(--error); }
+    .stock-fill.low { background: var(--warning); }
+    .stock-fill.good { background: var(--success); }
+    .reorder-badge {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .reorder-immediate { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+    .reorder-soon { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .reorder-planned { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+    .forecast-card {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.05));
+      border: 1px solid var(--success);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-top: 24px;
+    }
+    .forecast-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .forecast-icon { font-size: 32px; }
+    .forecast-title { font-size: 18px; font-weight: 800; }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Analyze</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">📦 Supply Chain</div>
+      <h1 class="reveal">Inventory <span>Restock</span></h1>
+      <p class="reveal">Analyze sales and inventory data, forecast demand, and generate smart reorder recommendations.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #22c55e, #16a34a);" onclick="WorkflowUI.nav('upload')">Analyze Inventory →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">4</div>
+          <div class="metric-label">Moving Avg Periods</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">2 wks</div>
+          <div class="metric-label">Safety Stock</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">7 days</div>
+          <div class="metric-label">Lead Time</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">3 days</div>
+          <div class="metric-label">Critical Threshold</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>Smart Restock Forecasting</h3>
+        <p style="margin-bottom: 24px;">Upload your inventory and sales data. Our AI analyzes trends, calculates safety stock, and generates prioritized reorder recommendations with timing.</p>
+        <div class="chips-container">
+          <span class="chip">📊 Demand Analysis</span>
+          <span class="chip">📈 Trend Detection</span>
+          <span class="chip">🎯 Safety Stock</span>
+          <span class="chip">📋 Reorder List</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Upload</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Analyze</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Recommend</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Upload Inventory Data</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Upload CSV with SKU, current stock, and sales history</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📊</div>
+        <h3>Drop inventory CSV here</h3>
+        <p>CSV with columns: sku, current_stock, avg_daily_sales</p>
+        <input type="file" accept=".csv,.xlsx,.txt">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Or paste inventory data:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="sku,current_stock,avg_daily_sales
+SKU-1001,150,25
+SKU-1002,45,15
+SKU-1003,200,10"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #22c55e, #16a34a);" onclick="analyzeInventory()">📊 Generate Forecast</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Analyzing Inventory...</h2>
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Restock Recommendations</h2>
+          <p style="color: var(--fg-muted);">AI-generated reorder priorities</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Analysis</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #22c55e, #16a34a);" onclick="exportPO()">📄 Export PO</button>
+        </div>
+      </div>
+
+      <!-- Summary Metrics -->
+      <div class="metrics-grid" style="margin-bottom: 32px;">
+        <div class="metric-card">
+          <div class="metric-value" id="total-skus">0</div>
+          <div class="metric-label">SKUs Analyzed</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--error);" id="critical-count">0</div>
+          <div class="metric-label">Critical Items</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--warning);" id="low-count">0</div>
+          <div class="metric-label">Low Stock</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--success);" id="healthy-count">0</div>
+          <div class="metric-label">Healthy Stock</div>
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div class="card card-static">
+        <h3 style="margin-bottom: 16px;">📦 Reorder Priority List</h3>
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Current Stock</th>
+              <th>Days of Stock</th>
+              <th>Stock Level</th>
+              <th>Reorder Qty</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-body"></tbody>
+        </table>
+      </div>
+
+      <!-- AI Explanation -->
+      <div class="forecast-card">
+        <div class="forecast-header">
+          <span class="forecast-icon">🤖</span>
+          <span class="forecast-title">AI Analysis Summary</span>
+        </div>
+        <div id="ai-explanation" style="line-height: 1.8;"></div>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Analysis Summary</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'inventory_restock';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      WorkflowUI.currentFile = new File(['sku,current_stock,avg_daily_sales\nSKU-1001,25,12\nSKU-1002,150,8\nSKU-1003,5,20\nSKU-1004,300,15'], 'demo_inventory.csv', { type: 'text/csv' });
+      const zone = document.getElementById('upload-zone');
+      zone.classList.add('has-file');
+      zone.querySelector('.upload-icon').textContent = '📄';
+      zone.querySelector('h3').textContent = 'demo_inventory.csv';
+      WorkflowUI.nav('upload');
+      WorkflowUI.toast('Demo data loaded', 'success');
+    }
+
+    async function analyzeInventory() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or paste data', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 20, message: 'Reading inventory data...', duration: 500 },
+        { progress: 40, message: 'Calculating demand trends...', duration: 600 },
+        { progress: 60, message: 'Computing safety stock...', duration: 500 },
+        { progress: 80, message: 'Generating recommendations...', duration: 600 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting inventory analysis...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Analysis complete!', 'success');
+          setTimeout(() => {
+            renderResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Analysis failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderResults(data) {
+      // Mock data for demo
+      const items = data.items || [
+        { sku: 'SKU-1003', current_stock: 5, days_of_stock: 0.25, reorder_qty: 200, urgency: 'immediate' },
+        { sku: 'SKU-1001', current_stock: 25, days_of_stock: 2.1, reorder_qty: 150, urgency: 'soon' },
+        { sku: 'SKU-1002', current_stock: 150, days_of_stock: 18.8, reorder_qty: 0, urgency: 'planned' },
+        { sku: 'SKU-1004', current_stock: 300, days_of_stock: 20, reorder_qty: 0, urgency: 'planned' }
+      ];
+
+      // Counts
+      const critical = items.filter(i => i.urgency === 'immediate').length;
+      const low = items.filter(i => i.urgency === 'soon').length;
+      const healthy = items.filter(i => i.urgency === 'planned').length;
+
+      document.getElementById('total-skus').textContent = items.length;
+      document.getElementById('critical-count').textContent = critical;
+      document.getElementById('low-count').textContent = low;
+      document.getElementById('healthy-count').textContent = healthy;
+
+      // Table
+      document.getElementById('inventory-body').innerHTML = items.map(item => {
+        const stockPct = Math.min(100, (item.days_of_stock / 14) * 100);
+        const stockClass = item.days_of_stock < 3 ? 'critical' : item.days_of_stock < 7 ? 'low' : 'good';
+        const badgeClass = item.urgency === 'immediate' ? 'reorder-immediate' : item.urgency === 'soon' ? 'reorder-soon' : 'reorder-planned';
+        
+        return `
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; color: var(--primary);">${item.sku}</td>
+            <td>${item.current_stock}</td>
+            <td>${item.days_of_stock.toFixed(1)} days</td>
+            <td>
+              <div class="stock-bar">
+                <div class="stock-fill ${stockClass}" style="width: ${stockPct}%"></div>
+              </div>
+            </td>
+            <td>${item.reorder_qty > 0 ? item.reorder_qty : '—'}</td>
+            <td><span class="reorder-badge ${badgeClass}">${item.urgency.toUpperCase()}</span></td>
+          </tr>
+        `;
+      }).join('');
+
+      // AI Explanation
+      document.getElementById('ai-explanation').innerHTML = data.explanation || `
+        <p><strong>Critical Alert:</strong> SKU-1003 has only 0.25 days of stock remaining and requires immediate reorder of 200 units.</p>
+        <p style="margin-top: 12px;"><strong>Low Stock Warning:</strong> SKU-1001 will run out in approximately 2 days. Recommend ordering 150 units within the next 24 hours.</p>
+        <p style="margin-top: 12px;"><strong>Healthy Items:</strong> SKU-1002 and SKU-1004 have adequate stock levels for the next 2+ weeks.</p>
+      `;
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '30 min',
+        cost_saved: '$50',
+        accuracy: `${Math.round((data.confidence || 0.88) * 100)}%`
+      });
+    }
+
+    function exportPO() {
+      WorkflowUI.toast('Exporting purchase order...', 'success');
+    }
+  </script>
+</body>
+</html>

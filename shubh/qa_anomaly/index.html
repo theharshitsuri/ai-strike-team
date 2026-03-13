@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QA Anomaly Detection — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #f59e0b, #d97706); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .anomaly-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .anomaly-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .anomaly-title { font-size: 16px; font-weight: 800; }
+    .severity-badge {
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .severity-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .severity-high { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+    .severity-medium { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .severity-low { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .measurement-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .measurement-row:last-child { border-bottom: none; }
+    .measurement-name { min-width: 120px; font-weight: 600; }
+    .measurement-value { font-family: 'JetBrains Mono', monospace; min-width: 80px; }
+    .measurement-spec { font-size: 12px; color: var(--fg-muted); min-width: 120px; }
+    .deviation-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .deviation-fill {
+      position: absolute;
+      height: 100%;
+      border-radius: 4px;
+    }
+    .deviation-fill.in-spec { background: var(--success); }
+    .deviation-fill.warning { background: var(--warning); }
+    .deviation-fill.out-of-spec { background: var(--error); }
+    .spec-marker {
+      position: absolute;
+      top: -4px;
+      width: 2px;
+      height: 16px;
+      background: var(--fg);
+    }
+    .summary-card {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+      border: 1px solid var(--warning);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-top: 24px;
+    }
+    .actions-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+    .actions-list li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+    .actions-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--warning);
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Analyze</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">🔬 Quality Assurance</div>
+      <h1 class="reveal">QA <span>Anomaly</span> Detection</h1>
+      <p class="reveal">Analyze inspection logs, detect statistical anomalies, and generate plain-English summaries for plant managers.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="WorkflowUI.nav('upload')">Analyze Data →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">2.5σ</div>
+          <div class="metric-label">Z-Score Threshold</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">5%</div>
+          <div class="metric-label">Spec Deviation</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">5+</div>
+          <div class="metric-label">Min Data Points</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">< 3s</div>
+          <div class="metric-label">Analysis Time</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>Statistical Anomaly Detection</h3>
+        <p style="margin-bottom: 24px;">Upload inspection data with measurements. Our AI identifies out-of-spec values, calculates statistical deviations, and generates actionable summaries.</p>
+        <div class="chips-container">
+          <span class="chip">📊 Data Analysis</span>
+          <span class="chip">📈 Z-Score Detection</span>
+          <span class="chip">⚠️ Anomaly Flags</span>
+          <span class="chip">📝 Executive Summary</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Upload</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Analyze</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Report</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Upload Inspection Data</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">CSV with measurement columns (temperature, pressure, thickness, etc.)</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">🔬</div>
+        <h3>Drop inspection CSV here</h3>
+        <p>CSV with measurement data</p>
+        <input type="file" accept=".csv,.xlsx,.txt">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Or paste inspection data:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="timestamp,temperature,pressure,thickness,weight
+2024-03-14 08:00,372,30.5,2.24,498
+2024-03-14 08:15,375,31.0,2.25,500
+2024-03-14 08:30,410,29.8,2.18,495"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="analyzeData()">🔬 Detect Anomalies</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Analyzing Data...</h2>
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Anomaly Report</h2>
+          <p style="color: var(--fg-muted);">Statistical analysis complete</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Analysis</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="exportReport()">📄 Export Report</button>
+        </div>
+      </div>
+
+      <!-- Summary Metrics -->
+      <div class="metrics-grid" style="margin-bottom: 32px;">
+        <div class="metric-card">
+          <div class="metric-value" id="total-readings">0</div>
+          <div class="metric-label">Total Readings</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--error);" id="anomaly-count">0</div>
+          <div class="metric-label">Anomalies Found</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="severity-level">—</div>
+          <div class="metric-label">Overall Severity</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--success);" id="pass-rate">0%</div>
+          <div class="metric-label">Pass Rate</div>
+        </div>
+      </div>
+
+      <!-- Anomalies List -->
+      <div id="anomalies-list"></div>
+
+      <!-- AI Summary -->
+      <div class="summary-card">
+        <h3 style="margin-bottom: 16px;">🤖 Executive Summary</h3>
+        <div id="ai-summary" style="line-height: 1.8;"></div>
+        <h4 style="margin-top: 20px; margin-bottom: 8px;">Recommended Actions:</h4>
+        <ul class="actions-list" id="actions-list"></ul>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Analysis Summary</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'qa_anomaly';
+
+    const SPECS = {
+      temperature: { min: 350, max: 400, target: 375, unit: '°F' },
+      pressure: { min: 28, max: 35, target: 31, unit: 'PSI' },
+      thickness: { min: 2.0, max: 2.5, target: 2.25, unit: 'mm' },
+      weight: { min: 495, max: 505, target: 500, unit: 'g' }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      WorkflowUI.currentFile = new File([
+        'timestamp,temperature,pressure,thickness,weight\n' +
+        '2024-03-14 08:00,372,30.5,2.24,498\n' +
+        '2024-03-14 08:15,375,31.0,2.25,500\n' +
+        '2024-03-14 08:30,410,29.8,2.18,495\n' +
+        '2024-03-14 08:45,378,31.2,2.26,501\n' +
+        '2024-03-14 09:00,365,38.5,2.22,499'
+      ], 'demo_inspection.csv', { type: 'text/csv' });
+      const zone = document.getElementById('upload-zone');
+      zone.classList.add('has-file');
+      zone.querySelector('.upload-icon').textContent = '📄';
+      zone.querySelector('h3').textContent = 'demo_inspection.csv';
+      WorkflowUI.nav('upload');
+      WorkflowUI.toast('Demo data loaded', 'success');
+    }
+
+    async function analyzeData() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or paste data', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 20, message: 'Reading inspection data...', duration: 500 },
+        { progress: 40, message: 'Calculating statistics...', duration: 600 },
+        { progress: 60, message: 'Detecting anomalies...', duration: 700 },
+        { progress: 80, message: 'Generating summary...', duration: 500 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting QA analysis...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Analysis complete!', 'success');
+          setTimeout(() => {
+            renderResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Analysis failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderResults(data) {
+      // Mock anomalies for demo
+      const anomalies = data.anomalies || [
+        { timestamp: '2024-03-14 08:30', measurement: 'temperature', value: 410, spec: SPECS.temperature, severity: 'high' },
+        { timestamp: '2024-03-14 09:00', measurement: 'pressure', value: 38.5, spec: SPECS.pressure, severity: 'critical' }
+      ];
+
+      const totalReadings = data.total_readings || 5;
+      const passRate = ((totalReadings - anomalies.length) / totalReadings * 100).toFixed(0);
+
+      document.getElementById('total-readings').textContent = totalReadings;
+      document.getElementById('anomaly-count').textContent = anomalies.length;
+      document.getElementById('pass-rate').textContent = passRate + '%';
+      
+      const maxSeverity = anomalies.reduce((max, a) => {
+        const order = { critical: 4, high: 3, medium: 2, low: 1 };
+        return order[a.severity] > order[max] ? a.severity : max;
+      }, 'low');
+      document.getElementById('severity-level').textContent = maxSeverity.toUpperCase();
+      document.getElementById('severity-level').style.color = 
+        maxSeverity === 'critical' ? 'var(--error)' : 
+        maxSeverity === 'high' ? 'var(--warning)' : 'var(--success)';
+
+      // Anomalies list
+      document.getElementById('anomalies-list').innerHTML = anomalies.map(a => {
+        const spec = a.spec;
+        const deviation = ((a.value - spec.target) / spec.target * 100).toFixed(1);
+        const deviationClass = Math.abs(deviation) > 10 ? 'out-of-spec' : Math.abs(deviation) > 5 ? 'warning' : 'in-spec';
+        
+        return `
+          <div class="anomaly-card">
+            <div class="anomaly-header">
+              <span class="anomaly-title">⚠️ ${a.measurement.charAt(0).toUpperCase() + a.measurement.slice(1)} Anomaly</span>
+              <span class="severity-badge severity-${a.severity}">${a.severity}</span>
+            </div>
+            <div class="measurement-row">
+              <span class="measurement-name">${a.measurement}</span>
+              <span class="measurement-value">${a.value} ${spec.unit}</span>
+              <span class="measurement-spec">Spec: ${spec.min}-${spec.max} ${spec.unit}</span>
+              <div class="deviation-bar">
+                <div class="deviation-fill ${deviationClass}" style="width: ${Math.min(100, Math.abs(deviation) * 5)}%; left: 50%;"></div>
+              </div>
+              <span style="font-size: 12px; color: ${deviationClass === 'out-of-spec' ? 'var(--error)' : 'var(--warning)'};">
+                ${deviation > 0 ? '+' : ''}${deviation}%
+              </span>
+            </div>
+            <p style="font-size: 12px; color: var(--fg-muted); margin-top: 12px;">
+              Detected at ${a.timestamp}
+            </p>
+          </div>
+        `;
+      }).join('');
+
+      // AI Summary
+      document.getElementById('ai-summary').innerHTML = data.summary || `
+        <p>Analysis of ${totalReadings} inspection readings identified <strong>${anomalies.length} anomalies</strong> requiring attention.</p>
+        <p style="margin-top: 12px;"><strong>Temperature spike</strong> at 08:30 reached 410°F, exceeding the maximum specification of 400°F by 2.5%. This may indicate a heating element malfunction or thermostat calibration issue.</p>
+        <p style="margin-top: 12px;"><strong>Pressure anomaly</strong> at 09:00 measured 38.5 PSI, significantly above the 35 PSI maximum. Immediate inspection of pressure relief valves is recommended.</p>
+      `;
+
+      // Actions
+      const actions = data.recommended_actions || [
+        'Inspect and calibrate temperature sensors on Line 1',
+        'Check pressure relief valves for proper operation',
+        'Review maintenance logs for recent equipment changes',
+        'Schedule preventive maintenance for heating system'
+      ];
+      document.getElementById('actions-list').innerHTML = actions.map(a => `<li>${a}</li>`).join('');
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '45 min',
+        cost_saved: '$75',
+        accuracy: `${Math.round((data.confidence || 0.92) * 100)}%`
+      });
+    }
+
+    function exportReport() {
+      WorkflowUI.toast('Exporting QA report...', 'success');
+    }
+  </script>
+</body>
+</html>

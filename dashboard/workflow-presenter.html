@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strike Team — Workflow Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --border: rgba(255, 255, 255, 0.06);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --accent-blue: #3B82F6;
+            --accent-purple: #8B5CF6;
+            --accent-green: #10B981;
+            --accent-orange: #F97316;
+            --accent-red: #EF4444;
+            --radius: 12px;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .presenter {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header .subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .company-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 12px 24px;
+            border-radius: 50px;
+            margin-top: 24px;
+            border: 1px solid var(--border);
+        }
+        
+        .company-badge .icon { font-size: 24px; }
+        .company-badge .name { font-weight: 600; }
+        
+        .workflow-canvas {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            min-height: 400px;
+            overflow: hidden;
+        }
+        
+        .workflow-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .nodes-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 40px 0;
+        }
+        
+        .presenter-node {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            min-width: 160px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+        
+        .presenter-node.active {
+            opacity: 1;
+            transform: scale(1);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .presenter-node.completed {
+            opacity: 1;
+            transform: scale(1);
+            border-color: var(--accent-green);
+        }
+        
+        .presenter-node .icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        
+        .presenter-node .label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .presenter-node .status {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        
+        .connector {
+            width: 40px;
+            height: 2px;
+            background: var(--border);
+            position: relative;
+        }
+        
+        .connector.active {
+            background: var(--accent-blue);
+            animation: flow 0.5s linear infinite;
+        }
+        
+        .connector::after {
+            content: '→';
+            position: absolute;
+            right: -8px;
+            top: -10px;
+            color: var(--text-muted);
+        }
+        
+        .connector.active::after {
+            color: var(--accent-blue);
+        }
+        
+        @keyframes flow {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .data-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .data-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        
+        .data-panel-header {
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .data-panel-content {
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .data-panel-content pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .json-key { color: var(--accent-purple); }
+        .json-string { color: var(--accent-green); }
+        .json-number { color: var(--accent-orange); }
+        .json-boolean { color: var(--accent-blue); }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
+        
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover { background: var(--bg-secondary); }
+        
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+        
+        .roi-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .roi-section h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .roi-metrics {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+        }
+        
+        .roi-metric {
+            text-align: center;
+        }
+        
+        .roi-metric .value {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .roi-metric .label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s;
+        }
+        
+        .step-dot.active { background: var(--accent-blue); transform: scale(1.3); }
+        .step-dot.completed { background: var(--accent-green); }
+        
+        .typing-effect {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 2s steps(40, end);
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .config-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .config-panel h3 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        
+        .config-item {
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .config-item .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .config-item .value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .config-item.editable .value {
+            background: var(--bg-secondary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="presenter">
+        <header class="header">
+            <h1 id="workflow-title">Load Scheduling Automation</h1>
+            <p class="subtitle" id="workflow-description">Automatically parse scheduling emails and create calendar events</p>
+            <div class="company-badge">
+                <span class="icon">🏢</span>
+                <span class="name" id="company-name">Acme Logistics</span>
+            </div>
+        </header>
+        
+        <div class="step-indicator" id="step-indicator"></div>
+        
+        <div class="workflow-canvas">
+            <div class="workflow-title">Workflow Execution</div>
+            <div class="nodes-container" id="nodes-container"></div>
+        </div>
+        
+        <div class="config-panel" id="config-panel">
+            <h3>⚙️ Company Configuration</h3>
+            <div class="config-grid" id="config-grid"></div>
+        </div>
+        
+        <div class="data-panels">
+            <div class="data-panel">
+                <div class="data-panel-header">📥 Input Data</div>
+                <div class="data-panel-content" id="input-data">
+                    <pre>Waiting for execution...</pre>
+                </div>
+            </div>
+            <div class="data-panel">
+                <div class="data-panel-header">📤 Output Result</div>
+                <div class="data-panel-content" id="output-data">
+                    <pre>Waiting for execution...</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="resetDemo()">↺ Reset</button>
+            <button class="btn btn-primary" id="run-btn" onclick="runDemo()">▶️ Run Demo</button>
+            <button class="btn btn-secondary" onclick="editConfig()">⚙️ Customize</button>
+        </div>
+        
+        <div class="roi-section">
+            <h2>💰 Projected ROI</h2>
+            <div class="roi-metrics">
+                <div class="roi-metric">
+                    <div class="value" id="roi-hours">15</div>
+                    <div class="label">Hours Saved / Week</div>
+                </div>
+                <div class="roi-metric">
+                    <div class="value" id="roi-cost">$2,400</div>
+                    <div class="label">Monthly Savings</div>
+                </div>
+                <div class="roi-metric">
+                    <div class="value" id="roi-accuracy">99%</div>
+                    <div class="label">Accuracy Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        // Demo workflows with sample data
+        const DEMO_WORKFLOWS = {
+            'load_scheduling': {
+                title: 'Load Scheduling Automation',
+                description: 'Automatically parse scheduling emails and create calendar events',
+                nodes: [
+                    { icon: '📧', label: 'Email Received', status: 'Trigger' },
+                    { icon: '🧠', label: 'LLM Extract', status: 'AI Processing' },
+                    { icon: '🔀', label: 'Confidence Check', status: 'Logic' },
+                    { icon: '📅', label: 'Create Event', status: 'Action' }
+                ],
+                input: `From: dispatch@carrier.com
+Subject: Load Pickup Confirmation - #LD-2024-1847
+
+Hi,
+
+Please confirm the following load details:
+
+Load ID: LD-2024-1847
+Pickup Date: March 15, 2024
+Pickup Time: 08:00 AM
+Pickup Location: 1234 Industrial Blvd, Chicago, IL 60601
+Delivery Date: March 16, 2024
+Delivery Time: 02:00 PM
+Delivery Location: 5678 Commerce Dr, Detroit, MI 48201
+Carrier: Swift Transport
+Driver: John Smith
+Driver Phone: (555) 123-4567
+
+Please confirm receipt.
+
+Best regards,
+Dispatch Team`,
+                output: {
+                    load_id: "LD-2024-1847",
+                    pickup: {
+                        date: "2024-03-15",
+                        time: "08:00",
+                        location: "1234 Industrial Blvd, Chicago, IL 60601"
+                    },
+                    delivery: {
+                        date: "2024-03-16",
+                        time: "14:00",
+                        location: "5678 Commerce Dr, Detroit, MI 48201"
+                    },
+                    carrier: "Swift Transport",
+                    driver: { name: "John Smith", phone: "(555) 123-4567" },
+                    confidence: 0.94,
+                    calendar_event_created: true,
+                    event_id: "evt_abc123"
+                },
+                config: {
+                    'Slack Channel': '#scheduling',
+                    'Calendar': 'Google Calendar',
+                    'Confidence Threshold': '0.85',
+                    'Auto-Confirm': 'Enabled',
+                    'Notification Email': 'ops@company.com',
+                    'Timezone': 'America/Chicago'
+                },
+                roi: { hours: 15, cost: '$2,400', accuracy: '99%' }
+            },
+            'detention_tracking': {
+                title: 'Detention Tracking & Invoicing',
+                description: 'Track detention times and automatically generate invoices',
+                nodes: [
+                    { icon: '🔗', label: 'Webhook Trigger', status: 'Trigger' },
+                    { icon: '🧠', label: 'Extract Times', status: 'AI Processing' },
+                    { icon: '⏱️', label: 'Calculate Fee', status: 'Logic' },
+                    { icon: '💰', label: 'Generate Invoice', status: 'Action' },
+                    { icon: '💬', label: 'Slack Alert', status: 'Notification' }
+                ],
+                input: `Detention Report - Load #DT-9921
+
+Facility: ABC Distribution Center
+Address: 789 Warehouse Way, Memphis, TN 38118
+
+Arrival Time: 2024-03-14 09:15:00
+Check-in Time: 2024-03-14 09:22:00
+Dock Assigned: 2024-03-14 12:45:00
+Loading Complete: 2024-03-14 14:30:00
+Departure Time: 2024-03-14 14:45:00
+
+Total Wait Time: 5 hours 30 minutes
+Carrier: FastFreight Inc.
+Rate: $75/hour after 2 hours free time`,
+                output: {
+                    load_id: "DT-9921",
+                    facility: "ABC Distribution Center",
+                    arrival: "2024-03-14T09:15:00",
+                    departure: "2024-03-14T14:45:00",
+                    total_wait_hours: 5.5,
+                    free_time_hours: 2,
+                    billable_hours: 3.5,
+                    rate_per_hour: 75,
+                    detention_fee: 262.50,
+                    invoice_generated: true,
+                    invoice_number: "INV-DET-2024-0342"
+                },
+                config: {
+                    'Free Time (hours)': '2',
+                    'Hourly Rate': '$75',
+                    'Invoice Format': 'PDF',
+                    'Auto-Send Invoice': 'Yes',
+                    'Alert Channel': '#detention-fees',
+                    'Escalation Threshold': '$500'
+                },
+                roi: { hours: 8, cost: '$1,800', accuracy: '97%' }
+            },
+            'po_email_to_erp': {
+                title: 'PO Email to ERP',
+                description: 'Parse purchase order emails and create ERP entries automatically',
+                nodes: [
+                    { icon: '📧', label: 'PO Email', status: 'Trigger' },
+                    { icon: '🧠', label: 'Extract PO Data', status: 'AI Processing' },
+                    { icon: '✅', label: 'Validate SKUs', status: 'Validation' },
+                    { icon: '📊', label: 'Create ERP Order', status: 'Integration' },
+                    { icon: '📤', label: 'Confirm Email', status: 'Response' }
+                ],
+                input: `From: purchasing@bigretailer.com
+Subject: Purchase Order #PO-2024-8847
+
+PURCHASE ORDER
+
+PO Number: PO-2024-8847
+Date: March 14, 2024
+Vendor: Your Company Inc.
+
+Bill To:
+Big Retailer Corp
+100 Commerce Street
+New York, NY 10001
+
+Ship To:
+Big Retailer Distribution
+500 Logistics Lane
+Newark, NJ 07102
+
+Items:
+1. SKU: WDG-1001 - Widget Pro (Blue) - Qty: 500 - $12.99 ea
+2. SKU: WDG-1002 - Widget Pro (Red) - Qty: 300 - $12.99 ea
+3. SKU: ACC-2001 - Widget Accessory Pack - Qty: 200 - $4.99 ea
+
+Subtotal: $11,392.00
+Shipping: $450.00
+Total: $11,842.00
+
+Requested Delivery: March 21, 2024
+Payment Terms: Net 30`,
+                output: {
+                    po_number: "PO-2024-8847",
+                    customer: "Big Retailer Corp",
+                    items: [
+                        { sku: "WDG-1001", name: "Widget Pro (Blue)", qty: 500, price: 12.99, validated: true },
+                        { sku: "WDG-1002", name: "Widget Pro (Red)", qty: 300, price: 12.99, validated: true },
+                        { sku: "ACC-2001", name: "Widget Accessory Pack", qty: 200, price: 4.99, validated: true }
+                    ],
+                    subtotal: 11392.00,
+                    shipping: 450.00,
+                    total: 11842.00,
+                    erp_order_created: true,
+                    erp_order_id: "SO-2024-4521",
+                    confirmation_sent: true
+                },
+                config: {
+                    'ERP System': 'SAP',
+                    'SKU Validation': 'Strict',
+                    'Auto-Create Order': 'Yes',
+                    'Confirmation Template': 'Standard',
+                    'CC Sales Team': 'Yes',
+                    'Price Tolerance': '5%'
+                },
+                roi: { hours: 25, cost: '$4,000', accuracy: '98%' }
+            }
+        };
+        
+        let currentWorkflow = null;
+        let currentStep = 0;
+        let isRunning = false;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const workflowId = params.get('workflow') || 'load_scheduling';
+            const company = params.get('company') || 'demo_company';
+            
+            loadWorkflow(workflowId, company);
+        });
+        
+        function loadWorkflow(id, company) {
+            currentWorkflow = DEMO_WORKFLOWS[id] || DEMO_WORKFLOWS['load_scheduling'];
+            
+            document.getElementById('workflow-title').textContent = currentWorkflow.title;
+            document.getElementById('workflow-description').textContent = currentWorkflow.description;
+            document.getElementById('company-name').textContent = formatCompanyName(company);
+            
+            renderNodes();
+            renderConfig();
+            renderROI();
+            resetDemo();
+        }
+        
+        function formatCompanyName(slug) {
+            return slug.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+        
+        function renderNodes() {
+            const container = document.getElementById('nodes-container');
+            const indicator = document.getElementById('step-indicator');
+            
+            container.innerHTML = currentWorkflow.nodes.map((node, i) => `
+                <div class="presenter-node" id="node-${i}">
+                    <div class="icon">${node.icon}</div>
+                    <div class="label">${node.label}</div>
+                    <div class="status">${node.status}</div>
+                </div>
+                ${i < currentWorkflow.nodes.length - 1 ? '<div class="connector" id="conn-' + i + '"></div>' : ''}
+            `).join('');
+            
+            indicator.innerHTML = currentWorkflow.nodes.map((_, i) => 
+                `<div class="step-dot" id="dot-${i}"></div>`
+            ).join('');
+        }
+        
+        function renderConfig() {
+            const grid = document.getElementById('config-grid');
+            grid.innerHTML = Object.entries(currentWorkflow.config).map(([key, value]) => `
+                <div class="config-item">
+                    <div class="label">${key}</div>
+                    <div class="value">${value}</div>
+                </div>
+            `).join('');
+        }
+        
+        function renderROI() {
+            document.getElementById('roi-hours').textContent = currentWorkflow.roi.hours;
+            document.getElementById('roi-cost').textContent = currentWorkflow.roi.cost;
+            document.getElementById('roi-accuracy').textContent = currentWorkflow.roi.accuracy;
+        }
+        
+        async function runDemo() {
+            if (isRunning) return;
+            isRunning = true;
+            
+            const btn = document.getElementById('run-btn');
+            btn.textContent = '⏳ Running...';
+            btn.disabled = true;
+            
+            // Show input
+            document.getElementById('input-data').innerHTML = `<pre>${escapeHtml(currentWorkflow.input)}</pre>`;
+            document.getElementById('output-data').innerHTML = `<pre>Processing...</pre>`;
+            
+            // Animate through nodes
+            for (let i = 0; i < currentWorkflow.nodes.length; i++) {
+                currentStep = i;
+                
+                // Update node states
+                document.querySelectorAll('.presenter-node').forEach((el, idx) => {
+                    el.classList.remove('active');
+                    if (idx < i) el.classList.add('completed');
+                });
+                document.getElementById(`node-${i}`).classList.add('active');
+                
+                // Update connectors
+                if (i > 0) {
+                    document.getElementById(`conn-${i-1}`)?.classList.remove('active');
+                    document.getElementById(`conn-${i-1}`)?.classList.add('completed');
+                }
+                if (i < currentWorkflow.nodes.length - 1) {
+                    document.getElementById(`conn-${i}`)?.classList.add('active');
+                }
+                
+                // Update step dots
+                document.querySelectorAll('.step-dot').forEach((el, idx) => {
+                    el.classList.remove('active');
+                    if (idx < i) el.classList.add('completed');
+                });
+                document.getElementById(`dot-${i}`).classList.add('active');
+                
+                await sleep(1200);
+            }
+            
+            // Mark last node as completed
+            document.getElementById(`node-${currentWorkflow.nodes.length - 1}`).classList.remove('active');
+            document.getElementById(`node-${currentWorkflow.nodes.length - 1}`).classList.add('completed');
+            document.getElementById(`dot-${currentWorkflow.nodes.length - 1}`).classList.remove('active');
+            document.getElementById(`dot-${currentWorkflow.nodes.length - 1}`).classList.add('completed');
+            
+            // Show output
+            document.getElementById('output-data').innerHTML = `<pre>${syntaxHighlight(currentWorkflow.output)}</pre>`;
+            
+            btn.textContent = '✓ Complete';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            
+            isRunning = false;
+        }
+        
+        function resetDemo() {
+            currentStep = 0;
+            isRunning = false;
+            
+            document.querySelectorAll('.presenter-node').forEach(el => {
+                el.classList.remove('active', 'completed');
+            });
+            document.querySelectorAll('.connector').forEach(el => {
+                el.classList.remove('active', 'completed');
+            });
+            document.querySelectorAll('.step-dot').forEach(el => {
+                el.classList.remove('active', 'completed');
+            });
+            
+            document.getElementById('input-data').innerHTML = `<pre>Click "Run Demo" to start...</pre>`;
+            document.getElementById('output-data').innerHTML = `<pre>Waiting for execution...</pre>`;
+            
+            const btn = document.getElementById('run-btn');
+            btn.textContent = '▶️ Run Demo';
+            btn.disabled = false;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-primary');
+        }
+        
+        function editConfig() {
+            alert('In a full implementation, this would open a configuration editor allowing you to customize the workflow settings for this specific company.');
+        }
+        
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function syntaxHighlight(obj) {
+            let json = JSON.stringify(obj, null, 2);
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+    </script>
+</body>
+</html>

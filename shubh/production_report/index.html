@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Report — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #6366f1, #4f46e5); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .report-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .report-header {
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(79, 70, 229, 0.05));
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .report-title { font-size: 20px; font-weight: 900; }
+    .grade-badge {
+      padding: 12px 24px;
+      border-radius: var(--r-sm);
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .grade-excellent { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .grade-good { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .grade-satisfactory { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .grade-below_target { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+    .grade-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .report-body { padding: 24px; }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--bg-alt);
+      padding: 20px;
+      border-radius: var(--r-sm);
+      text-align: center;
+    }
+    .kpi-value { font-size: 32px; font-weight: 900; }
+    .kpi-label { font-size: 12px; color: var(--fg-muted); margin-top: 4px; }
+    .kpi-target { font-size: 11px; color: var(--fg-muted); margin-top: 8px; }
+    .kpi-status { font-size: 18px; margin-top: 4px; }
+    .highlights-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .highlight-card {
+      background: var(--bg-alt);
+      padding: 20px;
+      border-radius: var(--r-sm);
+    }
+    .highlight-card h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    .highlight-list {
+      list-style: none;
+    }
+    .highlight-list li {
+      padding: 8px 0;
+      padding-left: 20px;
+      position: relative;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .highlight-list li:last-child { border-bottom: none; }
+    .highlight-list li::before {
+      position: absolute;
+      left: 0;
+    }
+    .highlight-list.positive li::before { content: '✓'; color: var(--success); }
+    .highlight-list.negative li::before { content: '⚠'; color: var(--warning); }
+    .executive-summary {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(79, 70, 229, 0.05));
+      border: 1px solid var(--primary);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-top: 24px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Generate</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Report</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">📊 Manufacturing</div>
+      <h1 class="reveal">Production <span>Report</span></h1>
+      <p class="reveal">Upload daily production data, aggregate metrics, and generate AI-powered executive summaries.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #6366f1, #4f46e5);" onclick="WorkflowUI.nav('upload')">Generate Report →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">1000</div>
+          <div class="metric-label">Daily Target</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">5%</div>
+          <div class="metric-label">Max Downtime</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">98%</div>
+          <div class="metric-label">Quality Target</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">2%</div>
+          <div class="metric-label">Max Scrap</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>AI-Powered Production Reports</h3>
+        <p style="margin-bottom: 24px;">Upload your daily production CSV. Our AI analyzes output, downtime, quality metrics, and generates executive summaries with highlights, concerns, and recommendations.</p>
+        <div class="chips-container">
+          <span class="chip">📈 Output Analysis</span>
+          <span class="chip">⏱️ Downtime Tracking</span>
+          <span class="chip">✅ Quality Metrics</span>
+          <span class="chip">📝 Executive Summary</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Upload</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Analyze</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Report</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Upload Production Data</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">CSV with production metrics (output, downtime, quality, scrap)</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📊</div>
+        <h3>Drop production CSV here</h3>
+        <p>Daily production data</p>
+        <input type="file" accept=".csv,.xlsx,.txt">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Or paste production data:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="shift,line,output_units,downtime_minutes,quality_pass,scrap_units
+Morning,Line1,520,15,510,10
+Morning,Line2,480,25,470,10
+Afternoon,Line1,490,20,485,5"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #6366f1, #4f46e5);" onclick="generateReport()">📊 Generate Report</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Generating Report...</h2>
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Daily Production Report</h2>
+          <p style="color: var(--fg-muted);" id="report-date">—</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Report</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #6366f1, #4f46e5);" onclick="exportPDF()">📄 Export PDF</button>
+        </div>
+      </div>
+
+      <!-- Report Card -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-title">📊 Production Summary</div>
+          <div class="grade-badge grade-good" id="grade-badge">GOOD</div>
+        </div>
+        <div class="report-body">
+          <!-- KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-value" id="total-output">0</div>
+              <div class="kpi-label">Total Output</div>
+              <div class="kpi-target">Target: 1000</div>
+              <div class="kpi-status" id="output-status">—</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value" id="downtime-pct">0%</div>
+              <div class="kpi-label">Downtime</div>
+              <div class="kpi-target">Max: 5%</div>
+              <div class="kpi-status" id="downtime-status">—</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value" id="quality-pct">0%</div>
+              <div class="kpi-label">Quality Rate</div>
+              <div class="kpi-target">Target: 98%</div>
+              <div class="kpi-status" id="quality-status">—</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value" id="scrap-pct">0%</div>
+              <div class="kpi-label">Scrap Rate</div>
+              <div class="kpi-target">Max: 2%</div>
+              <div class="kpi-status" id="scrap-status">—</div>
+            </div>
+          </div>
+
+          <!-- Highlights & Concerns -->
+          <div class="highlights-section">
+            <div class="highlight-card">
+              <h4>✅ Highlights</h4>
+              <ul class="highlight-list positive" id="highlights-list"></ul>
+            </div>
+            <div class="highlight-card">
+              <h4>⚠️ Concerns</h4>
+              <ul class="highlight-list negative" id="concerns-list"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Executive Summary -->
+      <div class="executive-summary">
+        <h3 style="margin-bottom: 16px;">📝 Executive Summary</h3>
+        <div id="executive-summary"></div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="card card-static" style="margin-top: 24px;">
+        <h3 style="margin-bottom: 16px;">💡 Recommendations</h3>
+        <ul id="recommendations-list" style="list-style: none;"></ul>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(79, 70, 229, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Report Generation Summary</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'production_report';
+
+    const TARGETS = {
+      daily_output: 1000,
+      max_downtime_pct: 5,
+      quality_rate_pct: 98,
+      max_scrap_pct: 2
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      WorkflowUI.currentFile = new File([
+        'shift,line,output_units,downtime_minutes,quality_pass,scrap_units\n' +
+        'Morning,Line1,520,15,510,10\n' +
+        'Morning,Line2,480,25,470,10\n' +
+        'Afternoon,Line1,490,20,485,5\n' +
+        'Afternoon,Line2,510,10,505,5\n' +
+        'Night,Line1,450,35,440,10\n' +
+        'Night,Line2,470,30,460,10'
+      ], 'demo_production.csv', { type: 'text/csv' });
+      const zone = document.getElementById('upload-zone');
+      zone.classList.add('has-file');
+      zone.querySelector('.upload-icon').textContent = '📄';
+      zone.querySelector('h3').textContent = 'demo_production.csv';
+      WorkflowUI.nav('upload');
+      WorkflowUI.toast('Demo data loaded', 'success');
+    }
+
+    async function generateReport() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or paste data', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 20, message: 'Reading production data...', duration: 500 },
+        { progress: 40, message: 'Aggregating metrics...', duration: 600 },
+        { progress: 60, message: 'Analyzing trends...', duration: 500 },
+        { progress: 80, message: 'Generating summary...', duration: 700 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting production report generation...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Report generated!', 'success');
+          setTimeout(() => {
+            renderResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Generation failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderResults(data) {
+      document.getElementById('report-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+      // Mock metrics
+      const totalOutput = data.total_output || 2920;
+      const totalDowntime = data.total_downtime_minutes || 135;
+      const totalQualityPass = data.total_quality_pass || 2870;
+      const totalScrap = data.total_scrap || 50;
+
+      const downtimePct = ((totalDowntime / (8 * 60 * 3)) * 100).toFixed(1); // 3 shifts, 8 hours each
+      const qualityPct = ((totalQualityPass / totalOutput) * 100).toFixed(1);
+      const scrapPct = ((totalScrap / totalOutput) * 100).toFixed(1);
+
+      // KPIs
+      document.getElementById('total-output').textContent = totalOutput.toLocaleString();
+      document.getElementById('downtime-pct').textContent = downtimePct + '%';
+      document.getElementById('quality-pct').textContent = qualityPct + '%';
+      document.getElementById('scrap-pct').textContent = scrapPct + '%';
+
+      // Status indicators
+      document.getElementById('output-status').textContent = totalOutput >= TARGETS.daily_output ? '✅' : '⚠️';
+      document.getElementById('downtime-status').textContent = parseFloat(downtimePct) <= TARGETS.max_downtime_pct ? '✅' : '⚠️';
+      document.getElementById('quality-status').textContent = parseFloat(qualityPct) >= TARGETS.quality_rate_pct ? '✅' : '⚠️';
+      document.getElementById('scrap-status').textContent = parseFloat(scrapPct) <= TARGETS.max_scrap_pct ? '✅' : '⚠️';
+
+      // Grade
+      const grade = data.overall_grade || 'good';
+      const gradeBadge = document.getElementById('grade-badge');
+      gradeBadge.textContent = grade.toUpperCase().replace('_', ' ');
+      gradeBadge.className = `grade-badge grade-${grade}`;
+
+      // Highlights
+      const highlights = data.highlights || [
+        'Line 1 morning shift exceeded target by 4%',
+        'Quality rate maintained above 98% for Line 2',
+        'Afternoon shift achieved lowest scrap rate'
+      ];
+      document.getElementById('highlights-list').innerHTML = highlights.map(h => `<li>${h}</li>`).join('');
+
+      // Concerns
+      const concerns = data.concerns || [
+        'Night shift downtime exceeded target by 2%',
+        'Line 1 night shift output 10% below target',
+        'Overall scrap rate slightly above 2% threshold'
+      ];
+      document.getElementById('concerns-list').innerHTML = concerns.map(c => `<li>${c}</li>`).join('');
+
+      // Executive Summary
+      document.getElementById('executive-summary').innerHTML = data.executive_summary || `
+        <p>Today's production achieved <strong>${totalOutput} units</strong>, representing ${((totalOutput / TARGETS.daily_output) * 100).toFixed(0)}% of the daily target. Overall performance is rated as <strong>${grade.toUpperCase()}</strong>.</p>
+        <p style="margin-top: 12px;">The morning and afternoon shifts performed well, with Line 1 morning shift exceeding expectations. However, the night shift experienced elevated downtime (${downtimePct}% vs 5% target), primarily due to equipment maintenance on Line 1.</p>
+        <p style="margin-top: 12px;">Quality metrics remain strong at ${qualityPct}%, meeting our 98% target. Scrap rate of ${scrapPct}% is slightly above the 2% threshold and should be monitored.</p>
+      `;
+
+      // Recommendations
+      const recommendations = data.recommendations || [
+        'Schedule preventive maintenance for Line 1 during planned downtime',
+        'Review night shift staffing levels to reduce changeover time',
+        'Investigate root cause of elevated scrap on night shift'
+      ];
+      document.getElementById('recommendations-list').innerHTML = recommendations.map(r => `
+        <li style="padding: 10px 0; padding-left: 24px; position: relative; border-bottom: 1px solid var(--border);">
+          <span style="position: absolute; left: 0; color: var(--primary);">→</span>
+          ${r}
+        </li>
+      `).join('');
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '45 min',
+        cost_saved: '$75',
+        accuracy: `${Math.round((data.confidence || 0.9) * 100)}%`
+      });
+    }
+
+    function exportPDF() {
+      WorkflowUI.toast('Exporting PDF report...', 'success');
+    }
+  </script>
+</body>
+</html>

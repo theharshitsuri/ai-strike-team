@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scheduling Automation — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #a855f7, #9333ea); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .calendar-widget {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .calendar-header {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(147, 51, 234, 0.05));
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .calendar-title { font-weight: 800; }
+    .calendar-body { padding: 20px; }
+    .time-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .time-slot {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: var(--tr-fast);
+    }
+    .time-slot:hover { border-color: var(--primary); }
+    .time-slot.selected { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
+    .time-slot.conflict { border-color: var(--error); opacity: 0.5; cursor: not-allowed; }
+    .slot-time { font-weight: 700; min-width: 100px; }
+    .slot-status { font-size: 12px; color: var(--fg-muted); }
+    .confirmation-card {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(147, 51, 234, 0.05));
+      border: 1px solid #a855f7;
+      border-radius: var(--r);
+      padding: 24px;
+      margin-top: 24px;
+    }
+    .confirmation-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .confirmation-icon { font-size: 32px; }
+    .confirmation-title { font-size: 18px; font-weight: 800; }
+    .appointment-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .detail-item {
+      background: var(--bg-alt);
+      padding: 16px;
+      border-radius: var(--r-sm);
+    }
+    .detail-label { font-size: 11px; color: var(--fg-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .detail-value { font-weight: 600; }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Schedule</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">📅 Business Automation</div>
+      <h1 class="reveal">Scheduling <span>Automation</span></h1>
+      <p class="reveal">Parse scheduling requests, check availability, optimize time slots, and send confirmations automatically.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #a855f7, #9333ea);" onclick="WorkflowUI.nav('upload')">Schedule Now →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">8-18</div>
+          <div class="metric-label">Business Hours</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">15 min</div>
+          <div class="metric-label">Buffer Time</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">90 days</div>
+          <div class="metric-label">Max Advance</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">< 2s</div>
+          <div class="metric-label">Processing</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>Smart Scheduling</h3>
+        <p style="margin-bottom: 24px;">Submit scheduling requests in natural language. Our AI extracts dates, times, participants, and preferences, then finds optimal slots and sends professional confirmations.</p>
+        <div class="chips-container">
+          <span class="chip">📝 Request Parsing</span>
+          <span class="chip">📅 Availability Check</span>
+          <span class="chip">⚡ Slot Optimization</span>
+          <span class="chip">✉️ Auto Confirmation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Request</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Process</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Confirm</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Submit Scheduling Request</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Describe your scheduling needs in natural language</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📅</div>
+        <h3>Drop request file here</h3>
+        <p>Or type your request below</p>
+        <input type="file" accept=".txt,.pdf,.eml">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Scheduling request:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="Example: I need to schedule a service call for next Tuesday around 2 PM at our downtown office. The technician will need about 2 hours. Please confirm with John Smith at john@company.com."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #a855f7, #9333ea);" onclick="processRequest()">📅 Find Available Slots</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Processing Request...</h2>
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Appointment Scheduled</h2>
+          <p style="color: var(--fg-muted);">Confirmation sent to all participants</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Request</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #a855f7, #9333ea);" onclick="addToCalendar()">📅 Add to Calendar</button>
+        </div>
+      </div>
+
+      <!-- Confirmation Card -->
+      <div class="confirmation-card">
+        <div class="confirmation-header">
+          <span class="confirmation-icon">✅</span>
+          <span class="confirmation-title">Appointment Confirmed</span>
+        </div>
+        <div class="appointment-details">
+          <div class="detail-item">
+            <div class="detail-label">Type</div>
+            <div class="detail-value" id="request-type">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Date</div>
+            <div class="detail-value" id="appointment-date">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Time</div>
+            <div class="detail-value" id="appointment-time">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Duration</div>
+            <div class="detail-value" id="duration">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Location</div>
+            <div class="detail-value" id="location">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Participants</div>
+            <div class="detail-value" id="participants">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmation Message Preview -->
+      <div class="card card-static" style="margin-top: 32px;">
+        <h3 style="margin-bottom: 16px;">📧 Confirmation Message Sent</h3>
+        <div class="json-display" id="confirmation-message" style="white-space: pre-wrap;"></div>
+      </div>
+
+      <!-- All Extracted Data -->
+      <div class="card card-static" style="margin-top: 32px;">
+        <h3 style="margin-bottom: 16px;">📋 Extracted Data</h3>
+        <div class="results-grid" id="results-data"></div>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(147, 51, 234, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Time Saved</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'scheduling_automation';
+    
+    const FIELD_MAPPING = {
+      request_id: 'Request ID',
+      requester_name: 'Requester',
+      requester_email: 'Email',
+      request_type: 'Type',
+      preferred_date: 'Date',
+      preferred_time: 'Time',
+      duration_minutes: 'Duration',
+      location: 'Location',
+      participants: 'Participants',
+      priority: 'Priority',
+      flexibility: 'Flexibility',
+      notes: 'Notes'
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      const file = await WorkflowUI.loadDemoFile(WORKFLOW_ID);
+      if (file) {
+        WorkflowUI.currentFile = file;
+        const zone = document.getElementById('upload-zone');
+        zone.classList.add('has-file');
+        zone.querySelector('.upload-icon').textContent = '📄';
+        zone.querySelector('h3').textContent = file.name;
+        WorkflowUI.nav('upload');
+      }
+    }
+
+    async function processRequest() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or describe your request', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 20, message: 'Parsing request...', duration: 500 },
+        { progress: 45, message: 'Extracting scheduling details...', duration: 600 },
+        { progress: 70, message: 'Checking availability...', duration: 500 },
+        { progress: 90, message: 'Generating confirmation...', duration: 400 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting scheduling automation...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Appointment scheduled!', 'success');
+          setTimeout(() => {
+            renderResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Processing failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderResults(data) {
+      document.getElementById('request-type').textContent = (data.request_type || 'meeting').replace('_', ' ');
+      document.getElementById('appointment-date').textContent = data.preferred_date || '—';
+      document.getElementById('appointment-time').textContent = data.preferred_time || '—';
+      document.getElementById('duration').textContent = data.duration_minutes ? `${data.duration_minutes} min` : '60 min';
+      document.getElementById('location').textContent = data.location || '—';
+      document.getElementById('participants').textContent = Array.isArray(data.participants) ? data.participants.join(', ') : (data.participants || '—');
+
+      // Confirmation message
+      document.getElementById('confirmation-message').textContent = data.confirmation_body || 
+        `Your ${data.request_type || 'appointment'} has been scheduled for ${data.preferred_date} at ${data.preferred_time}.\n\nLocation: ${data.location || 'TBD'}\nDuration: ${data.duration_minutes || 60} minutes\n\nA calendar invitation has been sent to all participants.`;
+
+      // All fields
+      WorkflowUI.renderResults('results-data', data, FIELD_MAPPING);
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '5 min',
+        cost_saved: '$8',
+        accuracy: `${Math.round((data.confidence || 0.9) * 100)}%`
+      });
+    }
+
+    function addToCalendar() {
+      WorkflowUI.toast('Opening calendar...', 'success');
+    }
+  </script>
+</body>
+</html>

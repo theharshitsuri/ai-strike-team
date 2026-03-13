@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance Triage — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #ef4444, #dc2626); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .triage-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .triage-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .triage-header h3 { font-size: 18px; font-weight: 800; }
+    .priority-badge {
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .priority-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+    .priority-high { background: rgba(249, 115, 22, 0.2); color: #f97316; border: 1px solid #f97316; }
+    .priority-medium { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+    .priority-low { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; }
+    .triage-body { padding: 24px; }
+    .triage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .triage-field {
+      background: var(--bg-alt);
+      padding: 16px;
+      border-radius: var(--r-sm);
+    }
+    .triage-field-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--fg-muted);
+      margin-bottom: 6px;
+    }
+    .triage-field-value { font-size: 16px; font-weight: 600; }
+    .routing-section {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+      border: 1px solid var(--primary);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-top: 24px;
+    }
+    .routing-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .routing-icon { font-size: 32px; }
+    .routing-title { font-size: 18px; font-weight: 800; }
+    .team-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--primary);
+      color: white;
+      border-radius: var(--r-sm);
+      font-weight: 700;
+    }
+    .safety-alert {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid var(--error);
+      border-radius: var(--r);
+      padding: 20px;
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .safety-icon { font-size: 40px; }
+    .category-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .category-electrical { background: rgba(245, 158, 11, 0.2); }
+    .category-mechanical { background: rgba(59, 130, 246, 0.2); }
+    .category-software { background: rgba(139, 92, 246, 0.2); }
+    .category-plumbing { background: rgba(6, 182, 212, 0.2); }
+    .category-hvac { background: rgba(34, 197, 94, 0.2); }
+    .category-safety { background: rgba(239, 68, 68, 0.2); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Triage</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">🔧 Manufacturing Automation</div>
+      <h1 class="reveal">Maintenance <span>Triage</span></h1>
+      <p class="reveal">Classify maintenance tickets by category and urgency. Auto-route to the correct team with priority assignment.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #ef4444, #dc2626);" onclick="WorkflowUI.nav('upload')">Triage Ticket →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">6</div>
+          <div class="metric-label">Categories</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">4</div>
+          <div class="metric-label">Priority Levels</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">5</div>
+          <div class="metric-label">Teams</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">< 2s</div>
+          <div class="metric-label">Classification Time</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>Intelligent Ticket Routing</h3>
+        <p style="margin-bottom: 24px;">Submit maintenance tickets in any format. Our AI classifies by category (electrical, mechanical, software, etc.), assigns priority, estimates downtime impact, and routes to the appropriate team.</p>
+        <div class="chips-container">
+          <span class="chip">⚡ Electrical</span>
+          <span class="chip">⚙️ Mechanical</span>
+          <span class="chip">💻 Software</span>
+          <span class="chip">🚿 Plumbing</span>
+          <span class="chip">❄️ HVAC</span>
+          <span class="chip">⚠️ Safety</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Submit</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Classify</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Route</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Submit Maintenance Ticket</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Describe the issue and we'll classify and route it automatically</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">🔧</div>
+        <h3>Drop ticket file here</h3>
+        <p>Or describe the issue below</p>
+        <input type="file" accept=".txt,.pdf,.doc,.docx">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Describe the maintenance issue:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="Example: The conveyor belt on Line 3 is making a grinding noise and occasionally stops. Started this morning around 6 AM. Production is slowed by about 30%."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #ef4444, #dc2626);" onclick="triageTicket()">🔧 Classify & Route</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Classifying Ticket...</h2>
+      
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Ticket Classified & Routed</h2>
+          <p style="color: var(--fg-muted);">AI triage complete — team notified</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Ticket</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #ef4444, #dc2626);" onclick="notifyTeam()">📢 Notify Team</button>
+        </div>
+      </div>
+
+      <!-- Triage Result Card -->
+      <div class="triage-card">
+        <div class="triage-header">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="category-icon" id="category-icon">⚙️</div>
+            <div>
+              <h3 id="ticket-title">Maintenance Ticket</h3>
+              <span style="font-size: 13px; color: var(--fg-muted);" id="ticket-id">MT-XXXX</span>
+            </div>
+          </div>
+          <div class="priority-badge priority-high" id="priority-badge">HIGH</div>
+        </div>
+        <div class="triage-body">
+          <div class="triage-grid">
+            <div class="triage-field">
+              <div class="triage-field-label">Category</div>
+              <div class="triage-field-value" id="category">—</div>
+            </div>
+            <div class="triage-field">
+              <div class="triage-field-label">Equipment ID</div>
+              <div class="triage-field-value" id="equipment-id">—</div>
+            </div>
+            <div class="triage-field">
+              <div class="triage-field-label">Location</div>
+              <div class="triage-field-value" id="location">—</div>
+            </div>
+            <div class="triage-field">
+              <div class="triage-field-label">Est. Downtime</div>
+              <div class="triage-field-value" id="downtime">—</div>
+            </div>
+            <div class="triage-field">
+              <div class="triage-field-label">Safety Risk</div>
+              <div class="triage-field-value" id="safety-risk">—</div>
+            </div>
+            <div class="triage-field">
+              <div class="triage-field-label">Confidence</div>
+              <div class="triage-field-value" id="confidence">—</div>
+            </div>
+          </div>
+
+          <!-- Routing -->
+          <div class="routing-section">
+            <div class="routing-header">
+              <span class="routing-icon">📍</span>
+              <span class="routing-title">Routed To</span>
+            </div>
+            <div class="team-badge" id="team-badge">
+              <span>👷</span>
+              <span id="assigned-team">Mechanics Team</span>
+            </div>
+            <p style="margin-top: 12px; font-size: 13px; color: var(--fg-muted);">
+              Slack notification sent to <strong id="slack-channel">#mechanics</strong>
+            </p>
+          </div>
+
+          <!-- Safety Alert (conditional) -->
+          <div class="safety-alert" id="safety-alert" style="display: none;">
+            <span class="safety-icon">⚠️</span>
+            <div>
+              <strong style="color: var(--error);">Safety Risk Detected</strong>
+              <p style="font-size: 13px; color: var(--fg-muted); margin-top: 4px;">
+                This ticket has been flagged for potential safety hazards. Safety officer has been notified.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Raw Data -->
+      <div class="card card-static" style="margin-top: 32px;">
+        <h3 style="margin-bottom: 16px;">🔧 Classification Data</h3>
+        <div class="json-display" id="raw-json"></div>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Triage Summary</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'maintenance_triage';
+
+    const CATEGORY_ICONS = {
+      electrical: { icon: '⚡', class: 'category-electrical' },
+      mechanical: { icon: '⚙️', class: 'category-mechanical' },
+      software: { icon: '💻', class: 'category-software' },
+      plumbing: { icon: '🚿', class: 'category-plumbing' },
+      hvac: { icon: '❄️', class: 'category-hvac' },
+      safety: { icon: '⚠️', class: 'category-safety' },
+      other: { icon: '🔧', class: '' }
+    };
+
+    const TEAM_MAPPING = {
+      electrical_team: { name: 'Electrical Team', channel: '#electrical-team', icon: '⚡' },
+      mechanics: { name: 'Mechanics Team', channel: '#mechanics', icon: '⚙️' },
+      it_support: { name: 'IT Support', channel: '#it-support', icon: '💻' },
+      facilities: { name: 'Facilities', channel: '#facilities', icon: '🏢' },
+      safety_officer: { name: 'Safety Officer', channel: '#safety', icon: '⚠️' }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      const file = await WorkflowUI.loadDemoFile(WORKFLOW_ID);
+      if (file) {
+        WorkflowUI.currentFile = file;
+        const zone = document.getElementById('upload-zone');
+        zone.classList.add('has-file');
+        zone.querySelector('.upload-icon').textContent = '📄';
+        zone.querySelector('h3').textContent = file.name;
+        zone.querySelector('p').textContent = 'Demo file loaded';
+        WorkflowUI.nav('upload');
+      }
+    }
+
+    async function triageTicket() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or describe the issue', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 20, message: 'Reading ticket content...', duration: 400 },
+        { progress: 45, message: 'Analyzing issue description...', duration: 600 },
+        { progress: 70, message: 'Classifying category and priority...', duration: 500 },
+        { progress: 90, message: 'Determining team routing...', duration: 400 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting maintenance triage...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        WorkflowUI.addLogEntry('live-log', 'Calling AI classification API...', 'info');
+        
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Classification complete!', 'success');
+          WorkflowUI.processingResult = result;
+          setTimeout(() => {
+            renderTriageResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Triage failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderTriageResults(data) {
+      // Category icon
+      const cat = CATEGORY_ICONS[data.category] || CATEGORY_ICONS.other;
+      const iconEl = document.getElementById('category-icon');
+      iconEl.textContent = cat.icon;
+      iconEl.className = 'category-icon ' + cat.class;
+
+      // Header
+      document.getElementById('ticket-title').textContent = data.title || 'Maintenance Ticket';
+      document.getElementById('ticket-id').textContent = data.ticket_id || `MT-${Math.floor(Math.random() * 9000) + 1000}`;
+
+      // Priority badge
+      const priorityBadge = document.getElementById('priority-badge');
+      priorityBadge.textContent = (data.priority || 'medium').toUpperCase();
+      priorityBadge.className = `priority-badge priority-${data.priority || 'medium'}`;
+
+      // Fields
+      document.getElementById('category').textContent = (data.category || 'other').replace('_', ' ').toUpperCase();
+      document.getElementById('equipment-id').textContent = data.equipment_id || 'N/A';
+      document.getElementById('location').textContent = data.location || 'N/A';
+      document.getElementById('downtime').textContent = data.estimated_downtime_hours ? `${data.estimated_downtime_hours} hours` : 'N/A';
+      document.getElementById('safety-risk').textContent = data.safety_risk ? '⚠️ YES' : '✓ No';
+      document.getElementById('confidence').textContent = `${Math.round((data.confidence || 0.85) * 100)}%`;
+
+      // Team routing
+      const team = TEAM_MAPPING[data.recommended_team] || TEAM_MAPPING.facilities;
+      document.getElementById('assigned-team').textContent = team.name;
+      document.getElementById('slack-channel').textContent = team.channel;
+
+      // Safety alert
+      if (data.safety_risk) {
+        document.getElementById('safety-alert').style.display = 'flex';
+      } else {
+        document.getElementById('safety-alert').style.display = 'none';
+      }
+
+      // Raw JSON
+      WorkflowUI.renderJSON('raw-json', data);
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '3 min',
+        cost_saved: '$5',
+        accuracy: `${Math.round((data.confidence || 0.85) * 100)}%`
+      });
+    }
+
+    function notifyTeam() {
+      WorkflowUI.toast('Team notification sent via Slack', 'success');
+    }
+  </script>
+</body>
+</html>

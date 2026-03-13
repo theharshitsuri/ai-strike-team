@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipment Follow-up — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #06b6d4, #0891b2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .shipment-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .shipment-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(8, 145, 178, 0.05));
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .shipment-id { font-size: 20px; font-weight: 900; }
+    .status-badge {
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .status-in_transit { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .status-delayed { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .status-delivered { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .status-at_origin { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .shipment-body { padding: 24px; }
+    .route-visual {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px;
+      background: var(--bg-alt);
+      border-radius: var(--r-sm);
+      margin-bottom: 24px;
+    }
+    .route-point {
+      text-align: center;
+      flex: 0 0 auto;
+    }
+    .route-icon { font-size: 32px; margin-bottom: 8px; }
+    .route-city { font-weight: 700; font-size: 14px; }
+    .route-date { font-size: 12px; color: var(--fg-muted); }
+    .route-line {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      margin: 0 20px;
+      position: relative;
+    }
+    .route-line::after {
+      content: '✈️';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .route-line.overdue { background: var(--error); }
+    .route-line.overdue::after { content: '⚠️'; }
+    .email-preview {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-top: 24px;
+    }
+    .email-header {
+      padding: 16px 20px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .email-field { display: flex; gap: 12px; margin-bottom: 8px; font-size: 13px; }
+    .email-field:last-child { margin-bottom: 0; }
+    .email-label { color: var(--fg-muted); min-width: 60px; }
+    .email-value { font-weight: 500; }
+    .email-body {
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    .urgency-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-radius: var(--r-sm);
+      margin-top: 16px;
+    }
+    .urgency-routine { background: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); }
+    .urgency-urgent { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); }
+    .urgency-critical { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Follow-up</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">📦 Logistics Automation</div>
+      <h1 class="reveal">Shipment <span>Follow-up</span></h1>
+      <p class="reveal">Monitor overdue shipments, auto-draft professional follow-up emails, and escalate when needed.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #06b6d4, #0891b2);" onclick="WorkflowUI.nav('upload')">Check Shipment →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">4 hrs</div>
+          <div class="metric-label">Overdue Trigger</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">8 hrs</div>
+          <div class="metric-label">Follow-up Interval</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">3</div>
+          <div class="metric-label">Escalation Attempts</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">24 hrs</div>
+          <div class="metric-label">Critical Threshold</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>Automated Shipment Monitoring</h3>
+        <p style="margin-bottom: 24px;">Input shipment details or paste tracking updates. Our AI extracts status, calculates if overdue, and generates professional follow-up emails with appropriate tone based on urgency.</p>
+        <div class="chips-container">
+          <span class="chip">📍 Status Extraction</span>
+          <span class="chip">⏰ Overdue Detection</span>
+          <span class="chip">✉️ Email Generation</span>
+          <span class="chip">📈 Escalation Logic</span>
+          <span class="chip">🔔 Team Alerts</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Input</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Analyze</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Email</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Check Shipment Status</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Paste shipment details or tracking information</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📦</div>
+        <h3>Drop shipment file here</h3>
+        <p>Or paste details below</p>
+        <input type="file" accept=".txt,.csv,.pdf">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Shipment details:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="Paste shipment tracking info, carrier updates, or describe the shipment status...
+
+Example:
+Load ID: LD-2024-5521
+Carrier: FastFreight Inc
+Origin: Chicago, IL
+Destination: Detroit, MI
+Expected Delivery: March 14, 2024
+Current Status: In Transit
+Last Update: March 13, 2024 at 2:00 PM
+Last Location: Toledo, OH"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #06b6d4, #0891b2);" onclick="checkShipment()">📧 Generate Follow-up</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Analyzing Shipment...</h2>
+      
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Follow-up Email Ready</h2>
+          <p style="color: var(--fg-muted);">AI-generated email based on shipment status</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Check</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #06b6d4, #0891b2);" onclick="sendEmail()">📧 Send Email</button>
+        </div>
+      </div>
+
+      <!-- Shipment Card -->
+      <div class="shipment-card">
+        <div class="shipment-header">
+          <div>
+            <div class="shipment-id" id="load-id">LD-2024-XXXX</div>
+            <span style="font-size: 13px; color: var(--fg-muted);" id="carrier">Carrier Name</span>
+          </div>
+          <div class="status-badge status-in_transit" id="status-badge">IN TRANSIT</div>
+        </div>
+        <div class="shipment-body">
+          <!-- Route Visual -->
+          <div class="route-visual">
+            <div class="route-point">
+              <div class="route-icon">📍</div>
+              <div class="route-city" id="origin">Origin</div>
+              <div class="route-date" id="pickup-date">—</div>
+            </div>
+            <div class="route-line" id="route-line"></div>
+            <div class="route-point">
+              <div class="route-icon">🏁</div>
+              <div class="route-city" id="destination">Destination</div>
+              <div class="route-date" id="delivery-date">—</div>
+            </div>
+          </div>
+
+          <!-- Status Details -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+            <div class="triage-field" style="background: var(--bg-alt); padding: 16px; border-radius: var(--r-sm);">
+              <div style="font-size: 11px; color: var(--fg-muted); margin-bottom: 4px;">Last Location</div>
+              <div style="font-weight: 600;" id="last-location">—</div>
+            </div>
+            <div class="triage-field" style="background: var(--bg-alt); padding: 16px; border-radius: var(--r-sm);">
+              <div style="font-size: 11px; color: var(--fg-muted); margin-bottom: 4px;">Last Update</div>
+              <div style="font-weight: 600;" id="last-update">—</div>
+            </div>
+            <div class="triage-field" style="background: var(--bg-alt); padding: 16px; border-radius: var(--r-sm);">
+              <div style="font-size: 11px; color: var(--fg-muted); margin-bottom: 4px;">Hours Overdue</div>
+              <div style="font-weight: 600;" id="hours-overdue">—</div>
+            </div>
+          </div>
+
+          <!-- Urgency Indicator -->
+          <div class="urgency-indicator urgency-routine" id="urgency-indicator">
+            <span style="font-size: 24px;">ℹ️</span>
+            <div>
+              <strong id="urgency-title">Routine Follow-up</strong>
+              <p style="font-size: 12px; color: var(--fg-muted); margin-top: 2px;" id="urgency-desc">Standard status check email</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Preview -->
+      <div class="email-preview">
+        <div class="email-header">
+          <div class="email-field">
+            <span class="email-label">To:</span>
+            <span class="email-value" id="email-to">carrier@example.com</span>
+          </div>
+          <div class="email-field">
+            <span class="email-label">Subject:</span>
+            <span class="email-value" id="email-subject">Status Update Request</span>
+          </div>
+        </div>
+        <div class="email-body" id="email-body">
+          Loading email content...
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button class="btn btn-secondary" onclick="editEmail()">✏️ Edit Email</button>
+        <button class="btn btn-secondary" onclick="copyEmail()">📋 Copy to Clipboard</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #06b6d4, #0891b2);" onclick="sendEmail()">📧 Send via Outlook</button>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(8, 145, 178, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Time Saved</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'shipment_followup';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      const file = await WorkflowUI.loadDemoFile(WORKFLOW_ID);
+      if (file) {
+        WorkflowUI.currentFile = file;
+        const zone = document.getElementById('upload-zone');
+        zone.classList.add('has-file');
+        zone.querySelector('.upload-icon').textContent = '📄';
+        zone.querySelector('h3').textContent = file.name;
+        zone.querySelector('p').textContent = 'Demo file loaded';
+        WorkflowUI.nav('upload');
+      }
+    }
+
+    async function checkShipment() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or paste shipment details', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 20, message: 'Reading shipment data...', duration: 500 },
+        { progress: 40, message: 'Extracting status information...', duration: 600 },
+        { progress: 60, message: 'Calculating overdue status...', duration: 400 },
+        { progress: 80, message: 'Generating follow-up email...', duration: 700 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting shipment follow-up workflow...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        WorkflowUI.addLogEntry('live-log', 'Calling AI extraction API...', 'info');
+        
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Email generated!', 'success');
+          WorkflowUI.processingResult = result;
+          setTimeout(() => {
+            renderFollowupResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Processing failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderFollowupResults(data) {
+      // Shipment header
+      document.getElementById('load-id').textContent = data.load_id || 'N/A';
+      document.getElementById('carrier').textContent = data.carrier || 'Unknown Carrier';
+
+      // Status badge
+      const status = data.current_status || 'unknown';
+      const statusBadge = document.getElementById('status-badge');
+      statusBadge.textContent = status.replace('_', ' ').toUpperCase();
+      statusBadge.className = `status-badge status-${status}`;
+
+      // Route
+      document.getElementById('origin').textContent = data.origin || 'Origin';
+      document.getElementById('destination').textContent = data.destination || 'Destination';
+      document.getElementById('pickup-date').textContent = data.actual_pickup_date || '—';
+      document.getElementById('delivery-date').textContent = data.expected_delivery || '—';
+
+      // Route line (overdue indicator)
+      const routeLine = document.getElementById('route-line');
+      if (data.is_overdue) {
+        routeLine.classList.add('overdue');
+      }
+
+      // Status details
+      document.getElementById('last-location').textContent = data.last_known_location || 'N/A';
+      document.getElementById('last-update').textContent = data.last_update || 'N/A';
+      document.getElementById('hours-overdue').textContent = data.hours_overdue ? `${data.hours_overdue} hrs` : '0 hrs';
+
+      // Urgency indicator
+      const urgency = data.urgency || 'routine';
+      const urgencyEl = document.getElementById('urgency-indicator');
+      urgencyEl.className = `urgency-indicator urgency-${urgency}`;
+      
+      const urgencyConfig = {
+        routine: { icon: 'ℹ️', title: 'Routine Follow-up', desc: 'Standard status check email' },
+        urgent: { icon: '⚠️', title: 'Urgent Follow-up', desc: 'Shipment is delayed - firmer tone' },
+        critical: { icon: '🚨', title: 'Critical Escalation', desc: 'Significant delay - escalation language' }
+      };
+      const urg = urgencyConfig[urgency] || urgencyConfig.routine;
+      urgencyEl.innerHTML = `
+        <span style="font-size: 24px;">${urg.icon}</span>
+        <div>
+          <strong>${urg.title}</strong>
+          <p style="font-size: 12px; color: var(--fg-muted); margin-top: 2px;">${urg.desc}</p>
+        </div>
+      `;
+
+      // Email preview
+      document.getElementById('email-to').textContent = data.carrier_contact_email || 'carrier@example.com';
+      document.getElementById('email-subject').textContent = data.email_subject || `Status Update Request: Load ${data.load_id}`;
+      document.getElementById('email-body').textContent = data.email_body || generateDefaultEmail(data);
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '10 min',
+        cost_saved: '$15',
+        accuracy: `${Math.round((data.confidence || 0.9) * 100)}%`
+      });
+    }
+
+    function generateDefaultEmail(data) {
+      return `Dear ${data.carrier || 'Carrier'} Team,
+
+I hope this message finds you well. I am writing to request a status update on the following shipment:
+
+Load ID: ${data.load_id || 'N/A'}
+Origin: ${data.origin || 'N/A'}
+Destination: ${data.destination || 'N/A'}
+Expected Delivery: ${data.expected_delivery || 'N/A'}
+
+Could you please provide the current location and estimated time of arrival?
+
+Thank you for your prompt attention to this matter.
+
+Best regards,
+Operations Team`;
+    }
+
+    function editEmail() {
+      WorkflowUI.toast('Opening email editor...', 'info');
+    }
+
+    function copyEmail() {
+      const body = document.getElementById('email-body').textContent;
+      navigator.clipboard.writeText(body);
+      WorkflowUI.toast('Email copied to clipboard', 'success');
+    }
+
+    function sendEmail() {
+      WorkflowUI.toast('Opening email client...', 'success');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detention Tracking — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .workflow-icon { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .hero h1 span { background: linear-gradient(135deg, #f97316, #ea580c); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .invoice-preview {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 32px;
+      margin-top: 32px;
+    }
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border);
+    }
+    .invoice-title { font-size: 28px; font-weight: 900; color: var(--accent); }
+    .invoice-meta { text-align: right; font-size: 13px; color: var(--fg-muted); }
+    .invoice-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .invoice-row:last-child { border-bottom: none; }
+    .invoice-label { font-weight: 600; color: var(--fg-muted); }
+    .invoice-value { font-weight: 700; }
+    .invoice-total {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 3px solid var(--accent);
+      display: flex;
+      justify-content: space-between;
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .invoice-total .amount { color: var(--accent); }
+    .timeline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 24px 0;
+      padding: 20px;
+      background: var(--bg-alt);
+      border-radius: var(--r-sm);
+      overflow-x: auto;
+    }
+    .timeline-point {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 100px;
+    }
+    .timeline-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin-bottom: 8px;
+    }
+    .timeline-time { font-size: 12px; font-weight: 700; }
+    .timeline-label { font-size: 10px; color: var(--fg-muted); }
+    .timeline-line {
+      flex: 1;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      min-width: 40px;
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Process</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">⏱️ Logistics Automation</div>
+      <h1 class="reveal">Detention <span>Tracking</span></h1>
+      <p class="reveal">Automatically track arrival/departure timestamps, calculate detention fees, and generate professional invoices.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-accent btn-lg" onclick="WorkflowUI.nav('upload')">Start Processing →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">$75</div>
+          <div class="metric-label">Per Hour Rate</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">2 hrs</div>
+          <div class="metric-label">Free Time</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">95%</div>
+          <div class="metric-label">Accuracy</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">< 5s</div>
+          <div class="metric-label">Processing Time</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal" style="margin-bottom: 40px;">
+        <h3>How It Works</h3>
+        <p style="margin-bottom: 24px;">Upload check-call logs, driver messages, or facility records. Our AI extracts timestamps, calculates detention fees based on your rate structure, and generates ready-to-send invoices.</p>
+        <div class="chips-container">
+          <span class="chip">📥 Upload Document</span>
+          <span class="chip">🧠 AI Extraction</span>
+          <span class="chip">⏱️ Time Calculation</span>
+          <span class="chip">💰 Fee Generation</span>
+          <span class="chip">📄 Invoice Output</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Upload</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Process</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Invoice</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Upload Detention Data</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Upload check-call logs, driver messages, or facility records</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📥</div>
+        <h3>Drop your file here</h3>
+        <p>PDF, TXT, or paste text below</p>
+        <input type="file" accept=".pdf,.txt,.csv,.doc,.docx">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Or paste text directly:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="Paste detention log, check-call data, or facility timestamps here..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-accent" style="flex: 1;" onclick="processDocument()">⚡ Calculate Detention Fee</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Processing Detention Data...</h2>
+      
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Detention Invoice Generated</h2>
+          <p style="color: var(--fg-muted);">AI-extracted timestamps with calculated fees</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Analysis</button>
+          <button class="btn btn-accent" onclick="downloadInvoice()">📄 Download Invoice</button>
+        </div>
+      </div>
+
+      <!-- Timeline Visualization -->
+      <div class="card card-static" style="margin-bottom: 32px;">
+        <h3 style="margin-bottom: 16px;">⏱️ Detention Timeline</h3>
+        <div class="timeline" id="timeline"></div>
+      </div>
+
+      <!-- Extracted Data -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+        <div class="card card-static">
+          <h3 style="margin-bottom: 20px;">📋 Extracted Data</h3>
+          <div class="results-grid" id="results-data"></div>
+        </div>
+        <div class="card card-static">
+          <h3 style="margin-bottom: 20px;">💰 Fee Calculation</h3>
+          <div class="results-grid" id="results-fees"></div>
+        </div>
+      </div>
+
+      <!-- Invoice Preview -->
+      <div class="invoice-preview" id="invoice-preview">
+        <div class="invoice-header">
+          <div>
+            <div class="invoice-title">DETENTION INVOICE</div>
+            <div style="margin-top: 8px; color: var(--fg-muted);">AI Strike Team Automation</div>
+          </div>
+          <div class="invoice-meta">
+            <div id="invoice-number">INV-DET-2024-XXXX</div>
+            <div id="invoice-date"></div>
+          </div>
+        </div>
+        <div id="invoice-body"></div>
+        <div class="invoice-total">
+          <span>Total Detention Fee</span>
+          <span class="amount" id="invoice-total">$0.00</span>
+        </div>
+      </div>
+
+      <!-- ROI Section -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 88, 12, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Processing Summary</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'detention_tracking';
+    
+    const FIELD_MAPPING = {
+      load_id: 'Load ID',
+      facility_name: 'Facility',
+      facility_type: 'Facility Type',
+      carrier_name: 'Carrier',
+      driver_name: 'Driver',
+      arrival_time: 'Arrival Time',
+      departure_time: 'Departure Time',
+      detention_reason: 'Reason',
+      detention_reason_detail: 'Details'
+    };
+
+    const FEE_MAPPING = {
+      total_wait_minutes: 'Total Wait Time',
+      free_time_minutes: 'Free Time',
+      billable_minutes: 'Billable Time',
+      rate_per_hour: 'Hourly Rate',
+      detention_fee: 'Detention Fee'
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      const file = await WorkflowUI.loadDemoFile(WORKFLOW_ID);
+      if (file) {
+        WorkflowUI.currentFile = file;
+        const zone = document.getElementById('upload-zone');
+        zone.classList.add('has-file');
+        zone.querySelector('.upload-icon').textContent = '📄';
+        zone.querySelector('h3').textContent = file.name;
+        zone.querySelector('p').textContent = 'Demo file loaded — Ready for processing';
+        WorkflowUI.nav('upload');
+      }
+    }
+
+    async function processDocument() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or paste text', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 15, message: 'Reading document...', duration: 600 },
+        { progress: 35, message: 'Extracting timestamps...', duration: 800 },
+        { progress: 55, message: 'Parsing arrival/departure times...', duration: 700 },
+        { progress: 75, message: 'Calculating detention fee...', duration: 600 },
+        { progress: 90, message: 'Generating invoice...', duration: 500 },
+        { progress: 100, message: 'Complete!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting detention tracking workflow...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        WorkflowUI.addLogEntry('live-log', 'Calling AI extraction API...', 'info');
+        
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Extraction successful!', 'success');
+          WorkflowUI.processingResult = result;
+          setTimeout(() => {
+            renderDetentionResults(result.result, result.roi);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Processing failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderDetentionResults(data, roi) {
+      // Render extracted data
+      WorkflowUI.renderResults('results-data', data, FIELD_MAPPING);
+      
+      // Calculate fees
+      const arrival = new Date(data.arrival_time);
+      const departure = new Date(data.departure_time);
+      const totalMinutes = Math.round((departure - arrival) / 60000);
+      const freeTime = data.free_time_minutes || 120;
+      const billableMinutes = Math.max(0, totalMinutes - freeTime);
+      const ratePerHour = 75;
+      const fee = (billableMinutes / 60) * ratePerHour;
+
+      const feeData = {
+        total_wait_minutes: `${totalMinutes} minutes (${(totalMinutes/60).toFixed(1)} hrs)`,
+        free_time_minutes: `${freeTime} minutes`,
+        billable_minutes: `${billableMinutes} minutes (${(billableMinutes/60).toFixed(1)} hrs)`,
+        rate_per_hour: `$${ratePerHour.toFixed(2)}`,
+        detention_fee: `$${fee.toFixed(2)}`,
+        confidence: data.confidence
+      };
+      WorkflowUI.renderResults('results-fees', feeData, FEE_MAPPING);
+
+      // Render timeline
+      renderTimeline(data);
+
+      // Render invoice
+      renderInvoice(data, feeData, fee);
+
+      // Render ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '15 min',
+        cost_saved: '$25',
+        accuracy: `${Math.round((data.confidence || 0.95) * 100)}%`
+      });
+    }
+
+    function renderTimeline(data) {
+      const timeline = document.getElementById('timeline');
+      const times = [
+        { time: data.arrival_time, label: 'Arrival' },
+        { time: data.check_in_time, label: 'Check-in' },
+        { time: data.loading_start_time, label: 'Loading Start' },
+        { time: data.departure_time, label: 'Departure' }
+      ].filter(t => t.time && t.time !== 'N/A');
+
+      timeline.innerHTML = times.map((t, i) => `
+        <div class="timeline-point">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">${new Date(t.time).toLocaleTimeString()}</div>
+          <div class="timeline-label">${t.label}</div>
+        </div>
+        ${i < times.length - 1 ? '<div class="timeline-line"></div>' : ''}
+      `).join('');
+    }
+
+    function renderInvoice(data, feeData, totalFee) {
+      document.getElementById('invoice-number').textContent = `INV-DET-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+      document.getElementById('invoice-date').textContent = new Date().toLocaleDateString();
+      
+      document.getElementById('invoice-body').innerHTML = `
+        <div class="invoice-row">
+          <span class="invoice-label">Load ID</span>
+          <span class="invoice-value">${data.load_id || 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Facility</span>
+          <span class="invoice-value">${data.facility_name || 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Carrier</span>
+          <span class="invoice-value">${data.carrier_name || 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Arrival</span>
+          <span class="invoice-value">${data.arrival_time ? new Date(data.arrival_time).toLocaleString() : 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Departure</span>
+          <span class="invoice-value">${data.departure_time ? new Date(data.departure_time).toLocaleString() : 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Total Wait Time</span>
+          <span class="invoice-value">${feeData.total_wait_minutes}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Free Time Allowance</span>
+          <span class="invoice-value">${feeData.free_time_minutes}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Billable Time</span>
+          <span class="invoice-value">${feeData.billable_minutes}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Rate</span>
+          <span class="invoice-value">${feeData.rate_per_hour}/hour</span>
+        </div>
+      `;
+      
+      document.getElementById('invoice-total').textContent = `$${totalFee.toFixed(2)}`;
+    }
+
+    function downloadInvoice() {
+      WorkflowUI.toast('Invoice download started', 'success');
+      // In production, this would generate a PDF
+    }
+  </script>
+</body>
+</html>

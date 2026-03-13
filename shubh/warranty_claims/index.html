@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warranty Claims — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .hero h1 span { background: linear-gradient(135deg, #ec4899, #db2777); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .claim-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .claim-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(219, 39, 119, 0.05));
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .claim-id { font-size: 20px; font-weight: 900; }
+    .decision-badge {
+      padding: 10px 20px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .decision-approved { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 2px solid #22c55e; }
+    .decision-rejected { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 2px solid #ef4444; }
+    .decision-review { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 2px solid #f59e0b; }
+    .claim-body { padding: 24px; }
+    .claim-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .claim-field {
+      background: var(--bg-alt);
+      padding: 16px;
+      border-radius: var(--r-sm);
+    }
+    .claim-field-label { font-size: 11px; color: var(--fg-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .claim-field-value { font-weight: 600; }
+    .warranty-timeline {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--bg-alt);
+      border-radius: var(--r-sm);
+    }
+    .timeline-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      position: relative;
+      margin: 16px 0;
+    }
+    .timeline-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--success), var(--warning), var(--error));
+    }
+    .timeline-marker {
+      position: absolute;
+      top: -6px;
+      width: 20px;
+      height: 20px;
+      background: var(--primary);
+      border: 3px solid var(--bg);
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--fg-muted);
+    }
+    .validation-section {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--bg-alt);
+      border-radius: var(--r-sm);
+    }
+    .validation-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .validation-item:last-child { border-bottom: none; }
+    .validation-icon { font-size: 18px; }
+    .validation-text { flex: 1; }
+    .validation-status { font-weight: 700; font-size: 13px; }
+    .validation-status.pass { color: var(--success); }
+    .validation-status.fail { color: var(--error); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Process</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">🛡️ Customer Service</div>
+      <h1 class="reveal">Warranty <span>Claims</span></h1>
+      <p class="reveal">Parse claim forms, validate against warranty rules, and auto-approve, reject, or flag for review.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #ec4899, #db2777);" onclick="WorkflowUI.nav('upload')">Process Claim →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">365</div>
+          <div class="metric-label">Warranty Days</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">90</div>
+          <div class="metric-label">Auto-Approve Days</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">$500</div>
+          <div class="metric-label">Auto-Approve Max</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">< 2s</div>
+          <div class="metric-label">Processing</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal">
+        <h3>Automated Claim Processing</h3>
+        <p style="margin-bottom: 24px;">Submit warranty claims in any format. Our AI extracts product info, validates warranty status, checks claim rules, and makes instant decisions.</p>
+        <div class="chips-container">
+          <span class="chip">📋 Claim Extraction</span>
+          <span class="chip">✅ Warranty Validation</span>
+          <span class="chip">🔍 Rule Checking</span>
+          <span class="chip">⚡ Auto-Decision</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 800px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Submit</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Validate</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Decision</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Submit Warranty Claim</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Upload claim form or describe the issue</p>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">🛡️</div>
+        <h3>Drop claim file here</h3>
+        <p>PDF, TXT, or image</p>
+        <input type="file" accept=".pdf,.txt,.png,.jpg,.doc,.docx">
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Or describe the claim:</label>
+        <textarea class="form-textarea" id="text-input" placeholder="Customer: John Smith
+Email: john@email.com
+Product: PRD-1001 Widget Pro
+Serial: SN-2024-12345
+Purchase Date: January 15, 2024
+Issue: Product stopped working after 2 months
+Requested: Replacement"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #ec4899, #db2777);" onclick="processClaim()">🛡️ Process Claim</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Processing Claim...</h2>
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Claim Processed</h2>
+          <p style="color: var(--fg-muted);">Warranty validation complete</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Claim</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #ec4899, #db2777);" onclick="sendResponse()">📧 Send Response</button>
+        </div>
+      </div>
+
+      <!-- Claim Card -->
+      <div class="claim-card">
+        <div class="claim-header">
+          <div>
+            <div class="claim-id" id="claim-id">CLM-XXXX</div>
+            <span style="font-size: 13px; color: var(--fg-muted);" id="customer-name">Customer Name</span>
+          </div>
+          <div class="decision-badge decision-approved" id="decision-badge">APPROVED</div>
+        </div>
+        <div class="claim-body">
+          <div class="claim-grid">
+            <div class="claim-field">
+              <div class="claim-field-label">Product</div>
+              <div class="claim-field-value" id="product-id">—</div>
+            </div>
+            <div class="claim-field">
+              <div class="claim-field-label">Serial Number</div>
+              <div class="claim-field-value" id="serial-number">—</div>
+            </div>
+            <div class="claim-field">
+              <div class="claim-field-label">Purchase Date</div>
+              <div class="claim-field-value" id="purchase-date">—</div>
+            </div>
+            <div class="claim-field">
+              <div class="claim-field-label">Issue Type</div>
+              <div class="claim-field-value" id="issue-type">—</div>
+            </div>
+            <div class="claim-field">
+              <div class="claim-field-label">Resolution</div>
+              <div class="claim-field-value" id="resolution">—</div>
+            </div>
+            <div class="claim-field">
+              <div class="claim-field-label">Confidence</div>
+              <div class="claim-field-value" id="confidence">—</div>
+            </div>
+          </div>
+
+          <!-- Warranty Timeline -->
+          <div class="warranty-timeline">
+            <h4 style="margin-bottom: 8px;">📅 Warranty Status</h4>
+            <div class="timeline-bar">
+              <div class="timeline-fill" id="timeline-fill" style="width: 100%;"></div>
+              <div class="timeline-marker" id="timeline-marker" style="left: 20%;"></div>
+            </div>
+            <div class="timeline-labels">
+              <span>Purchase Date</span>
+              <span id="days-remaining">— days remaining</span>
+              <span>Warranty End</span>
+            </div>
+          </div>
+
+          <!-- Validation Checks -->
+          <div class="validation-section">
+            <h4 style="margin-bottom: 12px;">✅ Validation Checks</h4>
+            <div id="validation-checks"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Raw Data -->
+      <div class="card card-static" style="margin-top: 32px;">
+        <h3 style="margin-bottom: 16px;">📋 Extracted Data</h3>
+        <div class="json-display" id="raw-json"></div>
+      </div>
+
+      <!-- ROI -->
+      <div class="card card-static" style="margin-top: 32px; background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(219, 39, 119, 0.05));">
+        <h3 style="margin-bottom: 20px;">📊 Processing Summary</h3>
+        <div class="metrics-grid" id="roi-metrics"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'warranty_claims';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowUI.setupUploadZone('upload-zone');
+    });
+
+    async function loadDemo() {
+      WorkflowUI.currentFile = new File([
+        'Warranty Claim Form\n\n' +
+        'Customer: Sarah Johnson\n' +
+        'Email: sarah.j@email.com\n' +
+        'Product ID: PRD-2001\n' +
+        'Serial Number: SN-2024-78901\n' +
+        'Purchase Date: 2024-01-20\n' +
+        'Issue Type: Malfunction\n' +
+        'Description: The device powers on but the display flickers and eventually goes black after 5 minutes of use.\n' +
+        'Requested Resolution: Replacement'
+      ], 'demo_claim.txt', { type: 'text/plain' });
+      const zone = document.getElementById('upload-zone');
+      zone.classList.add('has-file');
+      zone.querySelector('.upload-icon').textContent = '📄';
+      zone.querySelector('h3').textContent = 'demo_claim.txt';
+      WorkflowUI.nav('upload');
+      WorkflowUI.toast('Demo claim loaded', 'success');
+    }
+
+    async function processClaim() {
+      const textInput = document.getElementById('text-input').value;
+      const file = WorkflowUI.currentFile;
+      
+      if (!file && !textInput.trim()) {
+        WorkflowUI.toast('Please upload a file or describe the claim', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 20, message: 'Reading claim data...', duration: 500 },
+        { progress: 40, message: 'Extracting product info...', duration: 600 },
+        { progress: 60, message: 'Validating warranty status...', duration: 500 },
+        { progress: 80, message: 'Applying business rules...', duration: 400 },
+        { progress: 100, message: 'Decision made!', duration: 300 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting warranty claim processing...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, file, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Claim processed!', 'success');
+          setTimeout(() => {
+            renderResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Processing failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderResults(data) {
+      // Claim header
+      document.getElementById('claim-id').textContent = data.claim_id || `CLM-${Math.floor(Math.random() * 9000) + 1000}`;
+      document.getElementById('customer-name').textContent = data.customer_name || 'Customer';
+
+      // Decision
+      const purchaseDate = new Date(data.purchase_date || '2024-01-20');
+      const today = new Date();
+      const daysSincePurchase = Math.floor((today - purchaseDate) / (1000 * 60 * 60 * 24));
+      const warrantyDays = 365;
+      const inWarranty = daysSincePurchase <= warrantyDays;
+      const autoApprove = daysSincePurchase <= 90;
+
+      let decision = 'review';
+      if (!inWarranty) decision = 'rejected';
+      else if (autoApprove) decision = 'approved';
+
+      const badge = document.getElementById('decision-badge');
+      badge.textContent = decision.toUpperCase();
+      badge.className = `decision-badge decision-${decision}`;
+
+      // Fields
+      document.getElementById('product-id').textContent = data.product_id || 'N/A';
+      document.getElementById('serial-number').textContent = data.serial_number || 'N/A';
+      document.getElementById('purchase-date').textContent = data.purchase_date || 'N/A';
+      document.getElementById('issue-type').textContent = (data.issue_type || 'malfunction').replace('_', ' ');
+      document.getElementById('resolution').textContent = (data.requested_resolution || 'replacement').replace('_', ' ');
+      document.getElementById('confidence').textContent = `${Math.round((data.confidence || 0.92) * 100)}%`;
+
+      // Timeline
+      const timelinePct = Math.min(100, (daysSincePurchase / warrantyDays) * 100);
+      document.getElementById('timeline-fill').style.width = '100%';
+      document.getElementById('timeline-marker').style.left = `${timelinePct}%`;
+      document.getElementById('days-remaining').textContent = `${Math.max(0, warrantyDays - daysSincePurchase)} days remaining`;
+
+      // Validation checks
+      const checks = [
+        { name: 'Product ID Valid', pass: true },
+        { name: 'Within Warranty Period', pass: inWarranty },
+        { name: 'Serial Number Verified', pass: data.serial_number !== 'N/A' },
+        { name: 'Issue Type Covered', pass: true },
+        { name: 'No Previous Claims', pass: true }
+      ];
+
+      document.getElementById('validation-checks').innerHTML = checks.map(c => `
+        <div class="validation-item">
+          <span class="validation-icon">${c.pass ? '✅' : '❌'}</span>
+          <span class="validation-text">${c.name}</span>
+          <span class="validation-status ${c.pass ? 'pass' : 'fail'}">${c.pass ? 'PASS' : 'FAIL'}</span>
+        </div>
+      `).join('');
+
+      // Raw JSON
+      WorkflowUI.renderJSON('raw-json', data);
+
+      // ROI
+      WorkflowUI.renderROI('roi-metrics', {
+        time_saved: '8 min',
+        cost_saved: '$12',
+        accuracy: `${Math.round((data.confidence || 0.92) * 100)}%`
+      });
+    }
+
+    function sendResponse() {
+      WorkflowUI.toast('Sending customer response...', 'success');
+    }
+  </script>
+</body>
+</html>

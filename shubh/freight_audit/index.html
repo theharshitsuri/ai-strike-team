@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freight Audit — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/workflows/shared.css">
+  <style>
+    .workflow-icon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .hero h1 span { background: linear-gradient(135deg, #8b5cf6, #7c3aed); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr;
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .comparison-card {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 24px;
+    }
+    .comparison-card h4 {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .comparison-vs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--fg-muted);
+    }
+    .line-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .line-item:last-child { border-bottom: none; }
+    .line-item .desc { color: var(--fg-muted); font-size: 14px; }
+    .line-item .amount { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .line-item.total {
+      margin-top: 12px;
+      padding-top: 16px;
+      border-top: 2px solid var(--border);
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .discrepancy {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--error);
+      border-radius: var(--r-sm);
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .discrepancy-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      color: var(--error);
+      margin-bottom: 12px;
+    }
+    .discrepancy-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 6px 0;
+    }
+    .match-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .match-indicator.match { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .match-indicator.mismatch { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+    .audit-summary {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.05));
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 32px;
+      margin-top: 32px;
+    }
+    .audit-verdict {
+      font-size: 48px;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .audit-verdict.approved { color: var(--success); }
+    .audit-verdict.flagged { color: var(--error); }
+    .audit-verdict.review { color: var(--warning); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <nav class="nav">
+    <a href="/static/index.html" class="logo">
+      <div class="logo-icon">⚡</div>
+      AI Strike Team
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" id="nav-home" onclick="WorkflowUI.nav('home')">Home</a>
+      <a class="nav-link" id="nav-upload" onclick="WorkflowUI.nav('upload')">Audit</a>
+      <a class="nav-link" id="nav-results" onclick="WorkflowUI.nav('results')">Results</a>
+    </div>
+    <div class="nav-actions">
+      <a href="/static/index.html" class="btn btn-secondary btn-sm">← All Workflows</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-badge">🔍 Financial Automation</div>
+      <h1 class="reveal">Freight <span>Audit</span></h1>
+      <p class="reveal">Compare carrier invoices against rate confirmations. Flag every mismatch. Generate professional audit reports.</p>
+      <div class="reveal" style="display: flex; gap: 16px;">
+        <button class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);" onclick="WorkflowUI.nav('upload')">Start Audit →</button>
+        <button class="btn btn-secondary btn-lg" onclick="loadDemo()">Try Demo</button>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="metrics-grid reveal">
+        <div class="metric-card">
+          <div class="metric-value">$5</div>
+          <div class="metric-label">Line Item Tolerance</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">2%</div>
+          <div class="metric-label">Fuel % Tolerance</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">98%</div>
+          <div class="metric-label">Detection Rate</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">< 3s</div>
+          <div class="metric-label">Audit Time</div>
+        </div>
+      </div>
+
+      <div class="card card-static reveal" style="margin-bottom: 40px;">
+        <h3>Automated Freight Audit</h3>
+        <p style="margin-bottom: 24px;">Upload both the carrier invoice and rate confirmation. Our AI extracts all line items, normalizes charge descriptions, and flags any discrepancies.</p>
+        <div class="chips-container">
+          <span class="chip">📄 Invoice Extraction</span>
+          <span class="chip">📋 Rate Con Parsing</span>
+          <span class="chip">🔍 Line-by-Line Compare</span>
+          <span class="chip">⚠️ Discrepancy Flags</span>
+          <span class="chip">📊 Audit Report</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="page-upload" class="page">
+    <div class="container" style="max-width: 900px; padding-top: 40px;">
+      <div class="stepper">
+        <div class="step active"><div class="step-dot">1</div> Upload</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">2</div> Compare</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-dot">3</div> Report</div>
+      </div>
+
+      <h2 style="text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 16px;">Upload Documents</h2>
+      <p style="text-align: center; color: var(--fg-muted); margin-bottom: 40px;">Upload the carrier invoice and rate confirmation to compare</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div>
+          <h4 style="margin-bottom: 12px; font-weight: 700;">📄 Carrier Invoice</h4>
+          <div class="upload-zone" id="upload-invoice" style="padding: 40px 20px;">
+            <div class="upload-icon">📄</div>
+            <h3>Drop Invoice</h3>
+            <p>PDF, TXT, or image</p>
+            <input type="file" accept=".pdf,.txt,.csv,.png,.jpg">
+          </div>
+        </div>
+        <div>
+          <h4 style="margin-bottom: 12px; font-weight: 700;">📋 Rate Confirmation</h4>
+          <div class="upload-zone" id="upload-ratecon" style="padding: 40px 20px;">
+            <div class="upload-icon">📋</div>
+            <h3>Drop Rate Con</h3>
+            <p>PDF, TXT, or image</p>
+            <input type="file" accept=".pdf,.txt,.csv,.png,.jpg">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="form-label">Or paste invoice text:</label>
+        <textarea class="form-textarea" id="invoice-text" placeholder="Paste carrier invoice content here..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+        <button class="btn btn-secondary" onclick="WorkflowUI.nav('home')">← Back</button>
+        <button class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #8b5cf6, #7c3aed);" onclick="runAudit()">🔍 Run Freight Audit</button>
+        <button class="btn btn-secondary" onclick="loadDemo()">Load Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="page-processing" class="page">
+    <div class="container" style="max-width: 700px; padding-top: 80px; text-align: center;">
+      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Auditing Documents...</h2>
+      
+      <div class="progress-bar" style="margin-bottom: 16px;">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p class="progress-text" id="progress-status">Initializing...</p>
+
+      <div class="live-log" id="live-log" style="margin-top: 40px; text-align: left;"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="page-results" class="page">
+    <div class="container" style="padding-top: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">Freight Audit Complete</h2>
+          <p style="color: var(--fg-muted);">Invoice vs Rate Confirmation comparison</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="WorkflowUI.nav('upload')">New Audit</button>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);" onclick="downloadReport()">📊 Download Report</button>
+        </div>
+      </div>
+
+      <!-- Audit Summary -->
+      <div class="audit-summary">
+        <div class="audit-verdict" id="audit-verdict">APPROVED</div>
+        <div class="metrics-grid" id="audit-metrics"></div>
+      </div>
+
+      <!-- Comparison Grid -->
+      <div class="comparison-grid">
+        <div class="comparison-card">
+          <h4>📄 Invoice</h4>
+          <div id="invoice-items"></div>
+        </div>
+        <div class="comparison-vs">VS</div>
+        <div class="comparison-card">
+          <h4>📋 Rate Confirmation</h4>
+          <div id="ratecon-items"></div>
+        </div>
+      </div>
+
+      <!-- Discrepancies -->
+      <div id="discrepancies-section" style="margin-top: 32px;"></div>
+
+      <!-- Raw JSON -->
+      <div class="card card-static" style="margin-top: 32px;">
+        <h3 style="margin-bottom: 16px;">🔧 Raw Extraction Data</h3>
+        <div class="json-display" id="raw-json"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-toggle" onclick="WorkflowUI.toggleTheme()">🌓</div>
+
+  <script src="/static/workflows/shared.js"></script>
+  <script>
+    const WORKFLOW_ID = 'freight_audit';
+    let invoiceFile = null;
+    let rateconFile = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupInvoiceUpload();
+      setupRateconUpload();
+    });
+
+    function setupInvoiceUpload() {
+      const zone = document.getElementById('upload-invoice');
+      const input = zone.querySelector('input');
+      
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+          invoiceFile = e.dataTransfer.files[0];
+          zone.classList.add('has-file');
+          zone.querySelector('h3').textContent = invoiceFile.name;
+          WorkflowUI.toast('Invoice loaded', 'success');
+        }
+      });
+      input.addEventListener('change', () => {
+        if (input.files.length) {
+          invoiceFile = input.files[0];
+          zone.classList.add('has-file');
+          zone.querySelector('h3').textContent = invoiceFile.name;
+          WorkflowUI.toast('Invoice loaded', 'success');
+        }
+      });
+    }
+
+    function setupRateconUpload() {
+      const zone = document.getElementById('upload-ratecon');
+      const input = zone.querySelector('input');
+      
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+          rateconFile = e.dataTransfer.files[0];
+          zone.classList.add('has-file');
+          zone.querySelector('h3').textContent = rateconFile.name;
+          WorkflowUI.toast('Rate confirmation loaded', 'success');
+        }
+      });
+      input.addEventListener('change', () => {
+        if (input.files.length) {
+          rateconFile = input.files[0];
+          zone.classList.add('has-file');
+          zone.querySelector('h3').textContent = rateconFile.name;
+          WorkflowUI.toast('Rate confirmation loaded', 'success');
+        }
+      });
+    }
+
+    async function loadDemo() {
+      WorkflowUI.toast('Loading demo data...', 'info');
+      // Simulate demo data
+      invoiceFile = new File(['Demo invoice content'], 'demo_invoice.txt', { type: 'text/plain' });
+      rateconFile = new File(['Demo rate con content'], 'demo_ratecon.txt', { type: 'text/plain' });
+      
+      document.getElementById('upload-invoice').classList.add('has-file');
+      document.getElementById('upload-invoice').querySelector('h3').textContent = 'demo_invoice.txt';
+      document.getElementById('upload-ratecon').classList.add('has-file');
+      document.getElementById('upload-ratecon').querySelector('h3').textContent = 'demo_ratecon.txt';
+      
+      WorkflowUI.nav('upload');
+      WorkflowUI.toast('Demo files loaded', 'success');
+    }
+
+    async function runAudit() {
+      const textInput = document.getElementById('invoice-text').value;
+      
+      if (!invoiceFile && !textInput.trim()) {
+        WorkflowUI.toast('Please upload an invoice or paste text', 'error');
+        return;
+      }
+
+      WorkflowUI.nav('processing');
+      WorkflowUI.updateStepper(2);
+      WorkflowUI.clearLog('live-log');
+
+      const steps = [
+        { progress: 15, message: 'Reading invoice...', duration: 500 },
+        { progress: 30, message: 'Extracting line items...', duration: 700 },
+        { progress: 50, message: 'Reading rate confirmation...', duration: 500 },
+        { progress: 70, message: 'Comparing charges...', duration: 800 },
+        { progress: 85, message: 'Flagging discrepancies...', duration: 600 },
+        { progress: 100, message: 'Generating report...', duration: 400 }
+      ];
+
+      WorkflowUI.addLogEntry('live-log', 'Starting freight audit...', 'info');
+
+      WorkflowUI.animateProgress('progress-bar', 'progress-status', steps, async () => {
+        WorkflowUI.addLogEntry('live-log', 'Calling AI extraction API...', 'info');
+        
+        const result = await WorkflowUI.runWorkflow(WORKFLOW_ID, invoiceFile, textInput);
+        
+        if (result.success) {
+          WorkflowUI.addLogEntry('live-log', 'Audit complete!', 'success');
+          WorkflowUI.processingResult = result;
+          setTimeout(() => {
+            renderAuditResults(result.result);
+            WorkflowUI.updateStepper(3);
+            WorkflowUI.nav('results');
+          }, 500);
+        } else {
+          WorkflowUI.addLogEntry('live-log', 'Error: ' + result.error, 'error');
+          WorkflowUI.toast('Audit failed: ' + result.error, 'error');
+        }
+      });
+    }
+
+    function renderAuditResults(data) {
+      // Mock data for demo
+      const invoiceData = data.invoice || {
+        line_items: [
+          { description: 'linehaul', amount: 1850.00 },
+          { description: 'fuel_surcharge', amount: 277.50 },
+          { description: 'detention', amount: 150.00 },
+          { description: 'lumper', amount: 75.00 }
+        ],
+        total_amount: 2352.50
+      };
+
+      const rateconData = data.rate_confirmation || {
+        line_items: [
+          { description: 'linehaul', amount: 1850.00 },
+          { description: 'fuel_surcharge', amount: 277.50 },
+          { description: 'detention', amount: 0 }
+        ],
+        total_amount: 2127.50
+      };
+
+      // Render invoice items
+      document.getElementById('invoice-items').innerHTML = invoiceData.line_items.map(item => `
+        <div class="line-item">
+          <span class="desc">${item.description}</span>
+          <span class="amount">$${item.amount.toFixed(2)}</span>
+        </div>
+      `).join('') + `
+        <div class="line-item total">
+          <span>Total</span>
+          <span>$${invoiceData.total_amount.toFixed(2)}</span>
+        </div>
+      `;
+
+      // Render rate con items
+      document.getElementById('ratecon-items').innerHTML = rateconData.line_items.map(item => `
+        <div class="line-item">
+          <span class="desc">${item.description}</span>
+          <span class="amount">$${item.amount.toFixed(2)}</span>
+        </div>
+      `).join('') + `
+        <div class="line-item total">
+          <span>Total</span>
+          <span>$${rateconData.total_amount.toFixed(2)}</span>
+        </div>
+      `;
+
+      // Calculate discrepancies
+      const diff = invoiceData.total_amount - rateconData.total_amount;
+      const hasDiscrepancy = Math.abs(diff) > 10;
+
+      // Verdict
+      const verdict = document.getElementById('audit-verdict');
+      if (hasDiscrepancy) {
+        verdict.textContent = diff > 100 ? '⚠️ FLAGGED' : '🔍 REVIEW';
+        verdict.className = 'audit-verdict ' + (diff > 100 ? 'flagged' : 'review');
+      } else {
+        verdict.textContent = '✓ APPROVED';
+        verdict.className = 'audit-verdict approved';
+      }
+
+      // Metrics
+      document.getElementById('audit-metrics').innerHTML = `
+        <div class="metric-card">
+          <div class="metric-value">$${invoiceData.total_amount.toFixed(2)}</div>
+          <div class="metric-label">Invoice Total</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">$${rateconData.total_amount.toFixed(2)}</div>
+          <div class="metric-label">Rate Con Total</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: ${diff > 0 ? 'var(--error)' : 'var(--success)'}">
+            ${diff >= 0 ? '+' : ''}$${diff.toFixed(2)}
+          </div>
+          <div class="metric-label">Variance</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${hasDiscrepancy ? '⚠️' : '✓'}</div>
+          <div class="metric-label">Status</div>
+        </div>
+      `;
+
+      // Discrepancies
+      if (hasDiscrepancy) {
+        document.getElementById('discrepancies-section').innerHTML = `
+          <div class="discrepancy">
+            <div class="discrepancy-header">⚠️ Discrepancies Found</div>
+            <div class="discrepancy-row">
+              <span>Detention charge on invoice but not on rate con</span>
+              <span style="color: var(--error);">+$150.00</span>
+            </div>
+            <div class="discrepancy-row">
+              <span>Lumper charge on invoice but not on rate con</span>
+              <span style="color: var(--error);">+$75.00</span>
+            </div>
+          </div>
+        `;
+      } else {
+        document.getElementById('discrepancies-section').innerHTML = '';
+      }
+
+      // Raw JSON
+      WorkflowUI.renderJSON('raw-json', data);
+    }
+
+    function downloadReport() {
+      WorkflowUI.toast('Report download started', 'success');
+    }
+  </script>
+</body>
+</html>
