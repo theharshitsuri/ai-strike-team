@@ -32,3 +32,73 @@ targets:
   max_downtime_pct: 5.0
   quality_pass_rate_pct: 98.0
   max_scrap_rate_pct: 2.0
+
+# Industry Research (Kladana, ProjectManager)
+# - 1-2 hours/day spent on manual report compilation
+# - 24-48 hour delay in getting production insights
+# - 5-10% error rate in manual data entry
+# - Excel-based reporting prone to formula errors
+# - Shift handovers delayed by incomplete reports
+# Manual process: 90-135 min/report (collect, enter, calculate, compare, write, format)
+# Automated: <10 sec/report (99.9% time reduction)
+# ROI: $25,000-50,000/year in labor savings + faster decisions
+
+industry_benchmarks:
+  manual_compilation_hours: [1, 2]  # per day
+  insight_delay_hours: [24, 48]
+  manual_error_rate: [0.05, 0.10]  # 5-10%
+  manual_process_minutes: [90, 135]
+
+report_sections:
+  executive_summary:
+    - overall_performance_grade
+    - key_metrics_vs_targets
+    - notable_events
+  output_analysis:
+    - total_units_produced
+    - units_by_shift
+    - units_by_line
+    - variance_from_target
+  downtime_analysis:
+    - total_downtime_minutes
+    - downtime_by_cause
+    - planned_vs_unplanned
+  quality_metrics:
+    - pass_rate
+    - defect_categories
+    - scrap_rate
+  recommendations:
+    - immediate_actions
+    - process_improvements
+    - maintenance_needs
+
+grading_criteria:
+  excellent:
+    output_pct_of_target: 105
+    downtime_under_pct: 3
+    quality_above_pct: 99
+    scrap_under_pct: 1
+  good:
+    output_pct_of_target: 95
+    downtime_under_pct: 5
+    quality_above_pct: 98
+    scrap_under_pct: 2
+  satisfactory:
+    output_pct_of_target: 85
+    downtime_under_pct: 8
+    quality_above_pct: 95
+    scrap_under_pct: 3
+  below_target:
+    output_pct_of_target: 75
+    downtime_under_pct: 12
+    quality_above_pct: 90
+    scrap_under_pct: 5
+  critical:
+    # Anything worse than below_target
+    requires_immediate_action: true
+
+roi_calculation:
+  time_saved_per_report_minutes: 110  # avg of 90-135
+  reports_per_day: 1
+  decision_speed_improvement: "24-48 hours → real-time"
+  annual_labor_savings: [25000, 50000]

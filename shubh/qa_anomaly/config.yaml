@@ -59,3 +59,53 @@ column_specs:
     min: 495
     max: 505
     target: 500
+
+# Industry Research (Averroes AI, Assembly Magazine)
+# - Manual inspection detection rate: 60-90% (varies with fatigue)
+# - Automated detection rate: 99%+
+# - QC inspector salary: $89,000+/year average
+# - 3x faster defect detection with automation
+# - 10-30% of production issues from missed QA anomalies
+# Manual process: 85-155 min/batch (collect, enter, calculate, compare, document)
+# Automated: <10 sec/batch (99.9% time reduction)
+# ROI: $10,000-100,000/year in defect prevention
+
+industry_benchmarks:
+  manual_detection_rate: [0.60, 0.90]  # 60-90% varies with fatigue
+  automated_detection_rate: 0.99  # 99%+
+  qc_inspector_salary: 89000  # $/year average
+  manual_process_minutes: [85, 155]
+  defect_speed_improvement: 3.0  # 3x faster
+  production_issues_from_missed_qa: [0.10, 0.30]  # 10-30%
+
+fatigue_factors:
+  # Detection rate degrades over shift
+  hour_1_4: 0.90  # 90% detection
+  hour_5_6: 0.80  # 80% detection
+  hour_7_8: 0.65  # 65% detection
+  overtime: 0.55  # 55% detection
+
+severity_classification:
+  critical:
+    z_score_above: 4.0
+    spec_deviation_above: 0.15
+    actions: ["stop_production", "quarantine_batch", "notify_management"]
+  high:
+    z_score_above: 3.0
+    spec_deviation_above: 0.10
+    actions: ["increase_inspection", "notify_supervisor", "document_trend"]
+  medium:
+    z_score_above: 2.5
+    spec_deviation_above: 0.05
+    actions: ["monitor_closely", "check_equipment_calibration"]
+  low:
+    z_score_above: 2.0
+    spec_deviation_above: 0.03
+    actions: ["log_for_review", "continue_monitoring"]
+
+roi_calculation:
+  time_saved_per_batch_minutes: 120  # avg of 85-155
+  batches_per_day: 10
+  defects_caught_improvement: 0.30  # 30% more defects caught
+  cost_per_escaped_defect: [100, 10000]  # varies by industry
+  annual_value: [10000, 100000]

@@ -58,3 +58,64 @@ thresholds:
   min_gap_minutes: 15
   # Maximum scheduling days in advance
   max_advance_days: 90
+
+# Industry Research (Calendly, Acuity, Dialzara)
+# - 24/7 availability expected by customers
+# - 20-30% of appointments require rescheduling
+# - 5-10% no-show rate without reminders
+# - $50-150 cost per double-booking or missed appointment
+# - Automated systems eliminate double-bookings entirely
+# Manual process: 24-45 min/appointment (receive, parse, check, propose, confirm, create, send)
+# Automated: <10 sec/appointment (99.6% time reduction)
+# ROI: $500-1,500/month in double-booking prevention
+
+industry_benchmarks:
+  reschedule_rate: [0.20, 0.30]  # 20-30%
+  no_show_rate_without_reminders: [0.05, 0.10]  # 5-10%
+  no_show_rate_with_reminders: 0.02  # 2%
+  double_booking_cost: [50, 150]  # $
+  manual_process_minutes: [24, 45]
+
+request_types:
+  meeting:
+    default_duration_minutes: 60
+    buffer_minutes: 15
+    allow_recurring: true
+  service_call:
+    default_duration_minutes: 120
+    buffer_minutes: 30
+    allow_recurring: false
+  inspection:
+    default_duration_minutes: 90
+    buffer_minutes: 15
+    allow_recurring: true
+  delivery:
+    default_duration_minutes: 30
+    buffer_minutes: 15
+    allow_recurring: false
+  installation:
+    default_duration_minutes: 240
+    buffer_minutes: 60
+    allow_recurring: false
+
+availability_rules:
+  check_calendar_conflicts: true
+  check_resource_availability: true
+  respect_business_hours: true
+  allow_overtime_booking: false
+  max_appointments_per_day: 8
+
+confirmation_features:
+  send_immediate_confirmation: true
+  send_reminder_24h: true
+  send_reminder_1h: true
+  include_calendar_invite: true
+  include_location_map: true
+  include_cancellation_link: true
+
+roi_calculation:
+  time_saved_per_appointment_minutes: 35  # avg of 24-45
+  appointments_per_day: 10
+  double_booking_elimination: 1.0  # 100%
+  monthly_savings: [500, 1500]
+  annual_value: [6000, 18000]

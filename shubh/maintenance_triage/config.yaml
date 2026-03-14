@@ -35,3 +35,74 @@ thresholds:
   confidence_threshold: 0.70
   # Auto-escalate if safety_risk is true
   auto_escalate_safety: true
+
+# Industry Research (eMaint, CMMS Best Practices)
+# - 35% wrench time with poor triage vs 70%+ with good triage
+# - 45% emergency ratio typical vs <15% achievable
+# - 10 minutes average manual triage time per ticket
+# - 65% first-time fix rate poor vs 85%+ with proper routing
+# Manual process: 15-30 min/ticket (read, classify, route)
+# Automated: <10 sec/ticket (99.4% time reduction)
+# ROI: 2x more productive technicians
+
+industry_benchmarks:
+  manual_triage_minutes: [15, 30]
+  wrench_time_poor: 0.35  # 35% of time actually fixing
+  wrench_time_good: 0.70  # 70%+ with proper triage
+  emergency_ratio_poor: 0.45  # 45% reactive
+  emergency_ratio_good: 0.15  # <15% with good prioritization
+  first_time_fix_poor: 0.65
+  first_time_fix_good: 0.85
+
+priority_rules:
+  critical:
+    - safety_hazard
+    - production_line_down
+    - fire_risk
+    - chemical_leak
+  high:
+    - equipment_malfunction
+    - quality_impact
+    - multiple_assets_affected
+  medium:
+    - preventive_maintenance_due
+    - minor_equipment_issue
+    - cosmetic_damage
+  low:
+    - routine_inspection
+    - documentation_update
+    - non_urgent_request
+
+team_routing:
+  electrical_team:
+    - electrical
+    - power_outage
+    - motor_failure
+    - control_panel
+  mechanics:
+    - mechanical
+    - conveyor
+    - pump
+    - bearing
+    - hydraulic
+  it_support:
+    - software
+    - plc
+    - hmi
+    - network
+  facilities:
+    - hvac
+    - plumbing
+    - lighting
+    - building
+  safety_officer:
+    - safety
+    - lockout_tagout
+    - chemical
+    - fire
+
+roi_calculation:
+  time_saved_per_ticket_minutes: 22  # avg of 15-30
+  tickets_per_day: 20
+  technician_productivity_gain: 2.0  # 2x more wrench time
+  annual_value: [15000, 50000]

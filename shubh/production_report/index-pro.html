@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Report — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/shared-pro.css">
+  <style>
+    :root {
+      --workflow-color: #6366f1;
+      --workflow-color-light: #6366f11a;
+      --workflow-gradient: linear-gradient(135deg, #6366f1, #6366f1dd);
+    }
+    .workflow-icon { background: var(--workflow-gradient); }
+    .highlight-text { color: var(--workflow-color); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- SIDEBAR -->
+  <aside class="app-sidebar">
+    <div class="sidebar-header">
+      <a href="/dashboard" class="sidebar-logo">
+        <div class="sidebar-logo-icon">⚡</div>
+        <span class="sidebar-logo-text">AI Strike Team</span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Workflow</div>
+        <a class="sidebar-item active" onclick="WorkflowPro.goToStep(1)"><span class="sidebar-item-icon">🏠</span>Overview</a>
+        <a class="sidebar-item" onclick="WorkflowPro.goToStep(2)"><span class="sidebar-item-icon">📤</span>Upload</a>
+        <a class="sidebar-item" onclick="WorkflowPro.goToStep(3)"><span class="sidebar-item-icon">⚙️</span>Configure</a>
+        <a class="sidebar-item" onclick="WorkflowPro.goToStep(4)"><span class="sidebar-item-icon">🔄</span>Process</a>
+        <a class="sidebar-item" onclick="WorkflowPro.goToStep(5)"><span class="sidebar-item-icon">📊</span>Results</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Quick Actions</div>
+        <a class="sidebar-item" onclick="WorkflowPro.loadDemo()"><span class="sidebar-item-icon">🎮</span>Load Demo</a>
+        <a class="sidebar-item" href="/dashboard"><span class="sidebar-item-icon">←</span>Dashboard</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-ghost btn-sm" style="width: 100%;" onclick="WorkflowPro.toggleTheme()">🌓 Toggle Theme</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="app-main">
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <button class="btn btn-icon btn-ghost sm" id="mobile-menu-toggle">☰</button>
+        <div class="top-nav-breadcrumb">
+          <a href="/dashboard">Workflows</a><span>/</span><span>Production Report</span>
+        </div>
+      </div>
+      <div class="top-nav-right">
+        <span class="badge badge-primary">📈 Manufacturing</span>
+        <button class="btn btn-secondary btn-sm" onclick="WorkflowPro.loadDemo()">Try Demo</button>
+        <button class="btn btn-primary btn-sm" onclick="WorkflowPro.goToStep(2)">Start →</button>
+      </div>
+    </header>
+
+    <div class="wizard">
+      <!-- WIZARD STEPS -->
+      <div class="wizard-steps">
+        <div class="wizard-step active"><div class="wizard-step-number">1</div><div class="wizard-step-label">Overview</div></div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step"><div class="wizard-step-number">2</div><div class="wizard-step-label">Upload</div></div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step"><div class="wizard-step-number">3</div><div class="wizard-step-label">Configure</div></div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step"><div class="wizard-step-number">4</div><div class="wizard-step-label">Process</div></div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step"><div class="wizard-step-number">5</div><div class="wizard-step-label">Results</div></div>
+      </div>
+
+      <!-- STEP 1: OVERVIEW -->
+      <div id="step-1" class="wizard-step-content active">
+        <div class="wizard-header">
+          <h1 class="wizard-title">Production <span class="highlight-text">Report</span></h1>
+          <p class="wizard-subtitle">Aggregate daily production data and generate executive summaries with KPIs.</p>
+        </div>
+        <div class="metrics-row"><div class="metric-card">
+            <div class="metric-icon">⏱️</div>
+            <div class="metric-value">99.9%</div>
+            <div class="metric-label">Time Saved</div>
+            <div class="metric-change positive">↑ vs manual</div>
+          </div>
+<div class="metric-card highlight">
+            <div class="metric-icon">💰</div>
+            <div class="metric-value">$25K-50K</div>
+            <div class="metric-label">Annual Value</div>
+            <div class="metric-change positive">↑ per company</div>
+          </div>
+<div class="metric-card">
+            <div class="metric-icon">🎯</div>
+            <div class="metric-value">Real-time</div>
+            <div class="metric-label">Insights</div>
+            <div class="metric-change positive">↑ vs 24-48hr delay</div>
+          </div>
+<div class="metric-card">
+            <div class="metric-icon">📈</div>
+            <div class="metric-value">< 10 sec</div>
+            <div class="metric-label">Report Generation</div>
+            <div class="metric-change positive">↑ per report</div>
+          </div></div>
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header"><div class="card-title"><span class="card-title-icon" style="background: var(--workflow-color-light); color: var(--workflow-color);">📊</span>Industry Insights</div></div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;"><div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--error);">1-2 hrs</div>
+            <div style="font-size: 13px; color: var(--fg-muted);">Daily report compilation</div>
+          </div>
+<div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--warning);">24-48 hrs</div>
+            <div style="font-size: 13px; color: var(--fg-muted);">Insight delay</div>
+          </div>
+<div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--warning);">5-10%</div>
+            <div style="font-size: 13px; color: var(--fg-muted);">Manual entry error rate</div>
+          </div>
+<div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--success);">Real-time</div>
+            <div style="font-size: 13px; color: var(--fg-muted);">AI report generation</div>
+          </div></div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px;">
+          <button class="btn btn-secondary" onclick="WorkflowPro.loadDemo()">🎮 Try Demo</button>
+          <button class="btn btn-primary btn-lg" onclick="WorkflowPro.nextStep()">Get Started →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: UPLOAD -->
+      <div id="step-2" class="wizard-step-content">
+        <div class="wizard-header">
+          <h1 class="wizard-title">Upload Data</h1>
+          <p class="wizard-subtitle">Upload daily production data</p>
+        </div>
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" accept=".pdf,.txt,.csv,.doc,.docx,.xlsx,.png,.jpg,.jpeg">
+          <div class="upload-zone-icon">📁</div>
+          <div class="upload-zone-title">Drop your file here</div>
+          <div class="upload-zone-subtitle">or click to browse</div>
+          <div class="upload-zone-formats"><span class="upload-zone-format">CSV</span>
+<span class="upload-zone-format">Excel</span>
+<span class="upload-zone-format">JSON</span></div>
+        </div>
+        <div style="text-align: center; margin: 24px 0; color: var(--fg-muted);">— or —</div>
+        <div class="form-group">
+          <label class="form-label">Paste text directly</label>
+          <textarea class="form-textarea" id="text-input" rows="6" placeholder="Paste your data here..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 32px;">
+          <button class="btn btn-secondary" onclick="WorkflowPro.prevStep()">← Back</button>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-ghost" onclick="WorkflowPro.loadDemo()">Load Demo</button>
+            <button class="btn btn-primary" onclick="WorkflowPro.nextStep()">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: CONFIGURE -->
+      <div id="step-3" class="wizard-step-content">
+        <div class="wizard-header">
+          <h1 class="wizard-title">Configure Settings</h1>
+          <p class="wizard-subtitle">Customize workflow rules for your company</p>
+        </div>
+        <div class="config-panel">
+          <div class="config-header">
+            <div class="config-header-title">⚙️ Workflow Settings</div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-ghost btn-sm" onclick="WorkflowPro.resetConfig()">Reset</button>
+              <button class="btn btn-secondary btn-sm" onclick="WorkflowPro.exportConfig()">Export</button>
+            </div>
+          </div>
+          
+          <div class="config-section">
+            <div class="config-section-title">
+              <span class="icon">🎯</span> Production Targets
+            </div>
+            <div class="config-row">
+              
+                <div class="form-group">
+                  <label class="form-label">Daily Output Target</label>
+                  <input type="number" class="form-input" id="daily_output_units" 
+                         data-config="daily_output_units" value="1000"
+                         
+                         >
+                  
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Max Downtime (%)</label>
+                  <div class="range-group">
+                    <div class="range-header">
+                      <span>Max Downtime (%)</span>
+                      <span class="range-value" id="max_downtime_pct-value">5%</span>
+                    </div>
+                    <input type="range" class="range-input" id="max_downtime_pct" 
+                           data-config="max_downtime_pct" data-format="percent"
+                           min="1" max="15" 
+                           step="1" value="5">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Quality Pass Rate (%)</label>
+                  <div class="range-group">
+                    <div class="range-header">
+                      <span>Quality Pass Rate (%)</span>
+                      <span class="range-value" id="quality_pass_rate_pct-value">98%</span>
+                    </div>
+                    <input type="range" class="range-input" id="quality_pass_rate_pct" 
+                           data-config="quality_pass_rate_pct" data-format="percent"
+                           min="90" max="100" 
+                           step="1" value="98">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Max Scrap Rate (%)</label>
+                  <div class="range-group">
+                    <div class="range-header">
+                      <span>Max Scrap Rate (%)</span>
+                      <span class="range-value" id="max_scrap_rate_pct-value">2%</span>
+                    </div>
+                    <input type="range" class="range-input" id="max_scrap_rate_pct" 
+                           data-config="max_scrap_rate_pct" data-format="percent"
+                           min="0" max="10" 
+                           step="1" value="2">
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 32px;">
+          <button class="btn btn-secondary" onclick="WorkflowPro.prevStep()">← Back</button>
+          <button class="btn btn-primary btn-lg" onclick="WorkflowPro.runWorkflow()">⚡ Process</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: PROCESSING -->
+      <div id="step-4" class="wizard-step-content">
+        <div class="wizard-header">
+          <h1 class="wizard-title">Processing...</h1>
+          <p class="wizard-subtitle">AI is analyzing your data</p>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%;"></div></div>
+          <div class="progress-info">
+            <span class="progress-status" id="progress-status">Initializing...</span>
+            <span class="progress-percentage" id="progress-percentage">0%</span>
+          </div>
+        </div>
+        <div class="processing-steps"><div class="processing-step">
+            <div class="processing-step-icon">📊</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Loading Data</div>
+              <div class="processing-step-subtitle">Parsing production records</div>
+            </div>
+          </div>
+<div class="processing-step">
+            <div class="processing-step-icon">📈</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Calculating KPIs</div>
+              <div class="processing-step-subtitle">Computing output, downtime, quality</div>
+            </div>
+          </div>
+<div class="processing-step">
+            <div class="processing-step-icon">🎯</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Comparing Targets</div>
+              <div class="processing-step-subtitle">Evaluating performance vs goals</div>
+            </div>
+          </div>
+<div class="processing-step">
+            <div class="processing-step-icon">📝</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Generating Summary</div>
+              <div class="processing-step-subtitle">Writing executive narrative</div>
+            </div>
+          </div>
+<div class="processing-step">
+            <div class="processing-step-icon">💡</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Recommendations</div>
+              <div class="processing-step-subtitle">Suggesting improvements</div>
+            </div>
+          </div></div>
+      </div>
+
+      <!-- STEP 5: RESULTS -->
+      <div id="step-5" class="wizard-step-content">
+        <div class="results-header">
+          <div>
+            <h1 class="results-title">Results</h1>
+            <p style="color: var(--fg-muted);">AI-extracted data with analysis</p>
+          </div>
+          <div class="results-actions">
+            <button class="btn btn-secondary" onclick="WorkflowPro.goToStep(2)">New Analysis</button>
+            <button class="btn btn-secondary" onclick="WorkflowPro.downloadResults('json')">📥 Export JSON</button>
+            <button class="btn btn-primary" onclick="WorkflowPro.downloadResults('csv')">📄 Download CSV</button>
+          </div>
+        </div>
+        <div class="results-grid" id="extracted-data"></div>
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header"><div class="card-title">📊 ROI Summary</div></div>
+          <div class="card-body"><div class="metrics-row" id="roi-metrics"></div></div>
+        </div>
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header"><div class="card-title">🔧 Raw JSON</div></div>
+          <div class="card-body"><pre class="json-display" id="json-preview" style="max-height: 300px; overflow: auto;"></pre></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/dashboard/workflows/shared-pro.js"></script>
+  <script>
+    const WORKFLOW_ID = 'production_report';
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowPro.init(WORKFLOW_ID, {});
+    });
+  </script>
+</body>
+</html>

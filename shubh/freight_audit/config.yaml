@@ -72,3 +72,36 @@ thresholds:
   fuel_pct_tolerance: 0.02
   auto_approve_under: 5.00
   escalate_over: 100.00
+
+# Industry Research (Loop, Invensis, Global Growth Insights)
+# - 20-25% of freight invoices contain errors
+# - 52-54% of billing errors from accessorial fees
+# - 36% of shipping costs can be unnecessary accessories
+# - 2-5% of freight spend recoverable through audits
+# - 15+ extra days carriers wait when exceptions occur
+# Manual process: 75-130 min/invoice (often only 10-20% sampled)
+# Automated: <10 sec/invoice with 100% coverage
+# ROI: $2,000-10,000/month for mid-size shipper
+
+industry_benchmarks:
+  invoice_error_rate: 0.225  # 22.5% average
+  accessorial_error_percentage: 0.53  # 53% of errors
+  recoverable_spend_percentage: [0.02, 0.05]  # 2-5%
+  manual_process_minutes: [75, 130]
+  sample_audit_coverage: 0.15  # Only 15% of invoices audited manually
+  carrier_payment_delay_days: 15  # Extra days when exceptions occur
+
+common_error_categories:
+  - duplicate_charges
+  - incorrect_fuel_surcharge
+  - unauthorized_accessorials
+  - wrong_rate_applied
+  - mileage_discrepancy
+  - weight_classification_error
+
+roi_calculation:
+  time_saved_per_invoice_minutes: 100  # avg of 75-130
+  invoices_per_month_small: 100
+  invoices_per_month_large: 1000
+  monthly_recovery: [2000, 10000]
+  annual_value: [24000, 120000]

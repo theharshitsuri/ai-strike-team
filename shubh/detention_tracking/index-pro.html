@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detention Tracking — AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/shared-pro.css">
+  <style>
+    :root {
+      --workflow-color: #f97316;
+      --workflow-color-light: rgba(249, 115, 22, 0.1);
+      --workflow-gradient: linear-gradient(135deg, #f97316, #ea580c);
+    }
+    
+    .workflow-icon { background: var(--workflow-gradient); }
+    .highlight-text { color: var(--workflow-color); }
+    
+    .invoice-preview {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-top: 24px;
+    }
+    
+    .invoice-header {
+      padding: 24px;
+      background: var(--workflow-color-light);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    
+    .invoice-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--workflow-color);
+    }
+    
+    .invoice-meta {
+      text-align: right;
+      font-size: 13px;
+      color: var(--fg-muted);
+    }
+    
+    .invoice-body {
+      padding: 24px;
+    }
+    
+    .invoice-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .invoice-row:last-child { border-bottom: none; }
+    .invoice-label { font-weight: 600; color: var(--fg-muted); }
+    .invoice-value { font-weight: 700; }
+    
+    .invoice-total {
+      padding: 24px;
+      background: var(--bg-alt);
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: 900;
+    }
+    
+    .invoice-total .amount { color: var(--workflow-color); }
+    
+    .timeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 24px;
+      background: var(--bg-alt);
+      border-radius: var(--r);
+      overflow-x: auto;
+      margin-bottom: 24px;
+    }
+    
+    .timeline-point {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 100px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .timeline-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--workflow-color);
+      margin-bottom: 12px;
+      box-shadow: 0 0 0 4px var(--workflow-color-light);
+    }
+    
+    .timeline-time {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .timeline-label {
+      font-size: 12px;
+      color: var(--fg-muted);
+    }
+    
+    .timeline-line {
+      flex: 1;
+      height: 3px;
+      background: linear-gradient(90deg, var(--workflow-color), var(--primary));
+      min-width: 60px;
+      margin-bottom: 44px;
+    }
+    
+    .fee-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .fee-item {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .fee-item-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--workflow-color);
+      margin-bottom: 4px;
+    }
+    
+    .fee-item-label {
+      font-size: 12px;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .config-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      padding: 16px;
+      background: var(--bg-alt);
+      border-radius: var(--r-sm);
+      margin-top: 16px;
+    }
+    
+    .config-preview-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    
+    .config-preview-label { color: var(--fg-muted); }
+    .config-preview-value { font-weight: 600; }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- SIDEBAR -->
+  <aside class="app-sidebar">
+    <div class="sidebar-header">
+      <a href="/dashboard" class="sidebar-logo">
+        <div class="sidebar-logo-icon">⚡</div>
+        <span class="sidebar-logo-text">AI Strike Team</span>
+      </a>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Workflow</div>
+        <a class="sidebar-item active" onclick="WorkflowPro.goToStep(1)">
+          <span class="sidebar-item-icon">🏠</span>
+          Overview
+        </a>
+        <a class="sidebar-item" onclick="WorkflowPro.goToStep(2)">
+          <span class="sidebar-item-icon">📤</span>
+          Upload Data
+        </a>
+        <a class="sidebar-item" onclick="WorkflowPro.goToStep(3)">
+          <span class="sidebar-item-icon">⚙️</span>
+          Configure
+        </a>
+        <a class="sidebar-item" onclick="WorkflowPro.goToStep(4)">
+          <span class="sidebar-item-icon">🔄</span>
+          Processing
+        </a>
+        <a class="sidebar-item" onclick="WorkflowPro.goToStep(5)">
+          <span class="sidebar-item-icon">📊</span>
+          Results
+        </a>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Quick Actions</div>
+        <a class="sidebar-item" onclick="WorkflowPro.loadDemo()">
+          <span class="sidebar-item-icon">🎮</span>
+          Load Demo Data
+        </a>
+        <a class="sidebar-item" onclick="showModal('config-modal')">
+          <span class="sidebar-item-icon">📋</span>
+          Import/Export Config
+        </a>
+        <a class="sidebar-item" href="/dashboard">
+          <span class="sidebar-item-icon">←</span>
+          Back to Dashboard
+        </a>
+      </div>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <button class="btn btn-ghost btn-sm" style="width: 100%;" onclick="WorkflowPro.toggleTheme()">
+        🌓 Toggle Theme
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="app-main">
+    <!-- TOP NAV -->
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <button class="btn btn-icon btn-ghost sm" id="mobile-menu-toggle">☰</button>
+        <div class="top-nav-breadcrumb">
+          <a href="/dashboard">Workflows</a>
+          <span>/</span>
+          <span>Detention Tracking</span>
+        </div>
+      </div>
+      <div class="top-nav-right">
+        <span class="badge badge-primary">⏱️ Logistics</span>
+        <button class="btn btn-secondary btn-sm" onclick="WorkflowPro.loadDemo()">Try Demo</button>
+        <button class="btn btn-primary btn-sm" onclick="WorkflowPro.goToStep(2)">Start →</button>
+      </div>
+    </header>
+
+    <!-- WIZARD -->
+    <div class="wizard">
+      <!-- WIZARD STEPS INDICATOR -->
+      <div class="wizard-steps">
+        <div class="wizard-step active">
+          <div class="wizard-step-number">1</div>
+          <div class="wizard-step-label">Overview</div>
+        </div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step">
+          <div class="wizard-step-number">2</div>
+          <div class="wizard-step-label">Upload</div>
+        </div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step">
+          <div class="wizard-step-number">3</div>
+          <div class="wizard-step-label">Configure</div>
+        </div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step">
+          <div class="wizard-step-number">4</div>
+          <div class="wizard-step-label">Process</div>
+        </div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step">
+          <div class="wizard-step-number">5</div>
+          <div class="wizard-step-label">Results</div>
+        </div>
+      </div>
+
+      <!-- STEP 1: OVERVIEW -->
+      <div id="step-1" class="wizard-step-content active">
+        <div class="wizard-header">
+          <h1 class="wizard-title">Detention <span class="highlight-text">Tracking</span></h1>
+          <p class="wizard-subtitle">Automatically track arrival/departure timestamps, calculate detention fees, and generate professional invoices.</p>
+        </div>
+
+        <!-- ROI METRICS -->
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-icon">⏱️</div>
+            <div class="metric-value">99.7%</div>
+            <div class="metric-label">Time Saved</div>
+            <div class="metric-change positive">↑ vs manual</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-icon">💰</div>
+            <div class="metric-value">$26K-104K</div>
+            <div class="metric-label">Annual Value</div>
+            <div class="metric-change positive">↑ per company</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">🎯</div>
+            <div class="metric-value">98%+</div>
+            <div class="metric-label">Accuracy</div>
+            <div class="metric-change positive">↑ vs 82% manual</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">📈</div>
+            <div class="metric-value">25%</div>
+            <div class="metric-label">More Claims Filed</div>
+            <div class="metric-change positive">↑ recovered revenue</div>
+          </div>
+        </div>
+
+        <!-- HOW IT WORKS -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-title-icon" style="background: var(--workflow-color-light); color: var(--workflow-color);">📋</span>
+              How It Works
+            </div>
+          </div>
+          <div class="card-body">
+            <p style="margin-bottom: 20px; color: var(--fg-muted);">
+              Upload check-call logs, driver messages, or facility records. Our AI extracts timestamps, 
+              calculates detention fees based on your rate structure, and generates ready-to-send invoices.
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+              <span class="badge badge-neutral">📥 Upload Document</span>
+              <span class="badge badge-neutral">🧠 AI Extraction</span>
+              <span class="badge badge-neutral">⏱️ Time Calculation</span>
+              <span class="badge badge-neutral">💰 Fee Generation</span>
+              <span class="badge badge-neutral">📄 Invoice Output</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- INDUSTRY INSIGHTS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-title-icon" style="background: var(--primary-light); color: var(--primary);">📊</span>
+              Industry Insights
+            </div>
+            <span class="badge badge-primary">DOT Research</span>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+              <div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--error);">$1.2B</div>
+                <div style="font-size: 13px; color: var(--fg-muted);">Lost by drivers annually to detention</div>
+              </div>
+              <div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--warning);">20-30%</div>
+                <div style="font-size: 13px; color: var(--fg-muted);">Of valid claims never filed</div>
+              </div>
+              <div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--warning);">17.5%</div>
+                <div style="font-size: 13px; color: var(--fg-muted);">Manual claim rejection rate</div>
+              </div>
+              <div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--success);">< 2%</div>
+                <div style="font-size: 13px; color: var(--fg-muted);">AI-assisted rejection rate</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px;">
+          <button class="btn btn-secondary" onclick="WorkflowPro.loadDemo()">🎮 Try Demo</button>
+          <button class="btn btn-primary btn-lg" onclick="WorkflowPro.nextStep()">Get Started →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: UPLOAD -->
+      <div id="step-2" class="wizard-step-content">
+        <div class="wizard-header">
+          <h1 class="wizard-title">Upload Detention Data</h1>
+          <p class="wizard-subtitle">Upload check-call logs, driver messages, or facility records</p>
+        </div>
+
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" accept=".pdf,.txt,.csv,.doc,.docx,.png,.jpg,.jpeg">
+          <div class="upload-zone-icon">📁</div>
+          <div class="upload-zone-title">Drop your file here</div>
+          <div class="upload-zone-subtitle">or click to browse</div>
+          <div class="upload-zone-formats">
+            <span class="upload-zone-format">PDF</span>
+            <span class="upload-zone-format">TXT</span>
+            <span class="upload-zone-format">CSV</span>
+            <span class="upload-zone-format">DOC</span>
+            <span class="upload-zone-format">Image</span>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 24px 0; color: var(--fg-muted);">— or —</div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Paste text directly
+            <span class="form-label-hint">Check-call data, timestamps, facility records</span>
+          </label>
+          <textarea class="form-textarea" id="text-input" rows="6" placeholder="Paste detention log, check-call data, or facility timestamps here...
+
+Example:
+Load: TRK-88412
+Facility: ABC Distribution Center
+Arrived: 2025-03-14 08:00 AM
+Departed: 2025-03-14 01:30 PM
+Reason: Waiting for dock assignment"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 32px;">
+          <button class="btn btn-secondary" onclick="WorkflowPro.prevStep()">← Back</button>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-ghost" onclick="WorkflowPro.loadDemo()">Load Demo</button>
+            <button class="btn btn-primary" onclick="WorkflowPro.nextStep()">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: CONFIGURE -->
+      <div id="step-3" class="wizard-step-content">
+        <div class="wizard-header">
+          <h1 class="wizard-title">Configure Settings</h1>
+          <p class="wizard-subtitle">Customize detention calculation rules for your company</p>
+        </div>
+
+        <div class="config-panel">
+          <div class="config-header">
+            <div class="config-header-title">
+              ⚙️ Detention Fee Settings
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-ghost btn-sm" onclick="WorkflowPro.resetConfig()">Reset to Defaults</button>
+              <button class="btn btn-secondary btn-sm" onclick="showModal('config-modal')">Import/Export</button>
+            </div>
+          </div>
+
+          <!-- Rate Settings -->
+          <div class="config-section">
+            <div class="config-section-title">
+              <span class="icon">💰</span> Rate Configuration
+            </div>
+            <div class="config-row">
+              <div class="form-group">
+                <label class="form-label">
+                  Hourly Rate
+                  <span class="form-label-hint">$/hour</span>
+                </label>
+                <div class="range-group">
+                  <div class="range-header">
+                    <span>Detention rate per hour</span>
+                    <span class="range-value" id="rate_per_hour-value">$75.00</span>
+                  </div>
+                  <input type="range" class="range-input" id="rate_per_hour" 
+                         data-config="rate_per_hour" data-format="currency"
+                         min="25" max="250" step="5" value="75">
+                </div>
+                <div class="form-hint">Industry average: $50-100/hour</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  Free Time (Minutes)
+                  <span class="form-label-hint">Before fees apply</span>
+                </label>
+                <div class="range-group">
+                  <div class="range-header">
+                    <span>Free time allowance</span>
+                    <span class="range-value" id="free_time_minutes-value">120 min</span>
+                  </div>
+                  <input type="range" class="range-input" id="free_time_minutes" 
+                         data-config="free_time_minutes" data-format="minutes"
+                         min="30" max="240" step="15" value="120">
+                </div>
+                <div class="form-hint">Standard: 2 hours (120 minutes)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Threshold Settings -->
+          <div class="config-section">
+            <div class="config-section-title">
+              <span class="icon">⚠️</span> Thresholds & Alerts
+            </div>
+            <div class="config-row">
+              <div class="form-group">
+                <label class="form-label">Auto-Approve Under (Hours)</label>
+                <input type="number" class="form-input" id="auto_approve_hours" 
+                       data-config="auto_approve_hours" value="4" min="1" max="12">
+                <div class="form-hint">Claims under this duration auto-approve</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Escalate Over (Hours)</label>
+                <input type="number" class="form-input" id="escalate_hours" 
+                       data-config="escalate_hours" value="8" min="4" max="24">
+                <div class="form-hint">Claims over this duration escalate to manager</div>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="form-group">
+                <label class="form-label">Maximum Detention (Hours)</label>
+                <input type="number" class="form-input" id="max_detention_hours" 
+                       data-config="max_detention_hours" value="24" min="8" max="48">
+                <div class="form-hint">Cap for single detention event</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confidence Threshold</label>
+                <div class="range-group">
+                  <div class="range-header">
+                    <span>Minimum AI confidence</span>
+                    <span class="range-value" id="confidence_threshold-value">80%</span>
+                  </div>
+                  <input type="range" class="range-input" id="confidence_threshold" 
+                         data-config="confidence_threshold" data-format="percent"
+                         min="50" max="99" step="5" value="80">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notification Settings -->
+          <div class="config-section">
+            <div class="config-section-title">
+              <span class="icon">🔔</span> Notifications & Integrations
+            </div>
+            <div class="config-row">
+              <div class="form-group">
+                <label class="toggle">
+                  <input type="checkbox" data-config="slack_notifications" checked>
+                  <span class="toggle-switch"></span>
+                  <span class="toggle-label">Send Slack Alerts</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="toggle">
+                  <input type="checkbox" data-config="email_notifications">
+                  <span class="toggle-switch"></span>
+                  <span class="toggle-label">Send Email Notifications</span>
+                </label>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="form-group">
+                <label class="toggle">
+                  <input type="checkbox" data-config="auto_generate_invoice" checked>
+                  <span class="toggle-switch"></span>
+                  <span class="toggle-label">Auto-Generate Invoice</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="toggle">
+                  <input type="checkbox" data-config="require_approval">
+                  <span class="toggle-switch"></span>
+                  <span class="toggle-label">Require Manual Approval</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Invoice Settings -->
+          <div class="config-section">
+            <div class="config-section-title">
+              <span class="icon">📄</span> Invoice Customization
+            </div>
+            <div class="config-row full">
+              <div class="form-group">
+                <label class="form-label">Company Name (for Invoice)</label>
+                <input type="text" class="form-input" id="company_name" 
+                       data-config="company_name" placeholder="Your Company Name">
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="form-group">
+                <label class="form-label">Invoice Prefix</label>
+                <input type="text" class="form-input" id="invoice_prefix" 
+                       data-config="invoice_prefix" value="INV-DET" placeholder="INV-DET">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Payment Terms</label>
+                <select class="form-select" id="payment_terms" data-config="payment_terms">
+                  <option value="Net 15">Net 15</option>
+                  <option value="Net 30" selected>Net 30</option>
+                  <option value="Net 45">Net 45</option>
+                  <option value="Due on Receipt">Due on Receipt</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Config Preview -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div class="card-title">📋 Configuration Preview</div>
+          </div>
+          <div class="card-body">
+            <div class="config-preview" id="config-preview">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 32px;">
+          <button class="btn btn-secondary" onclick="WorkflowPro.prevStep()">← Back</button>
+          <button class="btn btn-primary btn-lg" onclick="startProcessing()">⚡ Process Document</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: PROCESSING -->
+      <div id="step-4" class="wizard-step-content">
+        <div class="wizard-header">
+          <h1 class="wizard-title">Processing...</h1>
+          <p class="wizard-subtitle">AI is extracting detention data and calculating fees</p>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+          </div>
+          <div class="progress-info">
+            <span class="progress-status" id="progress-status">Initializing...</span>
+            <span class="progress-percentage" id="progress-percentage">0%</span>
+          </div>
+        </div>
+
+        <div class="processing-steps">
+          <div class="processing-step">
+            <div class="processing-step-icon">📄</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Reading Document</div>
+              <div class="processing-step-subtitle">Parsing uploaded file content</div>
+            </div>
+          </div>
+          <div class="processing-step">
+            <div class="processing-step-icon">🔍</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Extracting Timestamps</div>
+              <div class="processing-step-subtitle">Identifying arrival and departure times</div>
+            </div>
+          </div>
+          <div class="processing-step">
+            <div class="processing-step-icon">⏱️</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Calculating Duration</div>
+              <div class="processing-step-subtitle">Computing total wait and billable time</div>
+            </div>
+          </div>
+          <div class="processing-step">
+            <div class="processing-step-icon">💰</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Applying Fee Rules</div>
+              <div class="processing-step-subtitle">Using your configured rates and thresholds</div>
+            </div>
+          </div>
+          <div class="processing-step">
+            <div class="processing-step-icon">📄</div>
+            <div class="processing-step-content">
+              <div class="processing-step-title">Generating Invoice</div>
+              <div class="processing-step-subtitle">Creating professional detention invoice</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: RESULTS -->
+      <div id="step-5" class="wizard-step-content">
+        <div class="results-header">
+          <div>
+            <h1 class="results-title">Detention Invoice Generated</h1>
+            <p style="color: var(--fg-muted);">AI-extracted timestamps with calculated fees</p>
+          </div>
+          <div class="results-actions">
+            <button class="btn btn-secondary" onclick="WorkflowPro.goToStep(2)">New Analysis</button>
+            <button class="btn btn-secondary" onclick="WorkflowPro.downloadResults('json')">📥 Export JSON</button>
+            <button class="btn btn-primary" onclick="downloadInvoice()">📄 Download Invoice</button>
+          </div>
+        </div>
+
+        <!-- Fee Breakdown -->
+        <div class="fee-breakdown" id="fee-breakdown">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Timeline -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div class="card-title">⏱️ Detention Timeline</div>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="timeline" id="timeline">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Extracted Data & Invoice -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 Extracted Data</div>
+              <span class="badge badge-success" id="confidence-badge">98% Confidence</span>
+            </div>
+            <div class="card-body">
+              <div class="results-grid" id="extracted-data">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="invoice-preview" id="invoice-preview">
+            <div class="invoice-header">
+              <div>
+                <div class="invoice-title">DETENTION INVOICE</div>
+                <div style="margin-top: 4px; color: var(--fg-muted);" id="invoice-company">AI Strike Team</div>
+              </div>
+              <div class="invoice-meta">
+                <div id="invoice-number">INV-DET-2025-0001</div>
+                <div id="invoice-date"></div>
+              </div>
+            </div>
+            <div class="invoice-body" id="invoice-body">
+              <!-- Populated by JS -->
+            </div>
+            <div class="invoice-total">
+              <span>Total Detention Fee</span>
+              <span class="amount" id="invoice-total">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROI Summary -->
+        <div class="card" style="margin-top: 24px; background: linear-gradient(135deg, var(--workflow-color-light), var(--primary-light));">
+          <div class="card-header">
+            <div class="card-title">📊 Processing Summary & ROI</div>
+          </div>
+          <div class="card-body">
+            <div class="metrics-row" id="roi-metrics">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- JSON Preview -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div class="card-title">🔧 Raw JSON Output</div>
+            <button class="btn btn-ghost btn-sm" onclick="copyJSON()">📋 Copy</button>
+          </div>
+          <div class="card-body">
+            <pre class="json-display" id="json-preview" style="max-height: 300px; overflow: auto;"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- CONFIG IMPORT/EXPORT MODAL -->
+  <div class="modal-overlay" id="config-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Import/Export Configuration</h2>
+        <button class="modal-close" onclick="hideModal('config-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs" data-content="config-tabs">
+          <button class="tab active">Export</button>
+          <button class="tab">Import</button>
+        </div>
+        <div id="config-tabs">
+          <div class="tab-content active">
+            <p style="margin-bottom: 16px; color: var(--fg-muted);">
+              Download your current configuration as a JSON file. You can share this with other team members or use it to set up other workflows.
+            </p>
+            <button class="btn btn-primary" onclick="WorkflowPro.exportConfig(); hideModal('config-modal');">
+              📥 Download Configuration
+            </button>
+          </div>
+          <div class="tab-content">
+            <p style="margin-bottom: 16px; color: var(--fg-muted);">
+              Upload a configuration file to apply those settings to this workflow.
+            </p>
+            <div class="upload-zone" style="padding: 32px;" id="config-upload-zone">
+              <input type="file" accept=".json" onchange="importConfigFile(this.files[0])">
+              <div class="upload-zone-icon" style="font-size: 32px;">📄</div>
+              <div class="upload-zone-title" style="font-size: 16px;">Drop config file here</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/dashboard/workflows/shared-pro.js"></script>
+  <script>
+    // ══════════════════════════════════════════════════════════════════════════
+    // DETENTION TRACKING WORKFLOW CONFIGURATION
+    // ══════════════════════════════════════════════════════════════════════════
+    
+    const WORKFLOW_ID = 'detention_tracking';
+    
+    const DEFAULT_CONFIG = {
+      rate_per_hour: 75,
+      free_time_minutes: 120,
+      auto_approve_hours: 4,
+      escalate_hours: 8,
+      max_detention_hours: 24,
+      confidence_threshold: 80,
+      slack_notifications: true,
+      email_notifications: false,
+      auto_generate_invoice: true,
+      require_approval: false,
+      company_name: '',
+      invoice_prefix: 'INV-DET',
+      payment_terms: 'Net 30'
+    };
+    
+    const FIELD_LABELS = {
+      load_id: 'Load ID',
+      facility_name: 'Facility',
+      facility_type: 'Facility Type',
+      carrier_name: 'Carrier',
+      driver_name: 'Driver',
+      arrival_time: 'Arrival Time',
+      departure_time: 'Departure Time',
+      detention_reason: 'Reason',
+      detention_reason_detail: 'Details'
+    };
+    
+    // Initialize workflow
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowPro.init(WORKFLOW_ID, DEFAULT_CONFIG);
+      initTabs();
+      updateConfigPreview();
+    });
+    
+    // ══════════════════════════════════════════════════════════════════════════
+    // CUSTOM FUNCTIONS
+    // ══════════════════════════════════════════════════════════════════════════
+    
+    function initTabs() {
+      document.querySelectorAll('.tabs').forEach(tabContainer => {
+        const tabs = tabContainer.querySelectorAll('.tab');
+        const contentId = tabContainer.dataset.content;
+        const contents = document.querySelectorAll(`#${contentId} .tab-content`);
+        
+        tabs.forEach((tab, idx) => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            if (contents[idx]) contents[idx].classList.add('active');
+          });
+        });
+      });
+    }
+    
+    function updateConfigPreview() {
+      const preview = document.getElementById('config-preview');
+      if (!preview) return;
+      
+      const config = WorkflowPro.state.config;
+      preview.innerHTML = `
+        <div class="config-preview-item">
+          <span class="config-preview-label">Hourly Rate</span>
+          <span class="config-preview-value">$${config.rate_per_hour}/hr</span>
+        </div>
+        <div class="config-preview-item">
+          <span class="config-preview-label">Free Time</span>
+          <span class="config-preview-value">${config.free_time_minutes} min</span>
+        </div>
+        <div class="config-preview-item">
+          <span class="config-preview-label">Auto-Approve</span>
+          <span class="config-preview-value">< ${config.auto_approve_hours} hrs</span>
+        </div>
+        <div class="config-preview-item">
+          <span class="config-preview-label">Escalate</span>
+          <span class="config-preview-value">> ${config.escalate_hours} hrs</span>
+        </div>
+        <div class="config-preview-item">
+          <span class="config-preview-label">Slack Alerts</span>
+          <span class="config-preview-value">${config.slack_notifications ? '✓ On' : '✗ Off'}</span>
+        </div>
+        <div class="config-preview-item">
+          <span class="config-preview-label">Auto Invoice</span>
+          <span class="config-preview-value">${config.auto_generate_invoice ? '✓ On' : '✗ Off'}</span>
+        </div>
+      `;
+    }
+    
+    // Override config change handler
+    window.onConfigChange = function(key, value) {
+      updateConfigPreview();
+    };
+    
+    function startProcessing() {
+      WorkflowPro.runWorkflow();
+    }
+    
+    // Custom results renderer
+    window.renderCustomResults = function(data) {
+      const result = data.result || {};
+      const config = WorkflowPro.state.config;
+      
+      // Calculate fees
+      const arrival = new Date(result.arrival_time);
+      const departure = new Date(result.departure_time);
+      const totalMinutes = Math.round((departure - arrival) / 60000);
+      const freeTime = result.free_time_minutes || config.free_time_minutes;
+      const billableMinutes = Math.max(0, totalMinutes - freeTime);
+      const ratePerHour = config.rate_per_hour;
+      const fee = (billableMinutes / 60) * ratePerHour;
+      
+      // Render fee breakdown
+      renderFeeBreakdown(totalMinutes, freeTime, billableMinutes, ratePerHour, fee);
+      
+      // Render timeline
+      renderTimeline(result);
+      
+      // Render extracted data
+      renderExtractedData(result);
+      
+      // Render invoice
+      renderInvoice(result, totalMinutes, freeTime, billableMinutes, ratePerHour, fee);
+      
+      // Update confidence badge
+      const confidence = result.confidence || 0.95;
+      const badge = document.getElementById('confidence-badge');
+      if (badge) {
+        badge.textContent = `${Math.round(confidence * 100)}% Confidence`;
+        badge.className = `badge ${confidence >= 0.9 ? 'badge-success' : confidence >= 0.7 ? 'badge-warning' : 'badge-error'}`;
+      }
+      
+      // Render JSON
+      const jsonPreview = document.getElementById('json-preview');
+      if (jsonPreview) {
+        jsonPreview.innerHTML = WorkflowPro.state.result ? 
+          syntaxHighlightJSON(JSON.stringify(WorkflowPro.state.result, null, 2)) : '';
+      }
+    };
+    
+    function renderFeeBreakdown(totalMinutes, freeTime, billableMinutes, rate, fee) {
+      const container = document.getElementById('fee-breakdown');
+      if (!container) return;
+      
+      container.innerHTML = `
+        <div class="fee-item">
+          <div class="fee-item-value">${(totalMinutes / 60).toFixed(1)} hrs</div>
+          <div class="fee-item-label">Total Wait Time</div>
+        </div>
+        <div class="fee-item">
+          <div class="fee-item-value">${freeTime} min</div>
+          <div class="fee-item-label">Free Time</div>
+        </div>
+        <div class="fee-item">
+          <div class="fee-item-value">${(billableMinutes / 60).toFixed(1)} hrs</div>
+          <div class="fee-item-label">Billable Time</div>
+        </div>
+        <div class="fee-item">
+          <div class="fee-item-value">$${rate}/hr</div>
+          <div class="fee-item-label">Rate Applied</div>
+        </div>
+        <div class="fee-item" style="background: var(--workflow-color-light); border-color: var(--workflow-color);">
+          <div class="fee-item-value">$${fee.toFixed(2)}</div>
+          <div class="fee-item-label">Total Fee</div>
+        </div>
+      `;
+    }
+    
+    function renderTimeline(data) {
+      const timeline = document.getElementById('timeline');
+      if (!timeline) return;
+      
+      const times = [
+        { time: data.arrival_time, label: 'Arrival' },
+        { time: data.check_in_time, label: 'Check-in' },
+        { time: data.loading_start_time, label: 'Loading Start' },
+        { time: data.departure_time, label: 'Departure' }
+      ].filter(t => t.time && t.time !== 'N/A');
+      
+      timeline.innerHTML = times.map((t, i) => `
+        <div class="timeline-point">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">${new Date(t.time).toLocaleTimeString()}</div>
+          <div class="timeline-label">${t.label}</div>
+        </div>
+        ${i < times.length - 1 ? '<div class="timeline-line"></div>' : ''}
+      `).join('');
+    }
+    
+    function renderExtractedData(data) {
+      const container = document.getElementById('extracted-data');
+      if (!container) return;
+      
+      container.innerHTML = '';
+      
+      Object.entries(FIELD_LABELS).forEach(([key, label]) => {
+        const value = data[key];
+        if (value === undefined || value === null || value === 'N/A') return;
+        
+        const row = document.createElement('div');
+        row.className = 'result-card';
+        row.style.marginBottom = '12px';
+        row.innerHTML = `
+          <div class="result-card-label">${label}</div>
+          <div class="result-card-value">${formatDisplayValue(key, value)}</div>
+        `;
+        container.appendChild(row);
+      });
+    }
+    
+    function formatDisplayValue(key, value) {
+      if (key.includes('time') && value) {
+        try {
+          return new Date(value).toLocaleString();
+        } catch (e) {
+          return value;
+        }
+      }
+      return value;
+    }
+    
+    function renderInvoice(data, totalMinutes, freeTime, billableMinutes, rate, fee) {
+      const config = WorkflowPro.state.config;
+      
+      document.getElementById('invoice-company').textContent = config.company_name || 'AI Strike Team';
+      document.getElementById('invoice-number').textContent = 
+        `${config.invoice_prefix}-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+      document.getElementById('invoice-date').textContent = new Date().toLocaleDateString();
+      
+      document.getElementById('invoice-body').innerHTML = `
+        <div class="invoice-row">
+          <span class="invoice-label">Load ID</span>
+          <span class="invoice-value">${data.load_id || 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Facility</span>
+          <span class="invoice-value">${data.facility_name || 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Carrier</span>
+          <span class="invoice-value">${data.carrier_name || 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Arrival</span>
+          <span class="invoice-value">${data.arrival_time ? new Date(data.arrival_time).toLocaleString() : 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Departure</span>
+          <span class="invoice-value">${data.departure_time ? new Date(data.departure_time).toLocaleString() : 'N/A'}</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Total Wait</span>
+          <span class="invoice-value">${(totalMinutes / 60).toFixed(1)} hours</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Free Time</span>
+          <span class="invoice-value">${freeTime} minutes</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Billable Time</span>
+          <span class="invoice-value">${(billableMinutes / 60).toFixed(1)} hours</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Rate</span>
+          <span class="invoice-value">$${rate.toFixed(2)}/hour</span>
+        </div>
+        <div class="invoice-row">
+          <span class="invoice-label">Payment Terms</span>
+          <span class="invoice-value">${config.payment_terms}</span>
+        </div>
+      `;
+      
+      document.getElementById('invoice-total').textContent = `$${fee.toFixed(2)}`;
+    }
+    
+    function downloadInvoice() {
+      WorkflowPro.showToast('Invoice download started', 'success');
+      // In production, this would generate a PDF
+    }
+    
+    function copyJSON() {
+      const json = JSON.stringify(WorkflowPro.state.result, null, 2);
+      navigator.clipboard.writeText(json).then(() => {
+        WorkflowPro.showToast('JSON copied to clipboard', 'success');
+      });
+    }
+    
+    function importConfigFile(file) {
+      if (file) {
+        WorkflowPro.importConfig(file);
+        hideModal('config-modal');
+      }
+    }
+    
+    function syntaxHighlightJSON(json) {
+      json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return json.replace(
+        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+        function(match) {
+          let cls = 'json-number';
+          if (/^"/.test(match)) {
+            cls = /:$/.test(match) ? 'json-key' : 'json-string';
+          } else if (/true|false/.test(match)) {
+            cls = 'json-boolean';
+          } else if (/null/.test(match)) {
+            cls = 'json-null';
+          }
+          return '<span class="' + cls + '">' + match + '</span>';
+        }
+      );
+    }
+    
+    // Modal functions
+    function showModal(id) { WorkflowPro.showModal(id); }
+    function hideModal(id) { WorkflowPro.hideModal(id); }
+  </script>
+</body>
+</html>

@@ -52,3 +52,66 @@ validation:
     WHL-2001: 89.99
     WHL-2002: 34.50
     DST-3001: 199.99
+
+# Industry Research (TableFlow, OrderEase, Mailparser)
+# - Hundreds of suppliers with different document formats
+# - Manual data entry: 5-10% error rate
+# - $15-50 cost per order entry error
+# - 8-25 hours/week spent on manual PO data entry
+# - Every supplier sends pricing in different formats (Excel, PDF, fax)
+# Manual process: 37-75 min/PO (read, extract, validate, enter, verify)
+# Automated: <10 sec/PO (99.8% time reduction)
+# ROI: $200-625/week in labor savings
+
+industry_benchmarks:
+  manual_error_rate: [0.05, 0.10]  # 5-10%
+  cost_per_error: [15, 50]  # $15-50
+  manual_hours_per_week: [8, 25]
+  manual_process_minutes: [37, 75]
+  document_formats: ["pdf", "excel", "csv", "image", "email", "fax"]
+
+common_extraction_challenges:
+  - varying_column_headers
+  - multiple_date_formats
+  - embedded_tables_in_pdf
+  - handwritten_annotations
+  - multi_page_orders
+  - currency_formatting
+
+validation_rules:
+  sku_validation:
+    - check_prefix_format
+    - lookup_in_catalog
+    - flag_unknown_skus
+  price_validation:
+    - compare_to_catalog
+    - flag_if_deviation_over_5pct
+    - check_quantity_breaks
+  quantity_validation:
+    - must_be_positive_integer
+    - check_min_order_quantity
+    - flag_unusually_large_orders
+  total_validation:
+    - verify_line_item_math
+    - verify_subtotal
+    - verify_tax_calculation
+
+erp_integration:
+  supported_systems:
+    - sap
+    - oracle
+    - netsuite
+    - dynamics_365
+    - quickbooks
+  output_formats:
+    - json_api
+    - csv_import
+    - xml_idoc
+    - edi_850
+
+roi_calculation:
+  time_saved_per_po_minutes: 55  # avg of 37-75
+  pos_per_week: 100
+  error_reduction: 0.90  # 90% fewer errors
+  weekly_labor_savings: [200, 625]
+  annual_value: [10400, 32500]

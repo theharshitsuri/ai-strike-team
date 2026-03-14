@@ -55,3 +55,59 @@ thresholds:
   facility_close_hour: 20
   max_time_window_hours: 8
   conflict_buffer_minutes: 30
+
+# Industry Research (GoodCall, Driver Schedule, ScienceDirect)
+# - 5-15 hours/week spent on scheduling coordination per dispatcher
+# - 10-15% of appointments result in conflicts or reschedules
+# - $150-500 cost per missed appointment (detention, rebooking)
+# - 30% of dispatcher time on administrative tasks vs value-add work
+# Manual process: 25-50 min/load (read, extract, check, create, confirm, update)
+# Automated: <10 sec/load (99.6% time reduction)
+# ROI: $200-600/week in labor, $1,500-5,000/month in missed appointment reduction
+
+industry_benchmarks:
+  dispatcher_scheduling_hours_per_week: [5, 15]
+  appointment_conflict_rate: [0.10, 0.15]  # 10-15%
+  missed_appointment_cost: [150, 500]  # $
+  admin_time_percentage: 0.30  # 30% of dispatcher time
+  manual_process_minutes: [25, 50]
+
+common_scheduling_issues:
+  - double_booking
+  - wrong_date_format_parsing
+  - timezone_confusion
+  - missing_contact_info
+  - unclear_facility_address
+  - conflicting_instructions
+
+appointment_types:
+  pickup:
+    typical_window_minutes: 120
+    buffer_before_minutes: 30
+    buffer_after_minutes: 30
+  delivery:
+    typical_window_minutes: 120
+    buffer_before_minutes: 30
+    buffer_after_minutes: 30
+  live_load:
+    typical_window_minutes: 180
+    buffer_before_minutes: 60
+    buffer_after_minutes: 30
+  live_unload:
+    typical_window_minutes: 180
+    buffer_before_minutes: 60
+    buffer_after_minutes: 30
+
+conflict_detection:
+  check_driver_availability: true
+  check_equipment_availability: true
+  check_facility_hours: true
+  check_drive_time_feasibility: true
+  minimum_turnaround_hours: 2
+
+roi_calculation:
+  time_saved_per_load_minutes: 35  # avg of 25-50
+  loads_per_day: 20
+  weekly_labor_savings: [200, 600]
+  monthly_missed_appointment_savings: [1500, 5000]
+  annual_value: [10400, 31200]

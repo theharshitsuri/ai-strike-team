@@ -77,3 +77,64 @@ thresholds:
   escalate_after_attempts: 3
   critical_overdue_hours: 24
   customer_notify_after_hours: 12
+
+# Industry Research (FreightPOP, Hiver, CEVA Logistics)
+# - 3-8 hours/day spent on shipment follow-up per dispatcher
+# - 24-48 hours typical delay in customer communication
+# - 15-25% of shipments require some form of follow-up
+# - $50-200 cost per customer complaint escalation
+# Manual process: 25-45 min/shipment (monitor, identify, research, draft, send, track)
+# Automated: <10 sec/shipment (99.6% time reduction)
+# ROI: $75-200/day per dispatcher in labor savings
+
+industry_benchmarks:
+  dispatcher_followup_hours_per_day: [3, 8]
+  communication_delay_hours: [24, 48]
+  shipments_requiring_followup_pct: [0.15, 0.25]  # 15-25%
+  escalation_cost: [50, 200]  # $
+  manual_process_minutes: [25, 45]
+
+followup_triggers:
+  - expected_delivery_passed
+  - no_check_call_in_hours: 12
+  - customer_inquiry_received
+  - weather_delay_reported
+  - equipment_breakdown
+  - driver_hos_violation
+
+tone_escalation:
+  attempt_1:
+    tone: "professional_polite"
+    subject_prefix: "Status Update Request"
+    urgency: "routine"
+    include_escalation_warning: false
+  attempt_2:
+    tone: "concerned_firm"
+    subject_prefix: "Urgent: Status Update Needed"
+    urgency: "urgent"
+    include_escalation_warning: true
+  attempt_3:
+    tone: "escalation"
+    subject_prefix: "CRITICAL: Immediate Response Required"
+    urgency: "critical"
+    include_escalation_warning: true
+    cc_management: true
+
+customer_communication:
+  notify_after_hours_overdue: 12
+  update_frequency_hours: 4
+  include_eta_estimate: true
+  include_last_known_location: true
+
+escalation_actions:
+  - notify_operations_manager
+  - create_incident_ticket
+  - flag_carrier_performance
+  - prepare_claim_documentation
+
+roi_calculation:
+  time_saved_per_shipment_minutes: 35  # avg of 25-45
+  shipments_per_day: 50
+  daily_labor_savings: [75, 200]
+  complaint_reduction_pct: 0.20  # 20% fewer complaints
+  annual_value: [19500, 52000]
