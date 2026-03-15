@@ -240,6 +240,26 @@ async def root():
     return FileResponse(str(DASHBOARD_DIR / "index.html")) if DASHBOARD_DIR.exists() else {"message": "AI Strike Team API"}
 
 
+@app.get("/dashboard")
+async def dashboard():
+    """Serve the main dashboard."""
+    if DASHBOARD_DIR.exists() and (DASHBOARD_DIR / "index.html").exists():
+        return FileResponse(str(DASHBOARD_DIR / "index.html"))
+    raise HTTPException(404, "Dashboard not found")
+
+
+@app.get("/dashboard/{path:path}")
+async def dashboard_files(path: str):
+    """Serve dashboard static files."""
+    file_path = DASHBOARD_DIR / path
+    if file_path.exists() and file_path.is_file():
+        return FileResponse(str(file_path))
+    # Try index.html for SPA routing
+    if (DASHBOARD_DIR / "index.html").exists():
+        return FileResponse(str(DASHBOARD_DIR / "index.html"))
+    raise HTTPException(404, "File not found")
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok", "workflows": len(WORKFLOW_REGISTRY), "version": "2.0.0"}
