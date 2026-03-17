@@ -97,7 +97,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["text", "file"],
         "roi": "Save 5-15 hrs/week in scheduling coordination",
         "demo_file": "shubh/load_scheduling/demo/sample_email.txt",
-        "ui_url": "/shubh/load_scheduling/index-pro.html",
+        "ui_url": "/shubh/load_scheduling/index-minimal.html",
     },
     "detention_tracking": {
         "module": "shubh.detention_tracking.main",
@@ -109,7 +109,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["text", "file"],
         "roi": "Capture $500-2000/week in missed detention fees",
         "demo_file": "shubh/detention_tracking/demo/sample_detention.txt",
-        "ui_url": "/shubh/detention_tracking/index-pro.html",
+        "ui_url": "/shubh/detention_tracking/index-minimal.html",
     },
     "shipment_followup": {
         "module": "shubh.shipment_followup.main",
@@ -121,7 +121,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["text", "file"],
         "roi": "Eliminate 3-8 hrs/day of dispatcher follow-up work",
         "demo_file": "shubh/shipment_followup/demo/sample_shipment.txt",
-        "ui_url": "/shubh/shipment_followup/index-pro.html",
+        "ui_url": "/shubh/shipment_followup/index-minimal.html",
     },
     "freight_audit": {
         "module": "shubh.freight_audit.main",
@@ -133,7 +133,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["text", "file"],
         "roi": "Recover 2-5% of freight spend in overcharges",
         "demo_file": "shubh/freight_audit/demo/sample_invoice.txt",
-        "ui_url": "/shubh/freight_audit/index-pro.html",
+        "ui_url": "/shubh/freight_audit/index-minimal.html",
     },
     "qa_anomaly": {
         "module": "shubh.qa_anomaly.main",
@@ -145,7 +145,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["csv", "excel"],
         "roi": "Catch defects 3x faster than manual review",
         "demo_file": "shubh/qa_anomaly/demo/sample_inspection.csv",
-        "ui_url": "/shubh/qa_anomaly/index-pro.html",
+        "ui_url": "/shubh/qa_anomaly/index-minimal.html",
     },
     "maintenance_triage": {
         "module": "shubh.maintenance_triage.main",
@@ -157,7 +157,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["text", "file"],
         "roi": "Cut ticket routing time from 10 min to 10 seconds",
         "demo_file": "shubh/maintenance_triage/demo/sample_ticket.txt",
-        "ui_url": "/shubh/maintenance_triage/index-pro.html",
+        "ui_url": "/shubh/maintenance_triage/index-minimal.html",
     },
     "production_report": {
         "module": "shubh.production_report.main",
@@ -169,7 +169,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["csv", "excel"],
         "roi": "Save 1-2 hours/day of report compilation",
         "demo_file": "shubh/production_report/demo/sample_production.csv",
-        "ui_url": "/shubh/production_report/index-pro.html",
+        "ui_url": "/shubh/production_report/index-minimal.html",
     },
     "warranty_claims": {
         "module": "shubh.warranty_claims.main",
@@ -181,7 +181,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["text", "file"],
         "roi": "Process claims 10x faster, reduce backlog by 80%",
         "demo_file": "shubh/warranty_claims/demo/sample_claim.txt",
-        "ui_url": "/shubh/warranty_claims/index-pro.html",
+        "ui_url": "/shubh/warranty_claims/index-minimal.html",
     },
     "po_email_to_erp": {
         "module": "shubh.po_email_to_erp.main",
@@ -193,7 +193,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["text", "file"],
         "roi": "Eliminate 8-25 hrs/week of manual PO data entry",
         "demo_file": "shubh/po_email_to_erp/demo/sample_po_email.txt",
-        "ui_url": "/shubh/po_email_to_erp/index-pro.html",
+        "ui_url": "/shubh/po_email_to_erp/index-minimal.html",
     },
     "inventory_restock": {
         "module": "shubh.inventory_restock.main",
@@ -205,7 +205,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["csv", "excel"],
         "roi": "Prevent stockouts, reduce carrying costs 5-10%",
         "demo_file": "shubh/inventory_restock/demo/sample_inventory.csv",
-        "ui_url": "/shubh/inventory_restock/index-pro.html",
+        "ui_url": "/shubh/inventory_restock/index-minimal.html",
     },
     "scheduling_automation": {
         "module": "shubh.scheduling_automation.main",
@@ -217,7 +217,7 @@ WORKFLOW_REGISTRY = {
         "accepts": ["text", "file"],
         "roi": "Zero double-bookings, instant confirmations",
         "demo_file": "shubh/scheduling_automation/demo/sample_request.txt",
-        "ui_url": "/shubh/scheduling_automation/index-pro.html",
+        "ui_url": "/shubh/scheduling_automation/index-minimal.html",
     },
 }
 

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance Triage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/shared-minimal.css">
+</head>
+<body data-theme="light">
+  <div class="container">
+    <header class="header">
+      <a href="/" class="logo">AI Strike Team</a>
+      <nav class="nav">
+        <a href="#" onclick="Workflow.loadDemo()">Demo</a>
+        <a href="/">Dashboard</a>
+      </nav>
+    </header>
+
+    <div class="steps">
+      <div class="step active" onclick="Workflow.goTo(1)"><span class="step-number">1</span><span>Overview</span></div>
+      <div class="step-connector"></div>
+      <div class="step" onclick="Workflow.goTo(2)"><span class="step-number">2</span><span>Upload</span></div>
+      <div class="step-connector"></div>
+      <div class="step" onclick="Workflow.goTo(3)"><span class="step-number">3</span><span>Process</span></div>
+      <div class="step-connector"></div>
+      <div class="step" onclick="Workflow.goTo(4)"><span class="step-number">4</span><span>Results</span></div>
+    </div>
+
+    <!-- Step 1: Overview -->
+    <div id="step-1" class="step-content active">
+      <div class="step-header">
+        <h1>Maintenance Triage</h1>
+        <p class="subtitle">Classify tickets, assign priority, route to teams</p>
+      </div>
+      <div class="metrics"><div class="metric"><div class="metric-value">99.4%</div><div class="metric-label">Time Saved</div></div>
+<div class="metric"><div class="metric-value">$15K+</div><div class="metric-label">Annual Value</div></div>
+<div class="metric"><div class="metric-value">2x</div><div class="metric-label">Wrench Time</div></div>
+<div class="metric"><div class="metric-value">10 sec</div><div class="metric-label">Per Ticket</div></div></div>
+      <div class="card">
+        <h3>How it works</h3>
+        <p>Upload maintenance tickets. AI classifies the issue, assigns priority, and routes to the appropriate team.</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Configuration</h3>
+          <button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Confidence Threshold (%)</label>
+            <div class="range-group">
+              <input type="range" class="range-input" id="confidence" data-config="confidence" data-format="percent" min="50" max="99" step="1" value="70">
+              <span class="range-value" id="confidence-value">70%</span>
+            </div>
+          </div></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="toggle">
+              <input type="checkbox" data-config="auto_escalate" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-label">Auto-escalate safety issues</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="toggle">
+              <input type="checkbox" data-config="notify_team" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-label">Notify assigned team</span>
+            </label>
+          </div></div>
+      </div>
+      <div class="footer-actions">
+        <div></div>
+        <button class="btn btn-primary" onclick="Workflow.next()">Get Started →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div id="step-2" class="step-content">
+      <div class="step-header">
+        <h1>Upload Data</h1>
+        <p class="subtitle">Maintenance ticket or work request</p>
+      </div>
+      <div class="upload-zone">
+        <input type="file" accept=".pdf,.txt,.csv,.doc,.docx,.xlsx">
+        <div class="upload-icon">📄</div>
+        <div class="upload-title">Drop file here</div>
+        <div class="upload-subtitle">or click to browse</div>
+      </div>
+      <div class="divider">or paste text</div>
+      <div class="form-group">
+        <textarea class="form-textarea" id="text-input" rows="8" placeholder="Paste maintenance ticket..."></textarea>
+      </div>
+      <div class="footer-actions">
+        <button class="btn btn-secondary" onclick="Workflow.prev()">← Back</button>
+        <div>
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">Process →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div id="step-3" class="step-content">
+      <div class="step-header">
+        <h1>Processing</h1>
+        <p class="subtitle">Analyzing your data</p>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-info"><span id="progress-status">Starting...</span><span id="progress-pct">0%</span></div>
+      </div>
+      <div class="processing-steps"><div class="processing-step">
+          <span class="processing-step-icon">📋</span>
+          <div><div class="processing-step-title">Reading ticket</div><div class="processing-step-subtitle">Parsing maintenance request</div></div>
+        </div>
+<div class="processing-step">
+          <span class="processing-step-icon">🏷️</span>
+          <div><div class="processing-step-title">Classifying</div><div class="processing-step-subtitle">Identifying issue type</div></div>
+        </div>
+<div class="processing-step">
+          <span class="processing-step-icon">🎯</span>
+          <div><div class="processing-step-title">Assigning priority</div><div class="processing-step-subtitle">Evaluating urgency</div></div>
+        </div>
+<div class="processing-step">
+          <span class="processing-step-icon">👥</span>
+          <div><div class="processing-step-title">Routing team</div><div class="processing-step-subtitle">Selecting technicians</div></div>
+        </div></div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div id="step-4" class="step-content">
+      <div class="results-header">
+        <div><h1>Results</h1><p class="text-muted">Extracted data</p></div>
+        <div class="results-actions">
+          <button class="btn btn-secondary btn-sm" onclick="Workflow.goTo(2)">New</button>
+          <button class="btn btn-primary btn-sm" onclick="Workflow.download('json')">Download</button>
+        </div>
+      </div>
+      <div class="results-grid" id="results-grid"></div>
+      <div class="card">
+        <div class="card-header"><h3>Raw Output</h3></div>
+        <pre class="json-display" id="json-output"></pre>
+      </div>
+    </div>
+  </div>
+
+  <button class="theme-toggle" onclick="Workflow.toggleTheme()">◐</button>
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/dashboard/workflows/shared-minimal.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Workflow.init('maintenance_triage', {"confidence": 70, "auto_escalate": true, "notify_team": true});
+    });
+  </script>
+</body>
+</html>
