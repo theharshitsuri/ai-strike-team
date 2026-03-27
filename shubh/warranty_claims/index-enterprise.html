@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warranty Claims | AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/enterprise.css">
+</head>
+<body data-theme="light">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><span>AI Strike Team</span></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Logistics</div>
+        <a href="/shubh/detention_tracking/index-enterprise.html" class="nav-item"><span class="nav-item-icon">⏱️</span><span>Detention Tracking</span></a>
+        <a href="/shubh/freight_audit/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔍</span><span>Freight Audit</span></a>
+        <a href="/shubh/load_scheduling/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📅</span><span>Load Scheduling</span></a>
+        <a href="/shubh/shipment_followup/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Shipment Follow-up</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Manufacturing</div>
+        <a href="/shubh/maintenance_triage/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔧</span><span>Maintenance Triage</span></a>
+        <a href="/shubh/qa_anomaly/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔬</span><span>QA Anomaly</span></a>
+        <a href="/shubh/production_report/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📊</span><span>Production Report</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Wholesale</div>
+        <a href="/shubh/po_email_to_erp/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📧</span><span>PO to ERP</span></a>
+        <a href="/shubh/inventory_restock/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Inventory Restock</span></a>
+        <a href="/shubh/warranty_claims/index-enterprise.html" class="nav-item active"><span class="nav-item-icon">🛡️</span><span>Warranty Claims</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-ghost w-full" onclick="Workflow.openCompanySettings()">⚙️ Settings</button></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left"><button class="btn btn-icon btn-ghost" onclick="Workflow.toggleSidebar()">☰</button><div class="topbar-breadcrumb"><a href="/">Dashboard</a><span class="topbar-breadcrumb-sep">/</span><span>Warranty Claims</span></div></div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.showHistory()">📋 History</button>
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.loadDemo()">Demo</button>
+        <button class="btn btn-icon btn-ghost" id="theme-toggle" onclick="Workflow.toggleTheme()">🌙</button>
+      </div>
+    </header>
+
+    <div class="wizard-steps">
+      <div class="wizard-step active" onclick="Workflow.goToStep(1)"><span class="wizard-step-number">1</span><span class="wizard-step-label">Configure</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(2)"><span class="wizard-step-number">2</span><span class="wizard-step-label">Upload</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(3)"><span class="wizard-step-number">3</span><span class="wizard-step-label">Process</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(4)"><span class="wizard-step-number">4</span><span class="wizard-step-label">Results</span></div>
+    </div>
+
+    <!-- Step 1: Configure -->
+    <div class="wizard-content active" id="step-1">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Warranty Claims Processing</h1>
+          <p class="page-subtitle">Parse claims, validate eligibility, automate approval decisions</p>
+        </div>
+
+        <div class="metrics-grid mb-6">
+          <div class="metric-card"><div class="metric-icon">⚡</div><div class="metric-value">10x</div><div class="metric-label">Faster Processing</div><div class="metric-change positive">↓ from 45 min/claim</div></div>
+          <div class="metric-card"><div class="metric-icon">📉</div><div class="metric-value">80%</div><div class="metric-label">Backlog Reduction</div><div class="metric-change positive">↓ pending claims</div></div>
+          <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-value">90%</div><div class="metric-label">Cost Reduction</div><div class="metric-change positive">↓ per claim cost</div></div>
+          <div class="metric-card"><div class="metric-icon">✓</div><div class="metric-value">99.7%</div><div class="metric-label">Time Saved</div><div class="metric-change positive">↑ efficiency</div></div>
+        </div>
+
+        <div class="alert alert-info mb-6">
+          <span class="alert-icon">💡</span>
+          <div class="alert-content">
+            <div class="alert-title">Industry Insight</div>
+            <div>Manual warranty processing costs $5/claim with 10 touchpoints. Automation reduces to $0.50/claim with instant decisions.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Configuration</div><div class="card-subtitle">Set warranty rules and decision thresholds</div></div>
+            <div class="flex gap-2"><button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button></div>
+          </div>
+          
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab active" data-tab="tab-warranty">Warranty Rules</button>
+              <button class="tab" data-tab="tab-decisions">Decision Rules</button>
+              <button class="tab" data-tab="tab-validation">Validation</button>
+              <button class="tab" data-tab="tab-notifications">Notifications</button>
+            </div>
+
+            <div class="tab-content active" id="tab-warranty">
+              <div class="form-section">
+                <div class="form-section-title">Warranty Period</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Standard Warranty (days)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="warranty_period_days" data-config="warranty_period_days" min="30" max="730" step="30" value="365">
+                      <span class="range-value" id="warranty_period_days-value">365</span>
+                    </div>
+                    <div class="form-hint">Days from purchase date</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Extended Warranty (days)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="extended_warranty_days" data-config="extended_warranty_days" min="365" max="1825" step="30" value="730">
+                      <span class="range-value" id="extended_warranty_days-value">730</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Valid Product Prefixes</label>
+                    <input type="text" class="form-input" id="valid_prefixes" data-config="valid_prefixes" value="PRD-, SKU-, MDL-" placeholder="PRD-, SKU-, MDL-">
+                    <div class="form-hint">Comma-separated product ID prefixes</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-decisions">
+              <div class="form-section">
+                <div class="form-section-title">Auto-Approve Rules</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Auto-approve within (days)</label>
+                    <input type="number" class="form-input" id="auto_approve_days" data-config="auto_approve_days" value="90" min="0">
+                    <div class="form-hint">Days since purchase for auto-approval</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Max auto-approve value ($)</label>
+                    <input type="number" class="form-input" id="max_auto_approve_value" data-config="max_auto_approve_value" value="500" min="0">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Review threshold ($)</label>
+                    <input type="number" class="form-input" id="review_over_value" data-config="review_over_value" value="200" min="0">
+                    <div class="form-hint">Claims over this require manual review</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-section">
+                <div class="form-section-title">Issue Types</div>
+                <div class="form-grid">
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="allow_defect" checked><span class="toggle-track"></span><div><span class="toggle-label">Manufacturing Defect</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="allow_malfunction" checked><span class="toggle-track"></span><div><span class="toggle-label">Malfunction</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="allow_damage"><span class="toggle-track"></span><div><span class="toggle-label">Physical Damage</span><div class="toggle-description">Usually requires review</div></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="allow_missing_parts" checked><span class="toggle-track"></span><div><span class="toggle-label">Missing Parts</span></div></label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-validation">
+              <div class="form-section">
+                <div class="form-section-title">Validation Checks</div>
+                <div class="form-grid">
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="check_product_id" checked><span class="toggle-track"></span><div><span class="toggle-label">Validate product ID format</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="check_serial" checked><span class="toggle-track"></span><div><span class="toggle-label">Verify serial number</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="check_purchase_date" checked><span class="toggle-track"></span><div><span class="toggle-label">Validate purchase date</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="check_duplicates" checked><span class="toggle-track"></span><div><span class="toggle-label">Check for duplicate claims</span></div></label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-notifications">
+              <div class="form-section">
+                <div class="form-section-title">Customer Notifications</div>
+                <div class="form-grid">
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="notify_customer" checked><span class="toggle-track"></span><div><span class="toggle-label">Notify customer of decision</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="send_confirmation"><span class="toggle-track"></span><div><span class="toggle-label">Send claim confirmation</span></div></label></div>
+                  <div class="form-group">
+                    <label class="form-label">Support Email</label>
+                    <input type="email" class="form-input" id="support_email" data-config="support_email" placeholder="support@company.com">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><span class="text-sm text-muted">Step 1 of 4</span></div>
+        <div class="footer-actions-right"><button class="btn btn-primary" onclick="Workflow.nextStep()">Continue →</button></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="wizard-content" id="step-2">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Submit Warranty Claim</h1>
+          <p class="page-subtitle">Upload claim form or enter details</p>
+        </div>
+        <div class="upload-zone">
+          <input type="file" accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg">
+          <div class="upload-icon">🛡️</div>
+          <div class="upload-title">Drop claim form here</div>
+          <div class="upload-subtitle">PDF, image, or document</div>
+        </div>
+        <div class="divider">or enter claim details</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="text-input" rows="14" placeholder="WARRANTY CLAIM FORM
+Claim #: WC-2025-0891
+
+Customer: David Martinez
+Email: david.martinez@email.com
+Phone: (555) 123-4567
+
+Product: PRD-X450 Heavy Duty Drill
+Serial Number: SN-HDD-2024-07821
+Purchase Date: 2025-01-10
+Date of Claim: 2025-03-14
+
+Issue Type: Malfunction
+Description: The drill motor stopped working after approximately 2 months of regular use. No visible damage. Was used according to manual instructions.
+
+Requested Resolution: Replacement
+
+Attachments: Receipt photo, product photo"></textarea>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><button class="btn btn-secondary" onclick="Workflow.prevStep()">← Back</button></div>
+        <div class="footer-actions-right">
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">Process Claim →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div class="wizard-content" id="step-3">
+      <div class="page">
+        <div class="page-header"><h1 class="page-title">Processing Claim</h1><p class="page-subtitle">Validating and making decision</p></div>
+        <div class="progress-container">
+          <div class="progress-header"><span class="progress-label" id="progress-label">Starting...</span><span class="progress-value" id="progress-value">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="processing-list mt-6">
+          <div class="processing-item"><div class="processing-item-icon">📋</div><div class="processing-item-content"><div class="processing-item-title">Reading claim</div><div class="processing-item-subtitle">Extracting details</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🔍</div><div class="processing-item-content"><div class="processing-item-title">Validating product</div><div class="processing-item-subtitle">Checking product ID and serial</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📅</div><div class="processing-item-content"><div class="processing-item-title">Checking warranty</div><div class="processing-item-subtitle">Verifying coverage period</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">⚖️</div><div class="processing-item-content"><div class="processing-item-title">Making decision</div><div class="processing-item-subtitle">Applying business rules</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">✉️</div><div class="processing-item-content"><div class="processing-item-title">Generating response</div><div class="processing-item-subtitle">Creating customer notification</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div class="wizard-content" id="step-4">
+      <div class="page">
+        <div class="results-header">
+          <div><h1 class="results-title">Claim Decision</h1><p class="results-subtitle">Processed in <span id="processing-time">—</span></p></div>
+          <div class="results-actions">
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.goToStep(2)">+ New Claim</button>
+            <button class="btn btn-primary btn-sm" onclick="Workflow.download('json')">Download</button>
+          </div>
+        </div>
+        <div class="metrics-grid mb-6" id="result-metrics"></div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Decision</div><span class="badge" id="decision-badge">—</span></div>
+          <div class="card-body"><div class="results-grid" id="results-grid"></div></div>
+        </div>
+        <div class="card mb-6" id="response-card">
+          <div class="card-header"><div class="card-title">Customer Response</div></div>
+          <div class="card-body" id="response-preview"></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Raw Output</div></div><div class="card-body"><pre class="json-output" id="json-output"></pre></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="company-settings-modal"><div class="modal"><div class="modal-header"><div class="modal-title">Company Settings</div><button class="modal-close" onclick="Workflow.closeCompanySettings()">×</button></div><div class="modal-body"><div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="company-name"></div><div class="form-group"><label class="form-label">Timezone</label><select class="form-select" id="company-timezone"><option value="America/New_York">Eastern</option></select></div><div class="form-group"><label class="form-label">Currency</label><select class="form-select" id="company-currency"><option value="USD">USD</option></select></div><div class="form-group"><label class="form-label">Units</label><select class="form-select" id="company-units"><option value="imperial">Imperial</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeCompanySettings()">Cancel</button><button class="btn btn-primary" onclick="Workflow.saveCompanySettings()">Save</button></div></div></div>
+<div class="modal-overlay" id="history-modal"><div class="modal"><div class="modal-header"><div class="modal-title">History</div><button class="modal-close" onclick="Workflow.closeHistory()">×</button></div><div class="modal-body"><div class="history-list"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeHistory()">Close</button></div></div></div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/dashboard/workflows/enterprise.js"></script>
+<script>
+  const DEFAULT_CONFIG = {
+    warranty_period_days: 365,
+    extended_warranty_days: 730,
+    valid_prefixes: 'PRD-, SKU-, MDL-',
+    auto_approve_days: 90,
+    max_auto_approve_value: 500,
+    review_over_value: 200,
+    allow_defect: true,
+    allow_malfunction: true,
+    allow_damage: false,
+    allow_missing_parts: true,
+    check_product_id: true,
+    check_serial: true,
+    check_purchase_date: true,
+    check_duplicates: true,
+    notify_customer: true,
+    send_confirmation: false
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Workflow.init('warranty_claims', { defaultConfig: DEFAULT_CONFIG });
+  });
+
+  function calculateMetrics(result) {
+    return [
+      { icon: '🛡️', value: result.claim_id || '—', label: 'Claim ID' },
+      { icon: '📦', value: result.product_id || '—', label: 'Product' },
+      { icon: '📅', value: result.days_since_purchase || '—', label: 'Days Since Purchase' },
+      { icon: '⚖️', value: (result.decision || '—').toUpperCase(), label: 'Decision' }
+    ];
+  }
+
+  function onResultsRendered(data) {
+    const result = data.result || {};
+    const badge = document.getElementById('decision-badge');
+    
+    if (badge && result.decision) {
+      const d = result.decision.toLowerCase();
+      badge.textContent = d.toUpperCase();
+      badge.className = 'badge ' + (d === 'approved' ? 'badge-success' : d === 'rejected' ? 'badge-error' : 'badge-warning');
+    }
+    
+    const response = document.getElementById('response-preview');
+    if (response && result.customer_response) {
+      response.innerHTML = `<div style="white-space: pre-wrap; font-family: var(--font-sans);">${result.customer_response}</div>`;
+    }
+  }
+</script>
+</body>
+</html>

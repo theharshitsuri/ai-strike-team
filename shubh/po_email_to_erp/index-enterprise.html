@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PO Email to ERP | AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/enterprise.css">
+</head>
+<body data-theme="light">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><span>AI Strike Team</span></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Logistics</div>
+        <a href="/shubh/detention_tracking/index-enterprise.html" class="nav-item"><span class="nav-item-icon">⏱️</span><span>Detention Tracking</span></a>
+        <a href="/shubh/freight_audit/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔍</span><span>Freight Audit</span></a>
+        <a href="/shubh/load_scheduling/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📅</span><span>Load Scheduling</span></a>
+        <a href="/shubh/shipment_followup/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Shipment Follow-up</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Manufacturing</div>
+        <a href="/shubh/maintenance_triage/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔧</span><span>Maintenance Triage</span></a>
+        <a href="/shubh/qa_anomaly/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔬</span><span>QA Anomaly</span></a>
+        <a href="/shubh/production_report/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📊</span><span>Production Report</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Wholesale</div>
+        <a href="/shubh/po_email_to_erp/index-enterprise.html" class="nav-item active"><span class="nav-item-icon">📧</span><span>PO to ERP</span></a>
+        <a href="/shubh/inventory_restock/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Inventory Restock</span></a>
+        <a href="/shubh/warranty_claims/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🛡️</span><span>Warranty Claims</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-ghost w-full" onclick="Workflow.openCompanySettings()">⚙️ Settings</button></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left"><button class="btn btn-icon btn-ghost" onclick="Workflow.toggleSidebar()">☰</button><div class="topbar-breadcrumb"><a href="/">Dashboard</a><span class="topbar-breadcrumb-sep">/</span><span>PO Email to ERP</span></div></div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.showHistory()">📋 History</button>
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.loadDemo()">Demo</button>
+        <button class="btn btn-icon btn-ghost" id="theme-toggle" onclick="Workflow.toggleTheme()">🌙</button>
+      </div>
+    </header>
+
+    <div class="wizard-steps">
+      <div class="wizard-step active" onclick="Workflow.goToStep(1)"><span class="wizard-step-number">1</span><span class="wizard-step-label">Configure</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(2)"><span class="wizard-step-number">2</span><span class="wizard-step-label">Upload</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(3)"><span class="wizard-step-number">3</span><span class="wizard-step-label">Process</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(4)"><span class="wizard-step-number">4</span><span class="wizard-step-label">Results</span></div>
+    </div>
+
+    <!-- Step 1: Configure -->
+    <div class="wizard-content active" id="step-1">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">PO Email to ERP</h1>
+          <p class="page-subtitle">Extract purchase order details from emails, validate SKUs, prepare ERP import</p>
+        </div>
+
+        <div class="metrics-grid mb-6">
+          <div class="metric-card"><div class="metric-icon">⏱️</div><div class="metric-value">99.8%</div><div class="metric-label">Time Saved</div><div class="metric-change positive">↓ from 15 min/PO</div></div>
+          <div class="metric-card"><div class="metric-icon">✓</div><div class="metric-value">&lt;1%</div><div class="metric-label">Error Rate</div><div class="metric-change positive">↓ from 5%</div></div>
+          <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-value">$10K+</div><div class="metric-label">Annual Value</div><div class="metric-change positive">↑ efficiency</div></div>
+          <div class="metric-card"><div class="metric-icon">⚡</div><div class="metric-value">&lt;10s</div><div class="metric-label">Per PO</div><div class="metric-change positive">↓ instant</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Configuration</div><div class="card-subtitle">Set validation rules and ERP settings</div></div>
+            <div class="flex gap-2"><button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button></div>
+          </div>
+          
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab active" data-tab="tab-validation">Validation</button>
+              <button class="tab" data-tab="tab-erp">ERP Integration</button>
+              <button class="tab" data-tab="tab-pricing">Pricing Rules</button>
+            </div>
+
+            <div class="tab-content active" id="tab-validation">
+              <div class="form-section">
+                <div class="form-section-title">Validation Settings</div>
+                <div class="form-grid">
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="validate_skus" checked><span class="toggle-track"></span><div><span class="toggle-label">Validate SKUs</span><div class="toggle-description">Check against product catalog</div></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="validate_pricing" checked><span class="toggle-track"></span><div><span class="toggle-label">Validate pricing</span><div class="toggle-description">Check against price list</div></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="validate_customer" checked><span class="toggle-track"></span><div><span class="toggle-label">Validate customer</span><div class="toggle-description">Check customer account</div></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="check_credit"><span class="toggle-track"></span><div><span class="toggle-label">Check credit limit</span><div class="toggle-description">Verify available credit</div></div></label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-erp">
+              <div class="form-section">
+                <div class="form-section-title">ERP Integration</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">ERP System</label>
+                    <select class="form-select" id="erp_system" data-config="erp_system">
+                      <option value="">None (Export Only)</option>
+                      <option value="sap">SAP</option>
+                      <option value="oracle">Oracle</option>
+                      <option value="netsuite">NetSuite</option>
+                      <option value="dynamics">Microsoft Dynamics</option>
+                      <option value="quickbooks">QuickBooks</option>
+                      <option value="custom">Custom API</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="auto_import">
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Auto-import to ERP</span><div class="toggle-description">Push validated POs automatically</div></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">API Endpoint</label>
+                    <input type="url" class="form-input" id="erp_api" data-config="erp_api" placeholder="https://api.yourerp.com">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-pricing">
+              <div class="form-section">
+                <div class="form-section-title">Pricing Tolerance</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Price Tolerance (%)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="price_tolerance" data-config="price_tolerance" data-format="percent" min="0" max="15" value="5">
+                      <span class="range-value" id="price_tolerance-value">5%</span>
+                    </div>
+                    <div class="form-hint">Flag prices outside this variance</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="allow_price_override">
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Allow price override</span><div class="toggle-description">Accept customer-specified prices</div></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><span class="text-sm text-muted">Step 1 of 4</span></div>
+        <div class="footer-actions-right"><button class="btn btn-primary" onclick="Workflow.nextStep()">Continue →</button></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="wizard-content" id="step-2">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Upload PO Email</h1>
+          <p class="page-subtitle">Email, PDF, or purchase order document</p>
+        </div>
+        <div class="upload-zone">
+          <input type="file" accept=".pdf,.txt,.eml,.msg,.doc,.docx">
+          <div class="upload-icon">📧</div>
+          <div class="upload-title">Drop PO email here</div>
+          <div class="upload-subtitle">or click to browse</div>
+        </div>
+        <div class="divider">or paste PO content</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="text-input" rows="16" placeholder="Subject: PO #WD-2025-1140 — Monthly Restock Order
+From: purchasing@midwestsupply.com
+
+PO Number: WD-2025-1140
+Company: MidWest Supply Co.
+Ship To: 
+  2200 Commerce Drive
+  Suite 100
+  Columbus, OH 43215
+
+Items:
+1. SKU-1001 — Industrial Bolt Pack (100ct)    Qty: 200    @ $24.99 ea = $4,998.00
+2. SKU-1002 — Heavy Duty Bracket Set          Qty: 50     @ $49.99 ea = $2,499.50
+3. WHL-2001 — Hydraulic Hose Assembly         Qty: 30     @ $89.99 ea = $2,699.70
+4. DST-3001 — Control Valve Assembly          Qty: 25     @ $124.99 ea = $3,124.75
+5. PLT-4001 — Pallet Jack Wheels (set of 4)   Qty: 40     @ $79.99 ea = $3,199.60
+
+Subtotal: $16,521.55
+Shipping: FREE
+Total: $16,521.55
+
+Payment Terms: Net 30
+Requested Ship Date: March 20, 2025"></textarea>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><button class="btn btn-secondary" onclick="Workflow.prevStep()">← Back</button></div>
+        <div class="footer-actions-right">
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">Process PO →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div class="wizard-content" id="step-3">
+      <div class="page">
+        <div class="page-header"><h1 class="page-title">Processing PO</h1><p class="page-subtitle">Extracting and validating order data</p></div>
+        <div class="progress-container">
+          <div class="progress-header"><span class="progress-label" id="progress-label">Starting...</span><span class="progress-value" id="progress-value">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="processing-list mt-6">
+          <div class="processing-item"><div class="processing-item-icon">📧</div><div class="processing-item-content"><div class="processing-item-title">Reading document</div><div class="processing-item-subtitle">Parsing PO content</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📋</div><div class="processing-item-content"><div class="processing-item-title">Extracting header</div><div class="processing-item-subtitle">PO#, customer, ship-to</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📦</div><div class="processing-item-content"><div class="processing-item-title">Extracting items</div><div class="processing-item-subtitle">SKUs, quantities, prices</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">✅</div><div class="processing-item-content"><div class="processing-item-title">Validating</div><div class="processing-item-subtitle">SKUs, pricing, customer</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">💾</div><div class="processing-item-content"><div class="processing-item-title">Generating payload</div><div class="processing-item-subtitle">Creating ERP import data</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div class="wizard-content" id="step-4">
+      <div class="page">
+        <div class="results-header">
+          <div><h1 class="results-title">PO Processed</h1><p class="results-subtitle">Processed in <span id="processing-time">—</span></p></div>
+          <div class="results-actions">
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.goToStep(2)">+ New PO</button>
+            <button class="btn btn-primary btn-sm" onclick="Workflow.download('json')">Export to ERP</button>
+          </div>
+        </div>
+        <div class="metrics-grid mb-6" id="result-metrics"></div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Order Details</div><span class="badge" id="validation-badge">—</span></div>
+          <div class="card-body"><div class="results-grid" id="results-grid"></div></div>
+        </div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Line Items</div></div>
+          <div class="card-body" id="line-items"></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">ERP Payload</div></div><div class="card-body"><pre class="json-output" id="json-output"></pre></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="company-settings-modal"><div class="modal"><div class="modal-header"><div class="modal-title">Company Settings</div><button class="modal-close" onclick="Workflow.closeCompanySettings()">×</button></div><div class="modal-body"><div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="company-name"></div><div class="form-group"><label class="form-label">Timezone</label><select class="form-select" id="company-timezone"><option value="America/New_York">Eastern</option></select></div><div class="form-group"><label class="form-label">Currency</label><select class="form-select" id="company-currency"><option value="USD">USD</option></select></div><div class="form-group"><label class="form-label">Units</label><select class="form-select" id="company-units"><option value="imperial">Imperial</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeCompanySettings()">Cancel</button><button class="btn btn-primary" onclick="Workflow.saveCompanySettings()">Save</button></div></div></div>
+<div class="modal-overlay" id="history-modal"><div class="modal"><div class="modal-header"><div class="modal-title">History</div><button class="modal-close" onclick="Workflow.closeHistory()">×</button></div><div class="modal-body"><div class="history-list"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeHistory()">Close</button></div></div></div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/dashboard/workflows/enterprise.js"></script>
+<script>
+  const DEFAULT_CONFIG = {
+    validate_skus: true,
+    validate_pricing: true,
+    validate_customer: true,
+    check_credit: false,
+    auto_import: false,
+    price_tolerance: 5,
+    allow_price_override: false
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Workflow.init('po_email_to_erp', { defaultConfig: DEFAULT_CONFIG });
+  });
+
+  function calculateMetrics(result) {
+    const items = result.line_items || [];
+    const total = items.reduce((sum, i) => sum + (i.total || 0), 0);
+    return [
+      { icon: '📋', value: result.po_number || '—', label: 'PO Number' },
+      { icon: '🏢', value: result.customer_name || '—', label: 'Customer' },
+      { icon: '📦', value: items.length, label: 'Line Items' },
+      { icon: '💰', value: Workflow.formatCurrency(total), label: 'Total' }
+    ];
+  }
+
+  function onResultsRendered(data) {
+    const result = data.result || {};
+    const items = result.line_items || [];
+    const badge = document.getElementById('validation-badge');
+    
+    if (badge) {
+      const valid = result.validation_status === 'valid';
+      badge.textContent = valid ? 'VALID' : 'REVIEW';
+      badge.className = 'badge ' + (valid ? 'badge-success' : 'badge-warning');
+    }
+    
+    const lineItems = document.getElementById('line-items');
+    if (lineItems && items.length > 0) {
+      lineItems.innerHTML = `<div class="table-container"><table class="table">
+        <thead><tr><th>SKU</th><th>Description</th><th>Qty</th><th>Price</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody>${items.map(i => `<tr>
+          <td><strong>${i.sku || '—'}</strong></td>
+          <td>${i.description || '—'}</td>
+          <td>${i.quantity || 0}</td>
+          <td>${Workflow.formatCurrency(i.unit_price || 0)}</td>
+          <td>${Workflow.formatCurrency(i.total || 0)}</td>
+          <td><span class="badge ${i.valid ? 'badge-success' : 'badge-warning'}">${i.valid ? '✓' : '⚠'}</span></td>
+        </tr>`).join('')}</tbody>
+      </table></div>`;
+    }
+  }
+</script>
+</body>
+</html>

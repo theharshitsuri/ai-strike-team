@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scheduling Automation | AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/enterprise.css">
+</head>
+<body data-theme="light">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><span>AI Strike Team</span></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Logistics</div>
+        <a href="/shubh/detention_tracking/index-enterprise.html" class="nav-item"><span class="nav-item-icon">⏱️</span><span>Detention Tracking</span></a>
+        <a href="/shubh/freight_audit/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔍</span><span>Freight Audit</span></a>
+        <a href="/shubh/load_scheduling/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📅</span><span>Load Scheduling</span></a>
+        <a href="/shubh/shipment_followup/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Shipment Follow-up</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Manufacturing</div>
+        <a href="/shubh/maintenance_triage/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔧</span><span>Maintenance Triage</span></a>
+        <a href="/shubh/qa_anomaly/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔬</span><span>QA Anomaly</span></a>
+        <a href="/shubh/production_report/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📊</span><span>Production Report</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Wholesale</div>
+        <a href="/shubh/po_email_to_erp/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📧</span><span>PO to ERP</span></a>
+        <a href="/shubh/inventory_restock/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Inventory Restock</span></a>
+        <a href="/shubh/warranty_claims/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🛡️</span><span>Warranty Claims</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Cross-Vertical</div>
+        <a href="/shubh/scheduling_automation/index-enterprise.html" class="nav-item active"><span class="nav-item-icon">🗓️</span><span>Scheduling Automation</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-ghost w-full" onclick="Workflow.openCompanySettings()">⚙️ Settings</button></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left"><button class="btn btn-icon btn-ghost" onclick="Workflow.toggleSidebar()">☰</button><div class="topbar-breadcrumb"><a href="/">Dashboard</a><span class="topbar-breadcrumb-sep">/</span><span>Scheduling Automation</span></div></div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.showHistory()">📋 History</button>
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.loadDemo()">Demo</button>
+        <button class="btn btn-icon btn-ghost" id="theme-toggle" onclick="Workflow.toggleTheme()">🌙</button>
+      </div>
+    </header>
+
+    <div class="wizard-steps">
+      <div class="wizard-step active" onclick="Workflow.goToStep(1)"><span class="wizard-step-number">1</span><span class="wizard-step-label">Configure</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(2)"><span class="wizard-step-number">2</span><span class="wizard-step-label">Upload</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(3)"><span class="wizard-step-number">3</span><span class="wizard-step-label">Process</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(4)"><span class="wizard-step-number">4</span><span class="wizard-step-label">Results</span></div>
+    </div>
+
+    <!-- Step 1: Configure -->
+    <div class="wizard-content active" id="step-1">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Scheduling Automation</h1>
+          <p class="page-subtitle">Parse scheduling requests, check availability, generate confirmations</p>
+        </div>
+
+        <div class="metrics-grid mb-6">
+          <div class="metric-card"><div class="metric-icon">📅</div><div class="metric-value">0%</div><div class="metric-label">Double Bookings</div><div class="metric-change positive">↓ eliminated</div></div>
+          <div class="metric-card"><div class="metric-icon">⏱️</div><div class="metric-value">99.6%</div><div class="metric-label">Time Saved</div><div class="metric-change positive">↓ instant booking</div></div>
+          <div class="metric-card"><div class="metric-icon">📉</div><div class="metric-value">2%</div><div class="metric-label">No-Show Rate</div><div class="metric-change positive">↓ with reminders</div></div>
+          <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-value">$6K+</div><div class="metric-label">Annual Value</div><div class="metric-change positive">↑ efficiency</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Configuration</div><div class="card-subtitle">Set business hours and booking rules</div></div>
+            <div class="flex gap-2"><button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button></div>
+          </div>
+          
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab active" data-tab="tab-hours">Business Hours</button>
+              <button class="tab" data-tab="tab-booking">Booking Rules</button>
+              <button class="tab" data-tab="tab-notifications">Notifications</button>
+            </div>
+
+            <div class="tab-content active" id="tab-hours">
+              <div class="form-section">
+                <div class="form-section-title">Operating Hours</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Start Time</label>
+                    <select class="form-select" id="start_time" data-config="start_time">
+                      <option value="06:00">6:00 AM</option>
+                      <option value="07:00">7:00 AM</option>
+                      <option value="08:00" selected>8:00 AM</option>
+                      <option value="09:00">9:00 AM</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">End Time</label>
+                    <select class="form-select" id="end_time" data-config="end_time">
+                      <option value="16:00">4:00 PM</option>
+                      <option value="17:00" selected>5:00 PM</option>
+                      <option value="18:00">6:00 PM</option>
+                      <option value="19:00">7:00 PM</option>
+                    </select>
+                  </div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="weekends"><span class="toggle-track"></span><div><span class="toggle-label">Allow weekend bookings</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="holidays"><span class="toggle-track"></span><div><span class="toggle-label">Allow holiday bookings</span></div></label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-booking">
+              <div class="form-section">
+                <div class="form-section-title">Booking Rules</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Minimum Gap (minutes)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="min_gap" data-config="min_gap" data-format="minutes" min="0" max="60" step="5" value="15">
+                      <span class="range-value" id="min_gap-value">15 min</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Default Duration (minutes)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="default_duration" data-config="default_duration" data-format="minutes" min="15" max="180" step="15" value="60">
+                      <span class="range-value" id="default_duration-value">60 min</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Advance Booking (days)</label>
+                    <input type="number" class="form-input" id="advance_days" data-config="advance_days" value="30" min="1">
+                    <div class="form-hint">How far in advance can book</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Minimum Notice (hours)</label>
+                    <input type="number" class="form-input" id="min_notice" data-config="min_notice" value="24" min="0">
+                    <div class="form-hint">Minimum hours before appointment</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-notifications">
+              <div class="form-section">
+                <div class="form-section-title">Notification Settings</div>
+                <div class="form-grid">
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="auto_confirm"><span class="toggle-track"></span><div><span class="toggle-label">Auto-send confirmation</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="send_reminder" checked><span class="toggle-track"></span><div><span class="toggle-label">Send reminder (24h before)</span></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="sms_reminder"><span class="toggle-track"></span><div><span class="toggle-label">SMS reminder</span></div></label></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><span class="text-sm text-muted">Step 1 of 4</span></div>
+        <div class="footer-actions-right"><button class="btn btn-primary" onclick="Workflow.nextStep()">Continue →</button></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="wizard-content" id="step-2">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Upload Scheduling Request</h1>
+          <p class="page-subtitle">Email, message, or appointment request</p>
+        </div>
+        <div class="upload-zone">
+          <input type="file" accept=".pdf,.txt,.eml,.msg">
+          <div class="upload-icon">🗓️</div>
+          <div class="upload-title">Drop request here</div>
+          <div class="upload-subtitle">or click to browse</div>
+        </div>
+        <div class="divider">or enter request details</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="text-input" rows="14" placeholder="Hi,
+
+I need to schedule a service call for our HVAC system at the downtown office.
+
+Preferably next Tuesday (March 18, 2025) around 10 AM. The visit usually takes about 2 hours. The technician will need access to the rooftop unit.
+
+Location: 200 Main Street, Suite 400, Denver, CO 80202
+Contact: Rachel Kim, Facilities Manager
+Phone: (303) 555-0198
+Email: rachel.kim@company.com
+
+Priority: High — AC not cooling properly
+
+Please confirm this appointment.
+
+Thanks,
+John"></textarea>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><button class="btn btn-secondary" onclick="Workflow.prevStep()">← Back</button></div>
+        <div class="footer-actions-right">
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">Schedule →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div class="wizard-content" id="step-3">
+      <div class="page">
+        <div class="page-header"><h1 class="page-title">Processing Request</h1><p class="page-subtitle">Checking availability and creating appointment</p></div>
+        <div class="progress-container">
+          <div class="progress-header"><span class="progress-label" id="progress-label">Starting...</span><span class="progress-value" id="progress-value">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="processing-list mt-6">
+          <div class="processing-item"><div class="processing-item-icon">📧</div><div class="processing-item-content"><div class="processing-item-title">Reading request</div><div class="processing-item-subtitle">Parsing scheduling details</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📅</div><div class="processing-item-content"><div class="processing-item-title">Extracting details</div><div class="processing-item-subtitle">Date, time, location, contact</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🔍</div><div class="processing-item-content"><div class="processing-item-title">Checking availability</div><div class="processing-item-subtitle">Verifying open slots</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">✅</div><div class="processing-item-content"><div class="processing-item-title">Creating appointment</div><div class="processing-item-subtitle">Booking the slot</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">✉️</div><div class="processing-item-content"><div class="processing-item-title">Generating confirmation</div><div class="processing-item-subtitle">Creating response</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div class="wizard-content" id="step-4">
+      <div class="page">
+        <div class="results-header">
+          <div><h1 class="results-title">Appointment Scheduled</h1><p class="results-subtitle">Processed in <span id="processing-time">—</span></p></div>
+          <div class="results-actions">
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.goToStep(2)">+ New</button>
+            <button class="btn btn-primary btn-sm" onclick="Workflow.download('json')">Download</button>
+          </div>
+        </div>
+        <div class="metrics-grid mb-6" id="result-metrics"></div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Appointment Details</div><span class="badge badge-success">Confirmed</span></div>
+          <div class="card-body"><div class="results-grid" id="results-grid"></div></div>
+        </div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Confirmation Message</div></div>
+          <div class="card-body" id="confirmation-preview" style="white-space: pre-wrap;"></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Raw Output</div></div><div class="card-body"><pre class="json-output" id="json-output"></pre></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="company-settings-modal"><div class="modal"><div class="modal-header"><div class="modal-title">Company Settings</div><button class="modal-close" onclick="Workflow.closeCompanySettings()">×</button></div><div class="modal-body"><div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="company-name"></div><div class="form-group"><label class="form-label">Timezone</label><select class="form-select" id="company-timezone"><option value="America/New_York">Eastern</option><option value="America/Chicago">Central</option><option value="America/Denver">Mountain</option><option value="America/Los_Angeles">Pacific</option></select></div><div class="form-group"><label class="form-label">Currency</label><select class="form-select" id="company-currency"><option value="USD">USD</option></select></div><div class="form-group"><label class="form-label">Units</label><select class="form-select" id="company-units"><option value="imperial">Imperial</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeCompanySettings()">Cancel</button><button class="btn btn-primary" onclick="Workflow.saveCompanySettings()">Save</button></div></div></div>
+<div class="modal-overlay" id="history-modal"><div class="modal"><div class="modal-header"><div class="modal-title">History</div><button class="modal-close" onclick="Workflow.closeHistory()">×</button></div><div class="modal-body"><div class="history-list"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeHistory()">Close</button></div></div></div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/dashboard/workflows/enterprise.js"></script>
+<script>
+  const DEFAULT_CONFIG = {
+    start_time: '08:00',
+    end_time: '17:00',
+    weekends: false,
+    holidays: false,
+    min_gap: 15,
+    default_duration: 60,
+    advance_days: 30,
+    min_notice: 24,
+    auto_confirm: false,
+    send_reminder: true,
+    sms_reminder: false
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Workflow.init('scheduling_automation', { defaultConfig: DEFAULT_CONFIG });
+  });
+
+  function calculateMetrics(result) {
+    return [
+      { icon: '📅', value: result.date || '—', label: 'Date' },
+      { icon: '🕐', value: result.time || '—', label: 'Time' },
+      { icon: '⏱️', value: `${result.duration || 60} min`, label: 'Duration' },
+      { icon: '📍', value: result.location || '—', label: 'Location' }
+    ];
+  }
+
+  function onResultsRendered(data) {
+    const result = data.result || {};
+    const preview = document.getElementById('confirmation-preview');
+    if (preview && result.confirmation_message) {
+      preview.textContent = result.confirmation_message;
+    }
+  }
+</script>
+</body>
+</html>

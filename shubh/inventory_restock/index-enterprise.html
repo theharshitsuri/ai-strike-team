@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Restock | AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/enterprise.css">
+</head>
+<body data-theme="light">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><span>AI Strike Team</span></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Logistics</div>
+        <a href="/shubh/detention_tracking/index-enterprise.html" class="nav-item"><span class="nav-item-icon">⏱️</span><span>Detention Tracking</span></a>
+        <a href="/shubh/freight_audit/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔍</span><span>Freight Audit</span></a>
+        <a href="/shubh/load_scheduling/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📅</span><span>Load Scheduling</span></a>
+        <a href="/shubh/shipment_followup/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Shipment Follow-up</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Manufacturing</div>
+        <a href="/shubh/maintenance_triage/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔧</span><span>Maintenance Triage</span></a>
+        <a href="/shubh/qa_anomaly/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔬</span><span>QA Anomaly</span></a>
+        <a href="/shubh/production_report/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📊</span><span>Production Report</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Wholesale</div>
+        <a href="/shubh/po_email_to_erp/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📧</span><span>PO to ERP</span></a>
+        <a href="/shubh/inventory_restock/index-enterprise.html" class="nav-item active"><span class="nav-item-icon">📦</span><span>Inventory Restock</span></a>
+        <a href="/shubh/warranty_claims/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🛡️</span><span>Warranty Claims</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-ghost w-full" onclick="Workflow.openCompanySettings()">⚙️ Settings</button></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left"><button class="btn btn-icon btn-ghost" onclick="Workflow.toggleSidebar()">☰</button><div class="topbar-breadcrumb"><a href="/">Dashboard</a><span class="topbar-breadcrumb-sep">/</span><span>Inventory Restock</span></div></div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.showHistory()">📋 History</button>
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.loadDemo()">Demo</button>
+        <button class="btn btn-icon btn-ghost" id="theme-toggle" onclick="Workflow.toggleTheme()">🌙</button>
+      </div>
+    </header>
+
+    <div class="wizard-steps">
+      <div class="wizard-step active" onclick="Workflow.goToStep(1)"><span class="wizard-step-number">1</span><span class="wizard-step-label">Configure</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(2)"><span class="wizard-step-number">2</span><span class="wizard-step-label">Upload</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(3)"><span class="wizard-step-number">3</span><span class="wizard-step-label">Process</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(4)"><span class="wizard-step-number">4</span><span class="wizard-step-label">Results</span></div>
+    </div>
+
+    <!-- Step 1: Configure -->
+    <div class="wizard-content active" id="step-1">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Inventory Restock Forecasting</h1>
+          <p class="page-subtitle">Forecast demand, calculate reorder points, generate purchase recommendations</p>
+        </div>
+
+        <div class="metrics-grid mb-6">
+          <div class="metric-card"><div class="metric-icon">📉</div><div class="metric-value">&lt;0.5%</div><div class="metric-label">Stockout Rate</div><div class="metric-change positive">↓ from 2-5%</div></div>
+          <div class="metric-card"><div class="metric-icon">📊</div><div class="metric-value">85%</div><div class="metric-label">Forecast Accuracy</div><div class="metric-change positive">↑ from 65% manual</div></div>
+          <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-value">$75K</div><div class="metric-label">Annual Savings</div><div class="metric-change positive">↑ stockout + carrying</div></div>
+          <div class="metric-card"><div class="metric-icon">⏱️</div><div class="metric-value">99.9%</div><div class="metric-label">Time Saved</div><div class="metric-change positive">↓ from 100 min</div></div>
+        </div>
+
+        <div class="alert alert-info mb-6">
+          <span class="alert-icon">💡</span>
+          <div class="alert-content">
+            <div class="alert-title">Industry Insight</div>
+            <div>2-5% of revenue is lost to stockouts. 20-30% excess inventory carrying costs. AI forecasting improves accuracy from 65% to 85%.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Configuration</div><div class="card-subtitle">Set forecasting parameters and thresholds</div></div>
+            <div class="flex gap-2"><button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button></div>
+          </div>
+          
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab active" data-tab="tab-forecast">Forecasting</button>
+              <button class="tab" data-tab="tab-safety">Safety Stock</button>
+              <button class="tab" data-tab="tab-urgency">Urgency Levels</button>
+              <button class="tab" data-tab="tab-erp">ERP Integration</button>
+            </div>
+
+            <div class="tab-content active" id="tab-forecast">
+              <div class="form-section">
+                <div class="form-section-title">Forecasting Method</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Method</label>
+                    <select class="form-select" id="forecast_method" data-config="forecast_method">
+                      <option value="simple_moving_average">Simple Moving Average</option>
+                      <option value="weighted_moving_average">Weighted Moving Average</option>
+                      <option value="exponential_smoothing">Exponential Smoothing</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Moving Average Periods</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="moving_avg_periods" data-config="moving_avg_periods" min="2" max="12" value="4">
+                      <span class="range-value" id="moving_avg_periods-value">4</span>
+                    </div>
+                    <div class="form-hint">Number of historical periods to average</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="seasonal_adjustment" checked>
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Seasonal adjustment</span><div class="toggle-description">Account for seasonal patterns</div></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-safety">
+              <div class="form-section">
+                <div class="form-section-title">Safety Stock Settings</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Safety Stock (weeks)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="safety_stock_weeks" data-config="safety_stock_weeks" min="1" max="8" value="2">
+                      <span class="range-value" id="safety_stock_weeks-value">2</span>
+                    </div>
+                    <div class="form-hint">Weeks of average demand as buffer</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Lead Time (days)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="lead_time_days" data-config="lead_time_days" min="1" max="30" value="7">
+                      <span class="range-value" id="lead_time_days-value">7</span>
+                    </div>
+                    <div class="form-hint">Default supplier lead time</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Service Level (%)</label>
+                    <select class="form-select" id="service_level" data-config="service_level">
+                      <option value="95">95% (Z=1.65)</option>
+                      <option value="99">99% (Z=2.33)</option>
+                      <option value="90">90% (Z=1.28)</option>
+                    </select>
+                    <div class="form-hint">Target in-stock probability</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-urgency">
+              <div class="form-section">
+                <div class="form-section-title">Urgency Classification</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Critical: Days of stock under</label>
+                    <input type="number" class="form-input" id="critical_days" data-config="critical_days" value="3" min="1">
+                    <div class="form-hint">Immediate action required</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Soon: Days of stock under</label>
+                    <input type="number" class="form-input" id="soon_days" data-config="soon_days" value="7" min="1">
+                    <div class="form-hint">Order within 24 hours</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Planned: Days of stock under</label>
+                    <input type="number" class="form-input" id="planned_days" data-config="planned_days" value="14" min="1">
+                    <div class="form-hint">Add to next order cycle</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-erp">
+              <div class="form-section">
+                <div class="form-section-title">ERP/WMS Integration</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">System</label>
+                    <select class="form-select" id="erp_system" data-config="erp_system">
+                      <option value="">None</option>
+                      <option value="sap">SAP</option>
+                      <option value="oracle">Oracle</option>
+                      <option value="netsuite">NetSuite</option>
+                      <option value="dynamics">Microsoft Dynamics</option>
+                      <option value="fishbowl">Fishbowl</option>
+                      <option value="custom">Custom API</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="auto_generate_po">
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Auto-generate PO drafts</span><div class="toggle-description">Create purchase orders automatically</div></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><span class="text-sm text-muted">Step 1 of 4</span></div>
+        <div class="footer-actions-right"><button class="btn btn-primary" onclick="Workflow.nextStep()">Continue →</button></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="wizard-content" id="step-2">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Upload Inventory Data</h1>
+          <p class="page-subtitle">Current stock levels and historical demand</p>
+        </div>
+        <div class="upload-zone">
+          <input type="file" accept=".csv,.xlsx,.xls">
+          <div class="upload-icon">📦</div>
+          <div class="upload-title">Drop inventory data here</div>
+          <div class="upload-subtitle">CSV or Excel format</div>
+        </div>
+        <div class="divider">or paste CSV data</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="text-input" rows="12" placeholder="sku,description,current_stock,week_1,week_2,week_3,week_4
+SKU-1001,Industrial Bolt Pack,1200,280,310,295,320
+SKU-1002,Heavy Duty Bracket Set,85,40,45,38,42
+WHL-2001,Hydraulic Hose Assembly,12,8,10,7,9
+DST-3001,Control Valve Assembly,25,5,7,6,4
+PLT-4001,Pallet Jack Wheels,150,30,35,28,32"></textarea>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><button class="btn btn-secondary" onclick="Workflow.prevStep()">← Back</button></div>
+        <div class="footer-actions-right">
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">Analyze Inventory →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div class="wizard-content" id="step-3">
+      <div class="page">
+        <div class="page-header"><h1 class="page-title">Forecasting Demand</h1><p class="page-subtitle">Calculating reorder points and recommendations</p></div>
+        <div class="progress-container">
+          <div class="progress-header"><span class="progress-label" id="progress-label">Starting...</span><span class="progress-value" id="progress-value">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="processing-list mt-6">
+          <div class="processing-item"><div class="processing-item-icon">📊</div><div class="processing-item-content"><div class="processing-item-title">Loading data</div><div class="processing-item-subtitle">Parsing inventory records</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📈</div><div class="processing-item-content"><div class="processing-item-title">Calculating trends</div><div class="processing-item-subtitle">Analyzing demand patterns</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🔮</div><div class="processing-item-content"><div class="processing-item-title">Forecasting demand</div><div class="processing-item-subtitle">Projecting future needs</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🛡️</div><div class="processing-item-content"><div class="processing-item-title">Safety stock</div><div class="processing-item-subtitle">Calculating buffer levels</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📋</div><div class="processing-item-content"><div class="processing-item-title">Generating recommendations</div><div class="processing-item-subtitle">Creating reorder list</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div class="wizard-content" id="step-4">
+      <div class="page">
+        <div class="results-header">
+          <div><h1 class="results-title">Restock Recommendations</h1><p class="results-subtitle">Processed in <span id="processing-time">—</span></p></div>
+          <div class="results-actions">
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.goToStep(2)">+ New Analysis</button>
+            <button class="btn btn-primary btn-sm" onclick="Workflow.download('csv')">Export CSV</button>
+          </div>
+        </div>
+        <div class="metrics-grid mb-6" id="result-metrics"></div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Reorder Recommendations</div></div>
+          <div class="card-body" id="reorder-list"></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Raw Output</div></div><div class="card-body"><pre class="json-output" id="json-output"></pre></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="company-settings-modal"><div class="modal"><div class="modal-header"><div class="modal-title">Company Settings</div><button class="modal-close" onclick="Workflow.closeCompanySettings()">×</button></div><div class="modal-body"><div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="company-name"></div><div class="form-group"><label class="form-label">Timezone</label><select class="form-select" id="company-timezone"><option value="America/New_York">Eastern</option></select></div><div class="form-group"><label class="form-label">Currency</label><select class="form-select" id="company-currency"><option value="USD">USD</option></select></div><div class="form-group"><label class="form-label">Units</label><select class="form-select" id="company-units"><option value="imperial">Imperial</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeCompanySettings()">Cancel</button><button class="btn btn-primary" onclick="Workflow.saveCompanySettings()">Save</button></div></div></div>
+<div class="modal-overlay" id="history-modal"><div class="modal"><div class="modal-header"><div class="modal-title">History</div><button class="modal-close" onclick="Workflow.closeHistory()">×</button></div><div class="modal-body"><div class="history-list"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeHistory()">Close</button></div></div></div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/dashboard/workflows/enterprise.js"></script>
+<script>
+  const DEFAULT_CONFIG = {
+    forecast_method: 'simple_moving_average',
+    moving_avg_periods: 4,
+    seasonal_adjustment: true,
+    safety_stock_weeks: 2,
+    lead_time_days: 7,
+    service_level: '95',
+    critical_days: 3,
+    soon_days: 7,
+    planned_days: 14,
+    auto_generate_po: false
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Workflow.init('inventory_restock', { defaultConfig: DEFAULT_CONFIG });
+  });
+
+  function calculateMetrics(result) {
+    const items = result.recommendations || [];
+    const critical = items.filter(i => i.urgency === 'immediate').length;
+    const soon = items.filter(i => i.urgency === 'soon').length;
+    return [
+      { icon: '📦', value: items.length, label: 'SKUs Analyzed' },
+      { icon: '🚨', value: critical, label: 'Critical' },
+      { icon: '⚠️', value: soon, label: 'Order Soon' },
+      { icon: '✓', value: `${Math.round((result.confidence || 0.85) * 100)}%`, label: 'Confidence' }
+    ];
+  }
+
+  function onResultsRendered(data) {
+    const result = data.result || {};
+    const items = result.recommendations || [];
+    const list = document.getElementById('reorder-list');
+    
+    if (list) {
+      if (items.length === 0) {
+        list.innerHTML = '<div class="text-muted">All inventory levels healthy</div>';
+      } else {
+        list.innerHTML = `<div class="table-container"><table class="table">
+          <thead><tr><th>SKU</th><th>Description</th><th>Current</th><th>Days Left</th><th>Reorder Qty</th><th>Urgency</th></tr></thead>
+          <tbody>${items.map(i => `<tr>
+            <td><strong>${i.sku || '—'}</strong></td>
+            <td>${i.description || '—'}</td>
+            <td>${i.current_stock || 0}</td>
+            <td>${i.days_of_stock || '—'}</td>
+            <td>${i.reorder_quantity || '—'}</td>
+            <td><span class="badge ${i.urgency === 'immediate' ? 'badge-error' : i.urgency === 'soon' ? 'badge-warning' : 'badge-info'}">${(i.urgency || '—').toUpperCase()}</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>`;
+      }
+    }
+  }
+</script>
+</body>
+</html>

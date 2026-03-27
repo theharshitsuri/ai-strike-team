@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Report | AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/enterprise.css">
+</head>
+<body data-theme="light">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><span>AI Strike Team</span></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Logistics</div>
+        <a href="/shubh/detention_tracking/index-enterprise.html" class="nav-item"><span class="nav-item-icon">⏱️</span><span>Detention Tracking</span></a>
+        <a href="/shubh/freight_audit/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔍</span><span>Freight Audit</span></a>
+        <a href="/shubh/load_scheduling/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📅</span><span>Load Scheduling</span></a>
+        <a href="/shubh/shipment_followup/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Shipment Follow-up</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Manufacturing</div>
+        <a href="/shubh/maintenance_triage/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔧</span><span>Maintenance Triage</span></a>
+        <a href="/shubh/qa_anomaly/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔬</span><span>QA Anomaly</span></a>
+        <a href="/shubh/production_report/index-enterprise.html" class="nav-item active"><span class="nav-item-icon">📊</span><span>Production Report</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Wholesale</div>
+        <a href="/shubh/po_email_to_erp/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📧</span><span>PO to ERP</span></a>
+        <a href="/shubh/inventory_restock/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Inventory Restock</span></a>
+        <a href="/shubh/warranty_claims/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🛡️</span><span>Warranty Claims</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-ghost w-full" onclick="Workflow.openCompanySettings()">⚙️ Settings</button></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left"><button class="btn btn-icon btn-ghost" onclick="Workflow.toggleSidebar()">☰</button><div class="topbar-breadcrumb"><a href="/">Dashboard</a><span class="topbar-breadcrumb-sep">/</span><span>Production Report</span></div></div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.showHistory()">📋 History</button>
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.loadDemo()">Demo</button>
+        <button class="btn btn-icon btn-ghost" id="theme-toggle" onclick="Workflow.toggleTheme()">🌙</button>
+      </div>
+    </header>
+
+    <div class="wizard-steps">
+      <div class="wizard-step active" onclick="Workflow.goToStep(1)"><span class="wizard-step-number">1</span><span class="wizard-step-label">Configure</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(2)"><span class="wizard-step-number">2</span><span class="wizard-step-label">Upload</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(3)"><span class="wizard-step-number">3</span><span class="wizard-step-label">Process</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(4)"><span class="wizard-step-number">4</span><span class="wizard-step-label">Results</span></div>
+    </div>
+
+    <!-- Step 1: Configure -->
+    <div class="wizard-content active" id="step-1">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Production Report</h1>
+          <p class="page-subtitle">Aggregate production data, calculate KPIs, generate executive summaries</p>
+        </div>
+
+        <div class="metrics-grid mb-6">
+          <div class="metric-card"><div class="metric-icon">📊</div><div class="metric-value">99.9%</div><div class="metric-label">Time Saved</div><div class="metric-change positive">↓ from 2 hrs/report</div></div>
+          <div class="metric-card"><div class="metric-icon">📈</div><div class="metric-value">Real-time</div><div class="metric-label">Insights</div><div class="metric-change positive">↑ instant analysis</div></div>
+          <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-value">$25K+</div><div class="metric-label">Annual Value</div><div class="metric-change positive">↑ efficiency</div></div>
+          <div class="metric-card"><div class="metric-icon">⚡</div><div class="metric-value">&lt;10s</div><div class="metric-label">Per Report</div><div class="metric-change positive">↓ instant</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Configuration</div><div class="card-subtitle">Set production targets and KPI thresholds</div></div>
+            <div class="flex gap-2"><button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button></div>
+          </div>
+          
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab active" data-tab="tab-targets">Targets</button>
+              <button class="tab" data-tab="tab-kpis">KPIs</button>
+              <button class="tab" data-tab="tab-report">Report Settings</button>
+            </div>
+
+            <div class="tab-content active" id="tab-targets">
+              <div class="form-section">
+                <div class="form-section-title">Production Targets</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Daily Output Target (units)</label>
+                    <input type="number" class="form-input" id="daily_target" data-config="daily_target" value="1000" min="0">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Quality Pass Rate Target (%)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="quality_target" data-config="quality_target" data-format="percent" min="80" max="100" value="95">
+                      <span class="range-value" id="quality_target-value">95%</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Max Downtime Target (minutes/shift)</label>
+                    <input type="number" class="form-input" id="downtime_target" data-config="downtime_target" value="30" min="0">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Scrap Rate Target (%)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="scrap_target" data-config="scrap_target" data-format="percent" min="0" max="10" step="0.5" value="2">
+                      <span class="range-value" id="scrap_target-value">2%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-kpis">
+              <div class="form-section">
+                <div class="form-section-title">KPI Calculations</div>
+                <div class="form-grid">
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="calc_oee" checked><span class="toggle-track"></span><div><span class="toggle-label">OEE (Overall Equipment Effectiveness)</span><div class="toggle-description">Availability × Performance × Quality</div></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="calc_throughput" checked><span class="toggle-track"></span><div><span class="toggle-label">Throughput</span><div class="toggle-description">Units per hour</div></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="calc_yield" checked><span class="toggle-track"></span><div><span class="toggle-label">First Pass Yield</span><div class="toggle-description">Quality units / Total units</div></div></label></div>
+                  <div class="form-group"><label class="toggle"><input type="checkbox" data-config="calc_downtime" checked><span class="toggle-track"></span><div><span class="toggle-label">Downtime Analysis</span><div class="toggle-description">By line and cause</div></div></label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-report">
+              <div class="form-section">
+                <div class="form-section-title">Report Settings</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="include_trends" checked>
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Include trend analysis</span></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="include_comparison" checked>
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Compare to targets</span></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="email_report">
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Email report</span></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Report Recipients</label>
+                    <input type="text" class="form-input" id="report_emails" data-config="report_emails" placeholder="manager@company.com, ops@company.com">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><span class="text-sm text-muted">Step 1 of 4</span></div>
+        <div class="footer-actions-right"><button class="btn btn-primary" onclick="Workflow.nextStep()">Continue →</button></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="wizard-content" id="step-2">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Upload Production Data</h1>
+          <p class="page-subtitle">Daily production CSV or MES export</p>
+        </div>
+        <div class="upload-zone">
+          <input type="file" accept=".csv,.xlsx,.xls">
+          <div class="upload-icon">📊</div>
+          <div class="upload-title">Drop production data here</div>
+          <div class="upload-subtitle">CSV or Excel format</div>
+        </div>
+        <div class="divider">or paste CSV data</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="text-input" rows="12" placeholder="date,shift,line,output_units,downtime_minutes,pass_count,fail_count,scrap_units
+2025-03-14,1,A,180,15,175,5,3
+2025-03-14,1,B,195,8,192,3,2
+2025-03-14,1,C,160,45,152,8,6
+2025-03-14,2,A,190,10,187,3,2
+2025-03-14,2,B,170,30,164,6,4
+2025-03-14,2,C,185,12,182,3,2"></textarea>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><button class="btn btn-secondary" onclick="Workflow.prevStep()">← Back</button></div>
+        <div class="footer-actions-right">
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">Generate Report →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div class="wizard-content" id="step-3">
+      <div class="page">
+        <div class="page-header"><h1 class="page-title">Generating Report</h1><p class="page-subtitle">Calculating KPIs and creating summary</p></div>
+        <div class="progress-container">
+          <div class="progress-header"><span class="progress-label" id="progress-label">Starting...</span><span class="progress-value" id="progress-value">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="processing-list mt-6">
+          <div class="processing-item"><div class="processing-item-icon">📊</div><div class="processing-item-content"><div class="processing-item-title">Loading data</div><div class="processing-item-subtitle">Parsing production records</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📈</div><div class="processing-item-content"><div class="processing-item-title">Calculating KPIs</div><div class="processing-item-subtitle">OEE, throughput, yield</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🎯</div><div class="processing-item-content"><div class="processing-item-title">Comparing targets</div><div class="processing-item-subtitle">Evaluating performance</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📝</div><div class="processing-item-content"><div class="processing-item-title">Generating summary</div><div class="processing-item-subtitle">Writing executive narrative</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div class="wizard-content" id="step-4">
+      <div class="page">
+        <div class="results-header">
+          <div><h1 class="results-title">Production Report</h1><p class="results-subtitle">Processed in <span id="processing-time">—</span></p></div>
+          <div class="results-actions">
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.goToStep(2)">+ New Report</button>
+            <button class="btn btn-secondary btn-sm" onclick="window.print()">Print</button>
+            <button class="btn btn-primary btn-sm" onclick="Workflow.download('json')">Download</button>
+          </div>
+        </div>
+        <div class="metrics-grid mb-6" id="result-metrics"></div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Executive Summary</div></div>
+          <div class="card-body" id="summary-content" style="white-space: pre-wrap;"></div>
+        </div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">KPI Details</div></div>
+          <div class="card-body"><div class="results-grid" id="results-grid"></div></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Raw Output</div></div><div class="card-body"><pre class="json-output" id="json-output"></pre></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="company-settings-modal"><div class="modal"><div class="modal-header"><div class="modal-title">Company Settings</div><button class="modal-close" onclick="Workflow.closeCompanySettings()">×</button></div><div class="modal-body"><div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="company-name"></div><div class="form-group"><label class="form-label">Timezone</label><select class="form-select" id="company-timezone"><option value="America/New_York">Eastern</option></select></div><div class="form-group"><label class="form-label">Currency</label><select class="form-select" id="company-currency"><option value="USD">USD</option></select></div><div class="form-group"><label class="form-label">Units</label><select class="form-select" id="company-units"><option value="imperial">Imperial</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeCompanySettings()">Cancel</button><button class="btn btn-primary" onclick="Workflow.saveCompanySettings()">Save</button></div></div></div>
+<div class="modal-overlay" id="history-modal"><div class="modal"><div class="modal-header"><div class="modal-title">History</div><button class="modal-close" onclick="Workflow.closeHistory()">×</button></div><div class="modal-body"><div class="history-list"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeHistory()">Close</button></div></div></div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/dashboard/workflows/enterprise.js"></script>
+<script>
+  const DEFAULT_CONFIG = {
+    daily_target: 1000,
+    quality_target: 95,
+    downtime_target: 30,
+    scrap_target: 2,
+    calc_oee: true,
+    calc_throughput: true,
+    calc_yield: true,
+    calc_downtime: true,
+    include_trends: true,
+    include_comparison: true,
+    email_report: false
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Workflow.init('production_report', { defaultConfig: DEFAULT_CONFIG });
+  });
+
+  function calculateMetrics(result) {
+    return [
+      { icon: '📦', value: result.total_output || '—', label: 'Total Output' },
+      { icon: '✓', value: `${result.pass_rate || 0}%`, label: 'Pass Rate' },
+      { icon: '⏱️', value: `${result.total_downtime || 0} min`, label: 'Downtime' },
+      { icon: '📊', value: `${result.oee || 0}%`, label: 'OEE' }
+    ];
+  }
+
+  function onResultsRendered(data) {
+    const result = data.result || {};
+    const summary = document.getElementById('summary-content');
+    if (summary && result.executive_summary) {
+      summary.textContent = result.executive_summary;
+    }
+  }
+</script>
+</body>
+</html>

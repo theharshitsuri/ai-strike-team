@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detention Tracking | AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/enterprise.css">
+</head>
+<body data-theme="light">
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">⚡</div>
+        <span>AI Strike Team</span>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Logistics</div>
+        <a href="/shubh/detention_tracking/index-enterprise.html" class="nav-item active">
+          <span class="nav-item-icon">⏱️</span>
+          <span>Detention Tracking</span>
+        </a>
+        <a href="/shubh/freight_audit/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">🔍</span>
+          <span>Freight Audit</span>
+        </a>
+        <a href="/shubh/load_scheduling/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">📅</span>
+          <span>Load Scheduling</span>
+        </a>
+        <a href="/shubh/shipment_followup/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">📦</span>
+          <span>Shipment Follow-up</span>
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Manufacturing</div>
+        <a href="/shubh/maintenance_triage/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">🔧</span>
+          <span>Maintenance Triage</span>
+        </a>
+        <a href="/shubh/qa_anomaly/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">🔬</span>
+          <span>QA Anomaly</span>
+        </a>
+        <a href="/shubh/production_report/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">📊</span>
+          <span>Production Report</span>
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Wholesale</div>
+        <a href="/shubh/po_email_to_erp/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">📧</span>
+          <span>PO to ERP</span>
+        </a>
+        <a href="/shubh/inventory_restock/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">📦</span>
+          <span>Inventory Restock</span>
+        </a>
+        <a href="/shubh/warranty_claims/index-enterprise.html" class="nav-item">
+          <span class="nav-item-icon">🛡️</span>
+          <span>Warranty Claims</span>
+        </a>
+      </div>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <button class="btn btn-ghost w-full" onclick="Workflow.openCompanySettings()">
+        ⚙️ Company Settings
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="btn btn-icon btn-ghost" onclick="Workflow.toggleSidebar()">☰</button>
+        <div class="topbar-breadcrumb">
+          <a href="/">Dashboard</a>
+          <span class="topbar-breadcrumb-sep">/</span>
+          <span>Detention Tracking</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.showHistory()">📋 History</button>
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.loadDemo()">Demo</button>
+        <button class="btn btn-icon btn-ghost" id="theme-toggle" onclick="Workflow.toggleTheme()">🌙</button>
+      </div>
+    </header>
+
+    <!-- Wizard Steps -->
+    <div class="wizard-steps">
+      <div class="wizard-step active" onclick="Workflow.goToStep(1)">
+        <span class="wizard-step-number">1</span>
+        <span class="wizard-step-label">Configure</span>
+      </div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(2)">
+        <span class="wizard-step-number">2</span>
+        <span class="wizard-step-label">Upload</span>
+      </div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(3)">
+        <span class="wizard-step-number">3</span>
+        <span class="wizard-step-label">Process</span>
+      </div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(4)">
+        <span class="wizard-step-number">4</span>
+        <span class="wizard-step-label">Results</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Configure -->
+    <div class="wizard-content active" id="step-1">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Detention Tracking</h1>
+          <p class="page-subtitle">Extract timestamps, calculate fees, generate invoices automatically</p>
+        </div>
+
+        <!-- ROI Metrics -->
+        <div class="metrics-grid mb-6">
+          <div class="metric-card">
+            <div class="metric-icon">⏱️</div>
+            <div class="metric-value">99.7%</div>
+            <div class="metric-label">Time Saved</div>
+            <div class="metric-change positive">↑ vs manual</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">💰</div>
+            <div class="metric-value">$26K+</div>
+            <div class="metric-label">Annual Value</div>
+            <div class="metric-change positive">↑ recovered fees</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">📊</div>
+            <div class="metric-value">98%</div>
+            <div class="metric-label">Accuracy</div>
+            <div class="metric-change positive">↑ vs 82% manual</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">⚡</div>
+            <div class="metric-value">&lt;10s</div>
+            <div class="metric-label">Per Claim</div>
+            <div class="metric-change positive">↓ from 80 min</div>
+          </div>
+        </div>
+
+        <!-- Industry Alert -->
+        <div class="alert alert-info mb-6">
+          <span class="alert-icon">💡</span>
+          <div class="alert-content">
+            <div class="alert-title">Industry Insight</div>
+            <div>Drivers lose $1.2B/year to detention. 25% of valid claims are never filed due to complexity. This workflow automates the entire process.</div>
+          </div>
+        </div>
+
+        <!-- Configuration Tabs -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Configuration</div>
+              <div class="card-subtitle">Customize settings for your company</div>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-ghost btn-sm" onclick="Workflow.exportConfig()">Export</button>
+              <button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab active" data-tab="tab-rates">Rates & Fees</button>
+              <button class="tab" data-tab="tab-rules">Business Rules</button>
+              <button class="tab" data-tab="tab-notifications">Notifications</button>
+              <button class="tab" data-tab="tab-integration">Integration</button>
+            </div>
+
+            <!-- Tab: Rates & Fees -->
+            <div class="tab-content active" id="tab-rates">
+              <div class="form-section">
+                <div class="form-section-title">Detention Rates</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Hourly Rate ($)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="rate_per_hour" data-config="rate_per_hour" data-format="currency" min="25" max="250" step="5" value="75">
+                      <span class="range-value" id="rate_per_hour-value">$75</span>
+                    </div>
+                    <div class="form-hint">Industry average: $50-$100/hour</div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label">Free Time (minutes)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="free_time_minutes" data-config="free_time_minutes" data-format="minutes" min="30" max="240" step="15" value="120">
+                      <span class="range-value" id="free_time_minutes-value">120 min</span>
+                    </div>
+                    <div class="form-hint">Standard: 2 hours (120 min)</div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label">Maximum Detention Hours</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="max_detention_hours" data-config="max_detention_hours" min="4" max="48" step="1" value="24">
+                      <span class="range-value" id="max_detention_hours-value">24</span>
+                    </div>
+                    <div class="form-hint">Cap billable hours per incident</div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label">Currency</label>
+                    <select class="form-select" id="currency" data-config="currency">
+                      <option value="USD">USD ($)</option>
+                      <option value="CAD">CAD (C$)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-section-title">Rate Tiers (Optional)</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Tier 1: First 4 hours ($/hr)</label>
+                    <div class="input-with-unit">
+                      <input type="number" class="form-input" id="tier1_rate" data-config="tier1_rate" value="75" min="0">
+                      <span class="input-unit">/hr</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Tier 2: 4-8 hours ($/hr)</label>
+                    <div class="input-with-unit">
+                      <input type="number" class="form-input" id="tier2_rate" data-config="tier2_rate" value="100" min="0">
+                      <span class="input-unit">/hr</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Tier 3: 8+ hours ($/hr)</label>
+                    <div class="input-with-unit">
+                      <input type="number" class="form-input" id="tier3_rate" data-config="tier3_rate" value="150" min="0">
+                      <span class="input-unit">/hr</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="use_tiered_rates">
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Enable tiered rates</span>
+                        <div class="toggle-description">Apply escalating rates for longer detention</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Business Rules -->
+            <div class="tab-content" id="tab-rules">
+              <div class="form-section">
+                <div class="form-section-title">Approval Thresholds</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Auto-approve under (hours)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="auto_approve_hours" data-config="auto_approve_hours" min="1" max="8" step="0.5" value="4">
+                      <span class="range-value" id="auto_approve_hours-value">4</span>
+                    </div>
+                    <div class="form-hint">Claims under this threshold are auto-approved</div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label">Escalate over (hours)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="escalation_hours" data-config="escalation_hours" min="4" max="24" step="1" value="8">
+                      <span class="range-value" id="escalation_hours-value">8</span>
+                    </div>
+                    <div class="form-hint">Claims over this require manager review</div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label">Confidence Threshold (%)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="confidence_threshold" data-config="confidence_threshold" data-format="percent" min="50" max="99" step="1" value="80">
+                      <span class="range-value" id="confidence_threshold-value">80%</span>
+                    </div>
+                    <div class="form-hint">Below this, flag for human review</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-section-title">Automation Settings</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="auto_generate_invoice" checked>
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Auto-generate invoice</span>
+                        <div class="toggle-description">Create invoice PDF automatically</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="require_po_number">
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Require PO number</span>
+                        <div class="toggle-description">Flag claims without PO reference</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="weekend_rates">
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Weekend premium rates</span>
+                        <div class="toggle-description">Apply 1.5x rate on weekends</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="holiday_rates">
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Holiday premium rates</span>
+                        <div class="toggle-description">Apply 2x rate on holidays</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Notifications -->
+            <div class="tab-content" id="tab-notifications">
+              <div class="form-section">
+                <div class="form-section-title">Alert Settings</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="slack_alerts" checked>
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Slack alerts</span>
+                        <div class="toggle-description">Send detention alerts to Slack</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="email_alerts">
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Email alerts</span>
+                        <div class="toggle-description">Send email notifications</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Slack Webhook URL</label>
+                    <input type="url" class="form-input" id="slack_webhook" data-config="slack_webhook" placeholder="https://hooks.slack.com/services/...">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Alert Email Recipients</label>
+                    <input type="text" class="form-input" id="alert_emails" data-config="alert_emails" placeholder="dispatch@company.com, billing@company.com">
+                    <div class="form-hint">Comma-separated email addresses</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-section-title">Alert Triggers</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="alert_on_escalation" checked>
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Alert on escalation</span>
+                        <div class="toggle-description">Notify when claim exceeds threshold</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="alert_on_low_confidence" checked>
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Alert on low confidence</span>
+                        <div class="toggle-description">Notify when AI confidence is low</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="daily_summary">
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Daily summary report</span>
+                        <div class="toggle-description">Send daily detention summary</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Integration -->
+            <div class="tab-content" id="tab-integration">
+              <div class="form-section">
+                <div class="form-section-title">TMS Integration</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">TMS Provider</label>
+                    <select class="form-select" id="tms_provider" data-config="tms_provider">
+                      <option value="">None</option>
+                      <option value="mcleod">McLeod Software</option>
+                      <option value="tmw">TMW Systems</option>
+                      <option value="mercurygate">MercuryGate</option>
+                      <option value="oracle_tms">Oracle TMS</option>
+                      <option value="sap_tm">SAP TM</option>
+                      <option value="bluejay">BluJay Solutions</option>
+                      <option value="custom">Custom API</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">API Endpoint</label>
+                    <input type="url" class="form-input" id="tms_api_url" data-config="tms_api_url" placeholder="https://api.yourtms.com/v1">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <input type="password" class="form-input" id="tms_api_key" data-config="tms_api_key" placeholder="••••••••••••••••">
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="auto_sync_tms">
+                      <span class="toggle-track"></span>
+                      <div>
+                        <span class="toggle-label">Auto-sync to TMS</span>
+                        <div class="toggle-description">Push detention data automatically</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-section-title">Accounting Integration</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Accounting System</label>
+                    <select class="form-select" id="accounting_system" data-config="accounting_system">
+                      <option value="">None</option>
+                      <option value="quickbooks">QuickBooks</option>
+                      <option value="xero">Xero</option>
+                      <option value="sage">Sage</option>
+                      <option value="netsuite">NetSuite</option>
+                      <option value="sap">SAP</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">GL Account Code</label>
+                    <input type="text" class="form-input" id="gl_account" data-config="gl_account" placeholder="4200-00">
+                    <div class="form-hint">Revenue account for detention fees</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <div class="footer-actions-left">
+          <span class="text-sm text-muted">Step 1 of 4</span>
+        </div>
+        <div class="footer-actions-right">
+          <button class="btn btn-primary" onclick="Workflow.nextStep()">
+            Continue to Upload →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="wizard-content" id="step-2">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Upload Detention Data</h1>
+          <p class="page-subtitle">Check-call logs, driver messages, facility records, or BOL documents</p>
+        </div>
+
+        <div class="upload-zone">
+          <input type="file" accept=".pdf,.txt,.csv,.doc,.docx,.xlsx,.xls,.png,.jpg,.jpeg">
+          <div class="upload-icon">📄</div>
+          <div class="upload-title">Drop file here</div>
+          <div class="upload-subtitle">or click to browse</div>
+          <div class="upload-formats">
+            <span class="upload-format">PDF</span>
+            <span class="upload-format">TXT</span>
+            <span class="upload-format">CSV</span>
+            <span class="upload-format">Excel</span>
+            <span class="upload-format">Image</span>
+          </div>
+        </div>
+
+        <div class="divider">or paste text directly</div>
+
+        <div class="form-group">
+          <textarea class="form-textarea" id="text-input" rows="10" placeholder="Paste check-call log, driver message, or facility timestamp data here...
+
+Example:
+Load: TRK-88412
+Carrier: FastHaul Logistics
+Driver: James Walker
+
+Facility: ABC Distribution Center
+Address: 1450 Industrial Blvd, Memphis, TN 38118
+
+Arrived: March 14, 2025 at 8:00 AM
+Check-in: March 14, 2025 at 8:15 AM
+Loading started: March 14, 2025 at 11:30 AM
+Departed: March 14, 2025 at 1:45 PM
+
+Reason for delay: Dock not available, waited for forklift crew
+PO#: PO-2025-4421"></textarea>
+        </div>
+
+        <div class="alert alert-info mt-4">
+          <span class="alert-icon">💡</span>
+          <div class="alert-content">
+            <div class="alert-title">Supported Formats</div>
+            <div>Check-call logs, ELD exports, driver text messages, facility gate logs, BOL with timestamps, or any document containing arrival/departure times.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <div class="footer-actions-left">
+          <button class="btn btn-secondary" onclick="Workflow.prevStep()">← Back</button>
+        </div>
+        <div class="footer-actions-right">
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">
+            Process Detention Claim →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div class="wizard-content" id="step-3">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Processing</h1>
+          <p class="page-subtitle">Extracting timestamps and calculating detention fees</p>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-header">
+            <span class="progress-label" id="progress-label">Starting...</span>
+            <span class="progress-value" id="progress-value">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="processing-list mt-6">
+          <div class="processing-item">
+            <div class="processing-item-icon">📄</div>
+            <div class="processing-item-content">
+              <div class="processing-item-title">Reading document</div>
+              <div class="processing-item-subtitle">Parsing uploaded content and extracting text</div>
+            </div>
+          </div>
+          <div class="processing-item">
+            <div class="processing-item-icon">🔍</div>
+            <div class="processing-item-content">
+              <div class="processing-item-title">Extracting timestamps</div>
+              <div class="processing-item-subtitle">Finding arrival, check-in, and departure times</div>
+            </div>
+          </div>
+          <div class="processing-item">
+            <div class="processing-item-icon">⏱️</div>
+            <div class="processing-item-content">
+              <div class="processing-item-title">Calculating detention</div>
+              <div class="processing-item-subtitle">Computing wait time and billable hours</div>
+            </div>
+          </div>
+          <div class="processing-item">
+            <div class="processing-item-icon">💰</div>
+            <div class="processing-item-content">
+              <div class="processing-item-title">Generating invoice</div>
+              <div class="processing-item-subtitle">Creating detention fee invoice</div>
+            </div>
+          </div>
+          <div class="processing-item">
+            <div class="processing-item-icon">📤</div>
+            <div class="processing-item-content">
+              <div class="processing-item-title">Sending alerts</div>
+              <div class="processing-item-subtitle">Notifying configured channels</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div class="wizard-content" id="step-4">
+      <div class="page">
+        <div class="results-header">
+          <div>
+            <h1 class="results-title">Detention Claim Results</h1>
+            <p class="results-subtitle">Processed in <span id="processing-time">—</span></p>
+          </div>
+          <div class="results-actions">
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.goToStep(2)">+ New Claim</button>
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.download('csv')">CSV</button>
+            <button class="btn btn-primary btn-sm" onclick="Workflow.download('json')">Download JSON</button>
+          </div>
+        </div>
+
+        <!-- Result Metrics -->
+        <div class="metrics-grid mb-6" id="result-metrics"></div>
+
+        <!-- Extracted Data -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title">Extracted Data</div>
+            <span class="badge badge-success" id="confidence-badge">High Confidence</span>
+          </div>
+          <div class="card-body">
+            <div class="results-grid" id="results-grid"></div>
+          </div>
+        </div>
+
+        <!-- Invoice Preview -->
+        <div class="card mb-6" id="invoice-card">
+          <div class="card-header">
+            <div class="card-title">Invoice Preview</div>
+            <button class="btn btn-sm btn-secondary" onclick="downloadInvoice()">Download PDF</button>
+          </div>
+          <div class="card-body" id="invoice-preview"></div>
+        </div>
+
+        <!-- Raw JSON -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Raw Output</div>
+            <button class="btn btn-ghost btn-sm" onclick="copyJSON()">Copy</button>
+          </div>
+          <div class="card-body">
+            <pre class="json-output" id="json-output"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Company Settings Modal -->
+<div class="modal-overlay" id="company-settings-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Company Settings</div>
+      <button class="modal-close" onclick="Workflow.closeCompanySettings()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Company Name</label>
+        <input type="text" class="form-input" id="company-name" placeholder="Your Company Name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Timezone</label>
+        <select class="form-select" id="company-timezone">
+          <option value="America/New_York">Eastern Time (ET)</option>
+          <option value="America/Chicago">Central Time (CT)</option>
+          <option value="America/Denver">Mountain Time (MT)</option>
+          <option value="America/Los_Angeles">Pacific Time (PT)</option>
+          <option value="UTC">UTC</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Currency</label>
+        <select class="form-select" id="company-currency">
+          <option value="USD">USD ($)</option>
+          <option value="CAD">CAD (C$)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Units</label>
+        <select class="form-select" id="company-units">
+          <option value="imperial">Imperial (miles, lbs)</option>
+          <option value="metric">Metric (km, kg)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="Workflow.closeCompanySettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="Workflow.saveCompanySettings()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal-overlay" id="history-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Processing History</div>
+      <button class="modal-close" onclick="Workflow.closeHistory()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="history-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="Workflow.clearHistory()">Clear History</button>
+      <button class="btn btn-secondary" onclick="Workflow.closeHistory()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/dashboard/workflows/enterprise.js"></script>
+<script>
+  const DEFAULT_CONFIG = {
+    rate_per_hour: 75,
+    free_time_minutes: 120,
+    max_detention_hours: 24,
+    currency: 'USD',
+    tier1_rate: 75,
+    tier2_rate: 100,
+    tier3_rate: 150,
+    use_tiered_rates: false,
+    auto_approve_hours: 4,
+    escalation_hours: 8,
+    confidence_threshold: 80,
+    auto_generate_invoice: true,
+    require_po_number: false,
+    weekend_rates: false,
+    holiday_rates: false,
+    slack_alerts: true,
+    email_alerts: false,
+    alert_on_escalation: true,
+    alert_on_low_confidence: true,
+    daily_summary: false
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Workflow.init('detention_tracking', {
+      defaultConfig: DEFAULT_CONFIG,
+      acceptedExtensions: ['.pdf', '.txt', '.csv', '.xlsx', '.xls', '.doc', '.docx', '.png', '.jpg', '.jpeg'],
+      maxFileSize: 10 * 1024 * 1024
+    });
+  });
+
+  // Custom metrics calculation for detention tracking
+  function calculateMetrics(result) {
+    const config = Workflow.state.config;
+    const freeTime = config.free_time_minutes || 120;
+    const rate = config.rate_per_hour || 75;
+    
+    let totalMinutes = 0;
+    let billableMinutes = 0;
+    let fee = 0;
+    
+    if (result.arrival_time && result.departure_time) {
+      const arrival = new Date(result.arrival_time);
+      const departure = new Date(result.departure_time);
+      totalMinutes = Math.round((departure - arrival) / 60000);
+      billableMinutes = Math.max(0, totalMinutes - freeTime);
+      fee = (billableMinutes / 60) * rate;
+    }
+    
+    return [
+      { icon: '💰', value: Workflow.formatCurrency(fee), label: 'Detention Fee' },
+      { icon: '⏱️', value: `${(billableMinutes / 60).toFixed(1)} hrs`, label: 'Billable Time' },
+      { icon: '🕐', value: `${(totalMinutes / 60).toFixed(1)} hrs`, label: 'Total Wait' },
+      { icon: '📊', value: `${Math.round((result.confidence || 0) * 100)}%`, label: 'Confidence' }
+    ];
+  }
+
+  // Custom results rendering
+  function onResultsRendered(data) {
+    const result = data.result || {};
+    const config = Workflow.state.config;
+    
+    // Update confidence badge
+    const badge = document.getElementById('confidence-badge');
+    if (badge && result.confidence) {
+      const conf = result.confidence * 100;
+      if (conf >= 90) {
+        badge.className = 'badge badge-success';
+        badge.textContent = 'High Confidence';
+      } else if (conf >= 70) {
+        badge.className = 'badge badge-warning';
+        badge.textContent = 'Medium Confidence';
+      } else {
+        badge.className = 'badge badge-error';
+        badge.textContent = 'Low Confidence - Review Required';
+      }
+    }
+    
+    // Generate invoice preview
+    const invoicePreview = document.getElementById('invoice-preview');
+    if (invoicePreview && result.arrival_time && result.departure_time) {
+      const arrival = new Date(result.arrival_time);
+      const departure = new Date(result.departure_time);
+      const totalMinutes = Math.round((departure - arrival) / 60000);
+      const freeTime = config.free_time_minutes || 120;
+      const billableMinutes = Math.max(0, totalMinutes - freeTime);
+      const rate = config.rate_per_hour || 75;
+      const fee = (billableMinutes / 60) * rate;
+      
+      invoicePreview.innerHTML = `
+        <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-6);">
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-6);">
+            <div>
+              <h3 style="margin-bottom: var(--space-2);">DETENTION INVOICE</h3>
+              <div class="text-muted">Invoice #: DET-${Date.now().toString().slice(-8)}</div>
+              <div class="text-muted">Date: ${new Date().toLocaleDateString()}</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="text-muted">Load: ${result.load_id || 'N/A'}</div>
+              <div class="text-muted">Carrier: ${result.carrier_name || 'N/A'}</div>
+            </div>
+          </div>
+          
+          <table class="table" style="margin-bottom: var(--space-6);">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th style="text-align: right;">Hours</th>
+                <th style="text-align: right;">Rate</th>
+                <th style="text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong>Detention at ${result.facility_name || 'Facility'}</strong><br>
+                  <span class="text-muted text-sm">Arrival: ${arrival.toLocaleString()}</span><br>
+                  <span class="text-muted text-sm">Departure: ${departure.toLocaleString()}</span>
+                </td>
+                <td style="text-align: right;">${(billableMinutes / 60).toFixed(2)}</td>
+                <td style="text-align: right;">${Workflow.formatCurrency(rate)}/hr</td>
+                <td style="text-align: right;">${Workflow.formatCurrency(fee)}</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="text-muted">Free time allowance (${freeTime} min)</td>
+                <td style="text-align: right;">-${Workflow.formatCurrency(0)}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr style="font-weight: bold; font-size: 16px;">
+                <td colspan="3">TOTAL DUE</td>
+                <td style="text-align: right;">${Workflow.formatCurrency(fee)}</td>
+              </tr>
+            </tfoot>
+          </table>
+          
+          <div class="text-muted text-sm">
+            <strong>Reason:</strong> ${result.detention_reason_detail || result.detention_reason || 'Not specified'}<br>
+            <strong>PO Reference:</strong> ${(result.po_numbers || []).join(', ') || 'N/A'}
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function copyJSON() {
+    const json = document.getElementById('json-output').textContent;
+    navigator.clipboard.writeText(json);
+    Workflow.showToast('Copied to clipboard', 'success');
+  }
+
+  function downloadInvoice() {
+    window.print();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance Triage | AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/enterprise.css">
+</head>
+<body data-theme="light">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><span>AI Strike Team</span></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Logistics</div>
+        <a href="/shubh/detention_tracking/index-enterprise.html" class="nav-item"><span class="nav-item-icon">⏱️</span><span>Detention Tracking</span></a>
+        <a href="/shubh/freight_audit/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔍</span><span>Freight Audit</span></a>
+        <a href="/shubh/load_scheduling/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📅</span><span>Load Scheduling</span></a>
+        <a href="/shubh/shipment_followup/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Shipment Follow-up</span></a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Manufacturing</div>
+        <a href="/shubh/maintenance_triage/index-enterprise.html" class="nav-item active"><span class="nav-item-icon">🔧</span><span>Maintenance Triage</span></a>
+        <a href="/shubh/qa_anomaly/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔬</span><span>QA Anomaly</span></a>
+        <a href="/shubh/production_report/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📊</span><span>Production Report</span></a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Wholesale</div>
+        <a href="/shubh/po_email_to_erp/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📧</span><span>PO to ERP</span></a>
+        <a href="/shubh/inventory_restock/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Inventory Restock</span></a>
+        <a href="/shubh/warranty_claims/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🛡️</span><span>Warranty Claims</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-ghost w-full" onclick="Workflow.openCompanySettings()">⚙️ Settings</button></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="btn btn-icon btn-ghost" onclick="Workflow.toggleSidebar()">☰</button>
+        <div class="topbar-breadcrumb"><a href="/">Dashboard</a><span class="topbar-breadcrumb-sep">/</span><span>Maintenance Triage</span></div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.showHistory()">📋 History</button>
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.loadDemo()">Demo</button>
+        <button class="btn btn-icon btn-ghost" id="theme-toggle" onclick="Workflow.toggleTheme()">🌙</button>
+      </div>
+    </header>
+
+    <div class="wizard-steps">
+      <div class="wizard-step active" onclick="Workflow.goToStep(1)"><span class="wizard-step-number">1</span><span class="wizard-step-label">Configure</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(2)"><span class="wizard-step-number">2</span><span class="wizard-step-label">Upload</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(3)"><span class="wizard-step-number">3</span><span class="wizard-step-label">Process</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(4)"><span class="wizard-step-number">4</span><span class="wizard-step-label">Results</span></div>
+    </div>
+
+    <!-- Step 1: Configure -->
+    <div class="wizard-content active" id="step-1">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Maintenance Triage</h1>
+          <p class="page-subtitle">Classify tickets, assign priority, route to the right team automatically</p>
+        </div>
+
+        <div class="metrics-grid mb-6">
+          <div class="metric-card"><div class="metric-icon">🔧</div><div class="metric-value">2x</div><div class="metric-label">Wrench Time</div><div class="metric-change positive">↑ technician productivity</div></div>
+          <div class="metric-card"><div class="metric-icon">⏱️</div><div class="metric-value">99.4%</div><div class="metric-label">Time Saved</div><div class="metric-change positive">↓ from 22 min/ticket</div></div>
+          <div class="metric-card"><div class="metric-icon">🎯</div><div class="metric-value">85%</div><div class="metric-label">First-Time Fix</div><div class="metric-change positive">↑ from 65%</div></div>
+          <div class="metric-card"><div class="metric-icon">🚨</div><div class="metric-value">&lt;15%</div><div class="metric-label">Emergency Ratio</div><div class="metric-change positive">↓ from 45%</div></div>
+        </div>
+
+        <div class="alert alert-info mb-6">
+          <span class="alert-icon">💡</span>
+          <div class="alert-content">
+            <div class="alert-title">CMMS Best Practice</div>
+            <div>Poor triage leads to only 35% wrench time. With proper classification and routing, technicians spend 70%+ of time actually fixing equipment.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Configuration</div><div class="card-subtitle">Set priority rules and team routing</div></div>
+            <div class="flex gap-2"><button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button></div>
+          </div>
+          
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab active" data-tab="tab-priority">Priority Rules</button>
+              <button class="tab" data-tab="tab-teams">Team Routing</button>
+              <button class="tab" data-tab="tab-safety">Safety Settings</button>
+              <button class="tab" data-tab="tab-cmms">CMMS Integration</button>
+            </div>
+
+            <div class="tab-content active" id="tab-priority">
+              <div class="form-section">
+                <div class="form-section-title">Priority Classification</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Confidence Threshold (%)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="confidence_threshold" data-config="confidence_threshold" data-format="percent" min="50" max="95" value="70">
+                      <span class="range-value" id="confidence_threshold-value">70%</span>
+                    </div>
+                    <div class="form-hint">Below this, flag for human review</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Default Priority</label>
+                    <select class="form-select" id="default_priority" data-config="default_priority">
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="low">Low</option>
+                    </select>
+                    <div class="form-hint">When classification is uncertain</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-section">
+                <div class="form-section-title">Critical Keywords (auto-escalate)</div>
+                <div class="form-group">
+                  <textarea class="form-textarea" id="critical_keywords" data-config="critical_keywords" rows="3" placeholder="safety hazard, production down, fire, chemical leak, injury">safety hazard, production down, fire, chemical leak, injury, smoke, explosion</textarea>
+                  <div class="form-hint">Comma-separated keywords that trigger critical priority</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-teams">
+              <div class="form-section">
+                <div class="form-section-title">Team Assignments</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Electrical Team</label>
+                    <input type="text" class="form-input" id="team_electrical" data-config="team_electrical" value="electrical_team" placeholder="Team name or email">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Mechanical Team</label>
+                    <input type="text" class="form-input" id="team_mechanical" data-config="team_mechanical" value="mechanics" placeholder="Team name or email">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">IT Support</label>
+                    <input type="text" class="form-input" id="team_it" data-config="team_it" value="it_support" placeholder="Team name or email">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Facilities</label>
+                    <input type="text" class="form-input" id="team_facilities" data-config="team_facilities" value="facilities" placeholder="Team name or email">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Safety Officer</label>
+                    <input type="text" class="form-input" id="team_safety" data-config="team_safety" value="safety_officer" placeholder="Team name or email">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-safety">
+              <div class="form-section">
+                <div class="form-section-title">Safety Escalation</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="auto_escalate_safety" checked>
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Auto-escalate safety issues</span><div class="toggle-description">Immediately notify safety officer</div></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="require_lockout_tagout">
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Flag LOTO requirements</span><div class="toggle-description">Identify lockout/tagout needs</div></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Safety Alert Email</label>
+                    <input type="email" class="form-input" id="safety_email" data-config="safety_email" placeholder="safety@company.com">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Safety Alert Phone</label>
+                    <input type="tel" class="form-input" id="safety_phone" data-config="safety_phone" placeholder="+1-555-SAFETY">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-cmms">
+              <div class="form-section">
+                <div class="form-section-title">CMMS Integration</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">CMMS System</label>
+                    <select class="form-select" id="cmms_system" data-config="cmms_system">
+                      <option value="">None</option>
+                      <option value="maximo">IBM Maximo</option>
+                      <option value="sap_pm">SAP PM</option>
+                      <option value="fiix">Fiix</option>
+                      <option value="limble">Limble</option>
+                      <option value="upkeep">UpKeep</option>
+                      <option value="emaint">eMaint</option>
+                      <option value="custom">Custom API</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">API Endpoint</label>
+                    <input type="url" class="form-input" id="cmms_api" data-config="cmms_api" placeholder="https://api.yourcmms.com">
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="auto_create_wo">
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Auto-create work orders</span><div class="toggle-description">Push to CMMS automatically</div></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><span class="text-sm text-muted">Step 1 of 4</span></div>
+        <div class="footer-actions-right"><button class="btn btn-primary" onclick="Workflow.nextStep()">Continue →</button></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="wizard-content" id="step-2">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Submit Maintenance Ticket</h1>
+          <p class="page-subtitle">Describe the issue or upload a ticket document</p>
+        </div>
+        <div class="upload-zone">
+          <input type="file" accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg">
+          <div class="upload-icon">🔧</div>
+          <div class="upload-title">Drop ticket here</div>
+          <div class="upload-subtitle">or click to browse</div>
+        </div>
+        <div class="divider">or describe the issue</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="text-input" rows="12" placeholder="Describe the maintenance issue...
+
+Example:
+Ticket submitted by: Floor Supervisor, Line 3
+Date: 2025-03-14 14:22
+
+Subject: Hydraulic press making grinding noise — possible seal failure
+
+The hydraulic press on Assembly Line 3 (Equipment ID: HP-042) has been making 
+a loud grinding noise since this morning. Operators noticed hydraulic fluid leaking 
+around the main cylinder seal. Production has been slowed — we're running at 60% 
+capacity on this line.
+
+Possible safety concern: if the seal fully fails, there is risk of high-pressure 
+fluid spray.
+
+Location: Building A, Assembly Line 3, Station 7"></textarea>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><button class="btn btn-secondary" onclick="Workflow.prevStep()">← Back</button></div>
+        <div class="footer-actions-right">
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">Classify Ticket →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div class="wizard-content" id="step-3">
+      <div class="page">
+        <div class="page-header"><h1 class="page-title">Classifying Ticket</h1><p class="page-subtitle">Analyzing issue and determining routing</p></div>
+        <div class="progress-container">
+          <div class="progress-header"><span class="progress-label" id="progress-label">Starting...</span><span class="progress-value" id="progress-value">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="processing-list mt-6">
+          <div class="processing-item"><div class="processing-item-icon">📋</div><div class="processing-item-content"><div class="processing-item-title">Reading ticket</div><div class="processing-item-subtitle">Parsing issue description</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🏷️</div><div class="processing-item-content"><div class="processing-item-title">Classifying category</div><div class="processing-item-subtitle">Electrical, mechanical, HVAC, etc.</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🎯</div><div class="processing-item-content"><div class="processing-item-title">Assigning priority</div><div class="processing-item-subtitle">Critical, high, medium, low</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🚨</div><div class="processing-item-content"><div class="processing-item-title">Safety check</div><div class="processing-item-subtitle">Identifying safety concerns</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">👥</div><div class="processing-item-content"><div class="processing-item-title">Routing to team</div><div class="processing-item-subtitle">Selecting appropriate technicians</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div class="wizard-content" id="step-4">
+      <div class="page">
+        <div class="results-header">
+          <div><h1 class="results-title">Triage Results</h1><p class="results-subtitle">Processed in <span id="processing-time">—</span></p></div>
+          <div class="results-actions">
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.goToStep(2)">+ New Ticket</button>
+            <button class="btn btn-primary btn-sm" onclick="Workflow.download('json')">Download</button>
+          </div>
+        </div>
+        <div class="metrics-grid mb-6" id="result-metrics"></div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Classification</div><span class="badge" id="priority-badge">—</span></div>
+          <div class="card-body"><div class="results-grid" id="results-grid"></div></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Raw Output</div></div><div class="card-body"><pre class="json-output" id="json-output"></pre></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="company-settings-modal"><div class="modal"><div class="modal-header"><div class="modal-title">Company Settings</div><button class="modal-close" onclick="Workflow.closeCompanySettings()">×</button></div><div class="modal-body"><div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="company-name"></div><div class="form-group"><label class="form-label">Timezone</label><select class="form-select" id="company-timezone"><option value="America/New_York">Eastern</option><option value="America/Chicago">Central</option></select></div><div class="form-group"><label class="form-label">Currency</label><select class="form-select" id="company-currency"><option value="USD">USD</option></select></div><div class="form-group"><label class="form-label">Units</label><select class="form-select" id="company-units"><option value="imperial">Imperial</option><option value="metric">Metric</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeCompanySettings()">Cancel</button><button class="btn btn-primary" onclick="Workflow.saveCompanySettings()">Save</button></div></div></div>
+<div class="modal-overlay" id="history-modal"><div class="modal"><div class="modal-header"><div class="modal-title">History</div><button class="modal-close" onclick="Workflow.closeHistory()">×</button></div><div class="modal-body"><div class="history-list"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeHistory()">Close</button></div></div></div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/dashboard/workflows/enterprise.js"></script>
+<script>
+  const DEFAULT_CONFIG = {
+    confidence_threshold: 70,
+    default_priority: 'medium',
+    critical_keywords: 'safety hazard, production down, fire, chemical leak, injury, smoke, explosion',
+    team_electrical: 'electrical_team',
+    team_mechanical: 'mechanics',
+    team_it: 'it_support',
+    team_facilities: 'facilities',
+    team_safety: 'safety_officer',
+    auto_escalate_safety: true,
+    require_lockout_tagout: true,
+    auto_create_wo: false
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Workflow.init('maintenance_triage', { defaultConfig: DEFAULT_CONFIG });
+  });
+
+  function calculateMetrics(result) {
+    return [
+      { icon: '🏷️', value: result.category || '—', label: 'Category' },
+      { icon: '🎯', value: (result.priority || '—').toUpperCase(), label: 'Priority' },
+      { icon: '👥', value: result.recommended_team || '—', label: 'Assigned Team' },
+      { icon: '🚨', value: result.safety_risk ? 'YES' : 'No', label: 'Safety Risk' }
+    ];
+  }
+
+  function onResultsRendered(data) {
+    const result = data.result || {};
+    const badge = document.getElementById('priority-badge');
+    if (badge && result.priority) {
+      const p = result.priority.toLowerCase();
+      badge.textContent = p.toUpperCase();
+      badge.className = 'badge ' + (p === 'critical' ? 'badge-error' : p === 'high' ? 'badge-warning' : p === 'medium' ? 'badge-info' : 'badge-success');
+    }
+  }
+</script>
+</body>
+</html>

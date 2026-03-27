@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QA Anomaly Detection | AI Strike Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/workflows/enterprise.css">
+</head>
+<body data-theme="light">
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><span>AI Strike Team</span></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Logistics</div>
+        <a href="/shubh/detention_tracking/index-enterprise.html" class="nav-item"><span class="nav-item-icon">⏱️</span><span>Detention Tracking</span></a>
+        <a href="/shubh/freight_audit/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔍</span><span>Freight Audit</span></a>
+        <a href="/shubh/load_scheduling/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📅</span><span>Load Scheduling</span></a>
+        <a href="/shubh/shipment_followup/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Shipment Follow-up</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Manufacturing</div>
+        <a href="/shubh/maintenance_triage/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🔧</span><span>Maintenance Triage</span></a>
+        <a href="/shubh/qa_anomaly/index-enterprise.html" class="nav-item active"><span class="nav-item-icon">🔬</span><span>QA Anomaly</span></a>
+        <a href="/shubh/production_report/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📊</span><span>Production Report</span></a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Wholesale</div>
+        <a href="/shubh/po_email_to_erp/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📧</span><span>PO to ERP</span></a>
+        <a href="/shubh/inventory_restock/index-enterprise.html" class="nav-item"><span class="nav-item-icon">📦</span><span>Inventory Restock</span></a>
+        <a href="/shubh/warranty_claims/index-enterprise.html" class="nav-item"><span class="nav-item-icon">🛡️</span><span>Warranty Claims</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-ghost w-full" onclick="Workflow.openCompanySettings()">⚙️ Settings</button></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left"><button class="btn btn-icon btn-ghost" onclick="Workflow.toggleSidebar()">☰</button><div class="topbar-breadcrumb"><a href="/">Dashboard</a><span class="topbar-breadcrumb-sep">/</span><span>QA Anomaly Detection</span></div></div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.showHistory()">📋 History</button>
+        <button class="btn btn-ghost btn-sm" onclick="Workflow.loadDemo()">Demo</button>
+        <button class="btn btn-icon btn-ghost" id="theme-toggle" onclick="Workflow.toggleTheme()">🌙</button>
+      </div>
+    </header>
+
+    <div class="wizard-steps">
+      <div class="wizard-step active" onclick="Workflow.goToStep(1)"><span class="wizard-step-number">1</span><span class="wizard-step-label">Configure</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(2)"><span class="wizard-step-number">2</span><span class="wizard-step-label">Upload</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(3)"><span class="wizard-step-number">3</span><span class="wizard-step-label">Process</span></div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step" onclick="Workflow.goToStep(4)"><span class="wizard-step-number">4</span><span class="wizard-step-label">Results</span></div>
+    </div>
+
+    <!-- Step 1: Configure -->
+    <div class="wizard-content active" id="step-1">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">QA Anomaly Detection</h1>
+          <p class="page-subtitle">Analyze inspection data, detect statistical anomalies, generate actionable reports</p>
+        </div>
+
+        <div class="metrics-grid mb-6">
+          <div class="metric-card"><div class="metric-icon">🔬</div><div class="metric-value">99%</div><div class="metric-label">Detection Rate</div><div class="metric-change positive">↑ vs 60-90% manual</div></div>
+          <div class="metric-card"><div class="metric-icon">⚡</div><div class="metric-value">3x</div><div class="metric-label">Faster Detection</div><div class="metric-change positive">↑ defect identification</div></div>
+          <div class="metric-card"><div class="metric-icon">⏱️</div><div class="metric-value">99.9%</div><div class="metric-label">Time Saved</div><div class="metric-change positive">↓ from 120 min/batch</div></div>
+          <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-value">$100K</div><div class="metric-label">Annual Value</div><div class="metric-change positive">↑ defect prevention</div></div>
+        </div>
+
+        <div class="alert alert-warning mb-6">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-content">
+            <div class="alert-title">Inspector Fatigue Factor</div>
+            <div>Manual detection drops from 90% (hour 1-4) to 55% (overtime). AI maintains 99%+ accuracy regardless of time.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Configuration</div><div class="card-subtitle">Set detection thresholds and specifications</div></div>
+            <div class="flex gap-2"><button class="btn btn-ghost btn-sm" onclick="Workflow.resetConfig()">Reset</button></div>
+          </div>
+          
+          <div class="card-body">
+            <div class="tabs">
+              <button class="tab active" data-tab="tab-thresholds">Detection Thresholds</button>
+              <button class="tab" data-tab="tab-specs">Column Specifications</button>
+              <button class="tab" data-tab="tab-severity">Severity Rules</button>
+              <button class="tab" data-tab="tab-alerts">Alerts</button>
+            </div>
+
+            <div class="tab-content active" id="tab-thresholds">
+              <div class="form-section">
+                <div class="form-section-title">Statistical Thresholds</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Z-Score Threshold</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="z_score_threshold" data-config="z_score_threshold" min="1.5" max="4" step="0.1" value="2.5">
+                      <span class="range-value" id="z_score_threshold-value">2.5</span>
+                    </div>
+                    <div class="form-hint">Standard deviations from mean to flag (2.5 = 99% confidence)</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Spec Deviation Threshold (%)</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="spec_deviation_pct" data-config="spec_deviation_pct" data-format="percent" min="1" max="20" step="1" value="5">
+                      <span class="range-value" id="spec_deviation_pct-value">5%</span>
+                    </div>
+                    <div class="form-hint">Percentage deviation from spec to flag</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Minimum Data Points</label>
+                    <div class="range-slider">
+                      <input type="range" class="range-input" id="min_data_points" data-config="min_data_points" min="3" max="20" step="1" value="5">
+                      <span class="range-value" id="min_data_points-value">5</span>
+                    </div>
+                    <div class="form-hint">Minimum samples before detection activates</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-specs">
+              <div class="form-section">
+                <div class="form-section-title">Column Specifications (customize per product)</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Temperature (°F)</label>
+                    <div class="flex gap-2">
+                      <input type="number" class="form-input" id="temp_min" data-config="temp_min" placeholder="Min" value="350">
+                      <input type="number" class="form-input" id="temp_target" data-config="temp_target" placeholder="Target" value="375">
+                      <input type="number" class="form-input" id="temp_max" data-config="temp_max" placeholder="Max" value="400">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Pressure (PSI)</label>
+                    <div class="flex gap-2">
+                      <input type="number" class="form-input" id="pressure_min" data-config="pressure_min" placeholder="Min" value="28">
+                      <input type="number" class="form-input" id="pressure_target" data-config="pressure_target" placeholder="Target" value="31">
+                      <input type="number" class="form-input" id="pressure_max" data-config="pressure_max" placeholder="Max" value="35">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Thickness (mm)</label>
+                    <div class="flex gap-2">
+                      <input type="number" class="form-input" id="thickness_min" data-config="thickness_min" placeholder="Min" value="2.0" step="0.01">
+                      <input type="number" class="form-input" id="thickness_target" data-config="thickness_target" placeholder="Target" value="2.25" step="0.01">
+                      <input type="number" class="form-input" id="thickness_max" data-config="thickness_max" placeholder="Max" value="2.5" step="0.01">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Weight (g)</label>
+                    <div class="flex gap-2">
+                      <input type="number" class="form-input" id="weight_min" data-config="weight_min" placeholder="Min" value="495">
+                      <input type="number" class="form-input" id="weight_target" data-config="weight_target" placeholder="Target" value="500">
+                      <input type="number" class="form-input" id="weight_max" data-config="weight_max" placeholder="Max" value="505">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-severity">
+              <div class="form-section">
+                <div class="form-section-title">Severity Classification</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Critical: Z-Score above</label>
+                    <input type="number" class="form-input" id="critical_zscore" data-config="critical_zscore" value="4.0" step="0.1">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">High: Z-Score above</label>
+                    <input type="number" class="form-input" id="high_zscore" data-config="high_zscore" value="3.0" step="0.1">
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="stop_production_critical" checked>
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Stop production on critical</span><div class="toggle-description">Recommend production halt</div></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="quarantine_batch" checked>
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Quarantine affected batches</span><div class="toggle-description">Flag batches for isolation</div></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-alerts">
+              <div class="form-section">
+                <div class="form-section-title">Alert Settings</div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="alert_on_anomaly" checked>
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Alert on anomaly detection</span></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle">
+                      <input type="checkbox" data-config="alert_supervisor">
+                      <span class="toggle-track"></span>
+                      <div><span class="toggle-label">Notify supervisor</span></div>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Alert Email</label>
+                    <input type="email" class="form-input" id="qa_alert_email" data-config="qa_alert_email" placeholder="qa@company.com">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><span class="text-sm text-muted">Step 1 of 4</span></div>
+        <div class="footer-actions-right"><button class="btn btn-primary" onclick="Workflow.nextStep()">Continue →</button></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="wizard-content" id="step-2">
+      <div class="page">
+        <div class="page-header">
+          <h1 class="page-title">Upload Inspection Data</h1>
+          <p class="page-subtitle">CSV or Excel file with inspection measurements</p>
+        </div>
+        <div class="upload-zone">
+          <input type="file" accept=".csv,.xlsx,.xls">
+          <div class="upload-icon">📊</div>
+          <div class="upload-title">Drop inspection data here</div>
+          <div class="upload-subtitle">CSV or Excel format</div>
+          <div class="upload-formats"><span class="upload-format">CSV</span><span class="upload-format">XLSX</span><span class="upload-format">XLS</span></div>
+        </div>
+        <div class="divider">or paste CSV data</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="text-input" rows="12" placeholder="batch_id,timestamp,temperature,pressure,thickness,weight
+B001,2025-03-14 08:00,372,31.2,2.24,499
+B002,2025-03-14 08:15,375,30.8,2.22,501
+B003,2025-03-14 08:30,374,31.0,2.23,500
+B004,2025-03-14 08:45,376,30.9,2.25,498
+B005,2025-03-14 09:00,373,31.1,2.24,502
+B006,2025-03-14 09:15,415,31.0,2.21,501
+B007,2025-03-14 09:30,376,38.5,2.24,499
+B008,2025-03-14 09:45,373,31.3,1.85,500"></textarea>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-actions-left"><button class="btn btn-secondary" onclick="Workflow.prevStep()">← Back</button></div>
+        <div class="footer-actions-right">
+          <button class="btn btn-ghost" onclick="Workflow.loadDemo()">Load Demo</button>
+          <button class="btn btn-primary" onclick="Workflow.run()">Analyze Data →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div class="wizard-content" id="step-3">
+      <div class="page">
+        <div class="page-header"><h1 class="page-title">Analyzing Data</h1><p class="page-subtitle">Detecting statistical anomalies</p></div>
+        <div class="progress-container">
+          <div class="progress-header"><span class="progress-label" id="progress-label">Starting...</span><span class="progress-value" id="progress-value">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="processing-list mt-6">
+          <div class="processing-item"><div class="processing-item-icon">📊</div><div class="processing-item-content"><div class="processing-item-title">Loading data</div><div class="processing-item-subtitle">Parsing inspection records</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📈</div><div class="processing-item-content"><div class="processing-item-title">Calculating statistics</div><div class="processing-item-subtitle">Mean, std dev, z-scores</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">🔍</div><div class="processing-item-content"><div class="processing-item-title">Detecting anomalies</div><div class="processing-item-subtitle">Finding outliers</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">⚠️</div><div class="processing-item-content"><div class="processing-item-title">Classifying severity</div><div class="processing-item-subtitle">Critical, high, medium, low</div></div></div>
+          <div class="processing-item"><div class="processing-item-icon">📝</div><div class="processing-item-content"><div class="processing-item-title">Generating report</div><div class="processing-item-subtitle">Creating summary</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div class="wizard-content" id="step-4">
+      <div class="page">
+        <div class="results-header">
+          <div><h1 class="results-title">Anomaly Detection Results</h1><p class="results-subtitle">Processed in <span id="processing-time">—</span></p></div>
+          <div class="results-actions">
+            <button class="btn btn-secondary btn-sm" onclick="Workflow.goToStep(2)">+ New Analysis</button>
+            <button class="btn btn-primary btn-sm" onclick="Workflow.download('json')">Download Report</button>
+          </div>
+        </div>
+        <div class="metrics-grid mb-6" id="result-metrics"></div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Anomalies Detected</div><span class="badge" id="severity-badge">—</span></div>
+          <div class="card-body" id="anomalies-list"></div>
+        </div>
+        <div class="card mb-6">
+          <div class="card-header"><div class="card-title">Recommended Actions</div></div>
+          <div class="card-body" id="actions-list"></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Raw Output</div></div><div class="card-body"><pre class="json-output" id="json-output"></pre></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="company-settings-modal"><div class="modal"><div class="modal-header"><div class="modal-title">Company Settings</div><button class="modal-close" onclick="Workflow.closeCompanySettings()">×</button></div><div class="modal-body"><div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="company-name"></div><div class="form-group"><label class="form-label">Timezone</label><select class="form-select" id="company-timezone"><option value="America/New_York">Eastern</option><option value="America/Chicago">Central</option></select></div><div class="form-group"><label class="form-label">Currency</label><select class="form-select" id="company-currency"><option value="USD">USD</option></select></div><div class="form-group"><label class="form-label">Units</label><select class="form-select" id="company-units"><option value="imperial">Imperial</option><option value="metric">Metric</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeCompanySettings()">Cancel</button><button class="btn btn-primary" onclick="Workflow.saveCompanySettings()">Save</button></div></div></div>
+<div class="modal-overlay" id="history-modal"><div class="modal"><div class="modal-header"><div class="modal-title">History</div><button class="modal-close" onclick="Workflow.closeHistory()">×</button></div><div class="modal-body"><div class="history-list"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="Workflow.closeHistory()">Close</button></div></div></div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/dashboard/workflows/enterprise.js"></script>
+<script>
+  const DEFAULT_CONFIG = {
+    z_score_threshold: 2.5,
+    spec_deviation_pct: 5,
+    min_data_points: 5,
+    temp_min: 350, temp_target: 375, temp_max: 400,
+    pressure_min: 28, pressure_target: 31, pressure_max: 35,
+    thickness_min: 2.0, thickness_target: 2.25, thickness_max: 2.5,
+    weight_min: 495, weight_target: 500, weight_max: 505,
+    critical_zscore: 4.0, high_zscore: 3.0,
+    stop_production_critical: true, quarantine_batch: true,
+    alert_on_anomaly: true, alert_supervisor: false
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Workflow.init('qa_anomaly', { defaultConfig: DEFAULT_CONFIG });
+  });
+
+  function calculateMetrics(result) {
+    const anomalies = result.anomalies || [];
+    const severity = result.severity || 'low';
+    return [
+      { icon: '📊', value: result.total_records || 0, label: 'Records Analyzed' },
+      { icon: '⚠️', value: anomalies.length, label: 'Anomalies Found' },
+      { icon: '🎯', value: severity.toUpperCase(), label: 'Severity' },
+      { icon: '✓', value: `${Math.round((result.confidence || 0) * 100)}%`, label: 'Confidence' }
+    ];
+  }
+
+  function onResultsRendered(data) {
+    const result = data.result || {};
+    const anomalies = result.anomalies || [];
+    const actions = result.recommended_actions || [];
+    
+    const badge = document.getElementById('severity-badge');
+    if (badge && result.severity) {
+      const s = result.severity.toLowerCase();
+      badge.textContent = s.toUpperCase();
+      badge.className = 'badge ' + (s === 'critical' ? 'badge-error' : s === 'high' ? 'badge-warning' : s === 'medium' ? 'badge-info' : 'badge-success');
+    }
+    
+    const anomList = document.getElementById('anomalies-list');
+    if (anomList) {
+      anomList.innerHTML = anomalies.length === 0 
+        ? '<div class="text-muted">No anomalies detected</div>'
+        : anomalies.map(a => `<div class="alert alert-warning mb-2"><span class="alert-icon">⚠️</span><div class="alert-content"><div class="alert-title">Batch ${a.batch_id || '—'}: ${a.column || '—'}</div><div>Value: ${a.value} | Z-Score: ${(a.z_score || 0).toFixed(2)} | ${a.description || ''}</div></div></div>`).join('');
+    }
+    
+    const actList = document.getElementById('actions-list');
+    if (actList) {
+      actList.innerHTML = actions.length === 0
+        ? '<div class="text-muted">No actions required</div>'
+        : '<ul style="margin:0;padding-left:20px;">' + actions.map(a => `<li>${a}</li>`).join('') + '</ul>';
+    }
+  }
+</script>
+</body>
+</html>
