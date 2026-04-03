@@ -1,0 +1,72 @@
+{
+  "clientId": "client_manufacturing",
+  "name": "Precision Parts Inc.",
+  "industry": "manufacturing",
+  "hubspot": {
+    "accessToken": "${HUBSPOT_ACCESS_TOKEN}",
+    "pipelineId": "default",
+    "stages": {
+      "new_lead": "appointmentscheduled",
+      "qualified": "qualifiedtobuy",
+      "rfq_sent": "presentationscheduled",
+      "prototype": "decisionmakerboughtin",
+      "closed_won": "closedwon",
+      "closed_lost": "closedlost"
+    },
+    "customFields": [
+      "part_type",
+      "material",
+      "annual_units",
+      "erp_system",
+      "quality_certifications",
+      "lead_time_weeks"
+    ],
+    "ownerEmail": "sales@precisionparts.com"
+  },
+  "parser": {
+    "vertical": "manufacturing",
+    "docTypes": ["rfq", "technical_drawing", "purchase_order", "quality_spec"],
+    "urgencyKeywords": ["production deadline", "line down", "urgent RFQ", "immediate need"],
+    "dealSizeSignals": ["annual volume", "units per year", "per month", "production run"]
+  },
+  "voice": {
+    "inboundScript": "manufacturing_inbound",
+    "outboundScript": "manufacturing_followup",
+    "voiceId": "michael",
+    "qualificationQuestions": [
+      "What type of parts are you looking to manufacture?",
+      "What's your estimated annual volume?",
+      "What materials and tolerances are required?",
+      "Do you have existing drawings or specs?"
+    ],
+    "callHours": { "start": "07:00", "end": "16:00", "timezone": "America/Detroit" }
+  },
+  "integrations": {
+    "gmail": true,
+    "twilio": true,
+    "slack": true,
+    "calendly": true,
+    "stripe": false,
+    "docusign": true
+  },
+  "sms": {
+    "templates": {
+      "new_lead": "Hi {name}, thanks for your RFQ submission to Precision Parts. We'll review your specs and follow up within 24 hours. Questions? Reply here.",
+      "follow_up": "Hi {name}, we've completed our review of your {part_type} RFQ. Ready to discuss pricing and lead times? Book a call: {calendly_link}",
+      "meeting_reminder": "Hi {name}, reminder: your engineering call with Precision Parts is {date} at {time}."
+    }
+  },
+  "reporting": {
+    "weeklyRecipients": ["owner@precisionparts.com"],
+    "metrics": ["new_rfqs", "quotes_sent", "prototype_orders", "closed_won", "pipeline_value", "avg_lead_time", "top_part_types"]
+  },
+  "leadScoring": {
+    "weights": {
+      "company_size": 15,
+      "title_seniority": 20,
+      "annual_volume": 30,
+      "has_drawings": 20,
+      "interaction_count": 15
+    }
+  }
+}

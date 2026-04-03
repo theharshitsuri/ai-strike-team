@@ -1,0 +1,73 @@
+{
+  "clientId": "client_logistics",
+  "name": "Freight Masters LLC",
+  "industry": "logistics",
+  "hubspot": {
+    "accessToken": "${HUBSPOT_ACCESS_TOKEN}",
+    "pipelineId": "default",
+    "stages": {
+      "new_lead": "appointmentscheduled",
+      "qualified": "qualifiedtobuy",
+      "proposal": "presentationscheduled",
+      "negotiation": "decisionmakerboughtin",
+      "closed_won": "closedwon",
+      "closed_lost": "closedlost"
+    },
+    "customFields": [
+      "load_type",
+      "origin_city",
+      "destination_city",
+      "freight_weight_lbs",
+      "freight_class",
+      "tms_system",
+      "annual_shipment_volume"
+    ],
+    "ownerEmail": "sales@freightmasters.com"
+  },
+  "parser": {
+    "vertical": "logistics",
+    "docTypes": ["bill_of_lading", "rfq", "invoice", "rate_confirmation"],
+    "urgencyKeywords": ["ASAP", "urgent", "tomorrow", "today", "rush", "critical"],
+    "dealSizeSignals": ["LTL", "FTL", "truckload", "container", "pallets"]
+  },
+  "voice": {
+    "inboundScript": "logistics_inbound",
+    "outboundScript": "logistics_followup",
+    "voiceId": "jennifer",
+    "qualificationQuestions": [
+      "What type of freight are you typically moving?",
+      "What's your average monthly shipping volume?",
+      "Are you currently working with a freight broker?",
+      "What are your main origin and destination states?"
+    ],
+    "callHours": { "start": "08:00", "end": "17:00", "timezone": "America/Chicago" }
+  },
+  "integrations": {
+    "gmail": true,
+    "twilio": true,
+    "slack": true,
+    "calendly": true,
+    "stripe": false,
+    "docusign": false
+  },
+  "sms": {
+    "templates": {
+      "new_lead": "Hi {name}, this is Jennifer from Freight Masters. We received your inquiry about {load_type} shipping. Can we schedule a quick 10-min call? Book here: {calendly_link}",
+      "follow_up": "Hi {name}, following up on our freight quote for your {origin} → {destination} lane. Any questions? Reply or call us at {phone}.",
+      "meeting_reminder": "Reminder: Your call with Freight Masters is tomorrow at {time}. We'll cover rates for your {load_type} needs."
+    }
+  },
+  "reporting": {
+    "weeklyRecipients": ["owner@freightmasters.com"],
+    "metrics": ["new_leads", "qualified_leads", "proposals_sent", "closed_won", "pipeline_value", "avg_deal_size", "top_lead_sources"]
+  },
+  "leadScoring": {
+    "weights": {
+      "company_size": 20,
+      "title_seniority": 25,
+      "interaction_count": 20,
+      "deal_urgency": 20,
+      "freight_volume": 15
+    }
+  }
+}

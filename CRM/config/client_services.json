@@ -1,0 +1,72 @@
+{
+  "clientId": "client_services",
+  "name": "Apex Consulting Group",
+  "industry": "services",
+  "hubspot": {
+    "accessToken": "${HUBSPOT_ACCESS_TOKEN}",
+    "pipelineId": "default",
+    "stages": {
+      "new_lead": "appointmentscheduled",
+      "discovery": "qualifiedtobuy",
+      "proposal": "presentationscheduled",
+      "contract": "decisionmakerboughtin",
+      "closed_won": "closedwon",
+      "closed_lost": "closedlost"
+    },
+    "customFields": [
+      "service_type",
+      "company_headcount",
+      "current_pain_point",
+      "budget_range",
+      "timeline",
+      "decision_maker"
+    ],
+    "ownerEmail": "sales@apexconsulting.com"
+  },
+  "parser": {
+    "vertical": "services",
+    "docTypes": ["rfp", "statement_of_work", "proposal", "contract"],
+    "urgencyKeywords": ["ASAP", "this quarter", "urgent", "board meeting", "deadline"],
+    "dealSizeSignals": ["annual contract", "monthly retainer", "project budget", "per year"]
+  },
+  "voice": {
+    "inboundScript": "services_inbound",
+    "outboundScript": "services_followup",
+    "voiceId": "sarah",
+    "qualificationQuestions": [
+      "What challenges are you looking to solve?",
+      "What's your timeline for getting started?",
+      "Do you have a budget range in mind?",
+      "Who else is involved in the decision-making process?"
+    ],
+    "callHours": { "start": "09:00", "end": "18:00", "timezone": "America/New_York" }
+  },
+  "integrations": {
+    "gmail": true,
+    "twilio": true,
+    "slack": true,
+    "calendly": true,
+    "stripe": true,
+    "docusign": true
+  },
+  "sms": {
+    "templates": {
+      "new_lead": "Hi {name}, thanks for reaching out to Apex Consulting. I'd love to learn more about your goals — are you free for a 20-min discovery call? {calendly_link}",
+      "follow_up": "Hi {name}, just checking in on the proposal we sent over. Any questions or would you like to schedule a review call?",
+      "meeting_reminder": "Hi {name}, looking forward to our call tomorrow at {time}. Talk soon! — Apex Consulting"
+    }
+  },
+  "reporting": {
+    "weeklyRecipients": ["owner@apexconsulting.com"],
+    "metrics": ["new_leads", "discovery_calls", "proposals_sent", "contracts_signed", "pipeline_value", "avg_deal_size", "top_industries"]
+  },
+  "leadScoring": {
+    "weights": {
+      "company_size": 20,
+      "title_seniority": 30,
+      "interaction_count": 20,
+      "budget_confirmed": 20,
+      "timeline_urgency": 10
+    }
+  }
+}
