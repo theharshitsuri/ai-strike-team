@@ -57,12 +57,13 @@ const INTEGRATIONS = [
 ];
 
 const WEBHOOK_ENDPOINTS = [
-  { label: 'Vapi (call ended)',    path: '/webhook/vapi', method: 'POST', badge: 'badge-blue' },
-  { label: 'HubSpot events',       path: '/webhook/hubspot', method: 'POST', badge: 'badge-orange' },
-  { label: 'Gmail Pub/Sub',        path: '/webhook/gmail', method: 'POST', badge: 'badge-green' },
-  { label: 'Calendly booking',     path: '/webhook/calendly', method: 'POST', badge: 'badge-purple' },
-  { label: 'Stripe payment',       path: '/webhook/stripe', method: 'POST', badge: 'badge-green' },
-  { label: 'Twilio SMS inbound',   path: '/webhook/twilio/sms', method: 'POST', badge: 'badge-muted' },
+  { label: 'Vapi (call ended)',    path: '/webhook/vapi',        method: 'POST', badge: 'badge-blue' },
+  { label: 'HubSpot events',      path: '/webhook/hubspot',     method: 'POST', badge: 'badge-orange' },
+  { label: 'Gmail Pub/Sub',       path: '/webhook/gmail',       method: 'POST', badge: 'badge-green' },
+  { label: 'Calendly booking',    path: '/webhook/calendly',    method: 'POST', badge: 'badge-purple' },
+  { label: 'Stripe payment',      path: '/webhook/stripe',      method: 'POST', badge: 'badge-green' },
+  { label: 'DocuSign envelope',   path: '/webhook/docusign',    method: 'POST', badge: 'badge-blue' },
+  { label: 'Twilio SMS inbound',  path: '/webhook/twilio/sms',  method: 'POST', badge: 'badge-muted' },
 ];
 
 export default function Integrations() {

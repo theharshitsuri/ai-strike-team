@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { extractWithClaude } from '../core/claudeClient.js';
-import { createContact, updateContact, logActivity } from '../core/hubspot.js';
+import { createContact, updateContact, searchContacts, logActivity } from '../core/hubspot.js';
 import { getDb } from '../db/db.js';
 import { PARSER_PROMPTS } from './prompts/verticals.js';
 
@@ -26,17 +26,39 @@ export async function parseEmail(config, emailText, metadata = {}) {
       promptFn(emailText)
     );
 
-    // Create or update contact in HubSpot
+    const emailAddr = extracted.email || metadata.senderEmail || '';
     const contactFields = {
       firstname: extracted.contact_name?.split(' ')[0] || 'Unknown',
       lastname: extracted.contact_name?.split(' ').slice(1).join(' ') || '',
-      email: extracted.email || metadata.senderEmail || '',
+      email: emailAddr,
       company: extracted.company || '',
       phone: extracted.phone || '',
       hs_lead_status: extracted.urgency === 'high' ? 'IN_PROGRESS' : 'NEW'
     };
 
-    const contact = await createContact(config, contactFields);
+    // Deduplicate: search by email before creating
+    let contact;
+    if (emailAddr) {
+      const existing = await searchContacts(config, emailAddr);
+      if (existing?.results?.length > 0) {
+        const existingContact = existing.results[0];
+        contact = await updateContact(config, existingContact.id, contactFields);
+        contact.id = existingContact.id;
+      }
+    }
+    if (!contact) {
+      contact = await createContact(config, contactFields);
+    }
+
+    // Mirror to local cache
+    db.prepare(`INSERT OR REPLACE INTO contacts_cache
+      (id, client_id, hubspot_id, firstname, lastname, email, phone, company, lead_status, source, last_activity_at, updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,datetime('now'),datetime('now'))`).run(
+      contact.id, config.clientId, contact.id,
+      contactFields.firstname, contactFields.lastname, emailAddr,
+      contactFields.phone, contactFields.company, contactFields.hs_lead_status,
+      metadata.source || 'email');
+
 
     // Log activity note
     const noteBody = `📧 Email parsed by AI\n\nIntent: ${extracted.intent}\nUrgency: ${extracted.urgency}\nEstimated Value: $${extracted.estimated_value || 'unknown'}\n\nNext Step: ${extracted.next_step}\n\nRaw extraction confidence: ${Math.round((extracted.confidence || 0.8) * 100)}%`;
@@ -101,11 +123,12 @@ export async function parseTranscript(config, transcriptText, contactId = null) 
 }
 
 /**
- * Intelligently parse a CSV file and map columns to CRM schema.
+ * Intelligently parse a CSV file, map columns to CRM schema, and bulk-import contacts.
  */
-export async function parseCsv(config, csvText) {
+export async function parseCsv(config, csvText, options = {}) {
   const jobId = uuid();
   const db = getDb();
+  const { importToHubspot = false } = options;
 
   db.prepare(`INSERT INTO parse_jobs (id, client_id, type, source, status, input_preview) VALUES (?,?,?,?,?,?)`).run(
     jobId, config.clientId, 'csv', 'upload', 'processing', csvText.slice(0, 200)
@@ -117,20 +140,60 @@ Return:
 {
   "column_mapping": { "csv_column_name": "crm_field_name_or_null" },
   "detected_rows": number,
-  "sample_contacts": [array of up to 3 parsed contact objects],
+  "all_contacts": [array of ALL parsed contact objects with fields: firstname, lastname, email, phone, company, jobtitle, city, state, country, website],
+  "sample_contacts": [first 3 from all_contacts],
   "data_quality_issues": ["array of issues found"],
   "confidence": number
 }
 
-CRM fields available: firstname, lastname, email, phone, company, jobtitle, city, state, country, website`;
+CRM fields available: firstname, lastname, email, phone, company, jobtitle, city, state, country, website
+Parse ALL rows if there are 200 or fewer; otherwise parse up to 200.`;
 
-    const extracted = await extractWithClaude(systemPrompt, `CSV Data:\n${csvText.slice(0, 3000)}`);
+    const extracted = await extractWithClaude(systemPrompt, `CSV Data:\n${csvText.slice(0, 6000)}`);
 
+    const importResults = { created: 0, updated: 0, failed: 0, errors: [] };
+
+    if (importToHubspot && extracted.all_contacts?.length > 0) {
+      for (const contact of extracted.all_contacts) {
+        try {
+          let existing = null;
+          if (contact.email) {
+            const search = await searchContacts(config, contact.email);
+            if (search?.results?.length > 0) existing = search.results[0];
+          }
+
+          if (existing) {
+            await updateContact(config, existing.id, contact);
+            db.prepare(`INSERT OR REPLACE INTO contacts_cache
+              (id, client_id, hubspot_id, firstname, lastname, email, phone, company, jobtitle, source, updated_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?,datetime('now'))`).run(
+              existing.id, config.clientId, existing.id,
+              contact.firstname, contact.lastname, contact.email,
+              contact.phone, contact.company, contact.jobtitle, 'csv_import');
+            importResults.updated++;
+          } else {
+            const created = await createContact(config, contact);
+            db.prepare(`INSERT OR REPLACE INTO contacts_cache
+              (id, client_id, hubspot_id, firstname, lastname, email, phone, company, jobtitle, source, created_at, updated_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?,datetime('now'),datetime('now'))`).run(
+              created.id, config.clientId, created.id,
+              contact.firstname, contact.lastname, contact.email,
+              contact.phone, contact.company, contact.jobtitle, 'csv_import');
+            importResults.created++;
+          }
+        } catch (e) {
+          importResults.failed++;
+          importResults.errors.push(e.message);
+        }
+      }
+    }
+
+    const result = { ...extracted, importResults: importToHubspot ? importResults : null };
     db.prepare(`UPDATE parse_jobs SET status=?, output_json=?, confidence=?, processed_at=datetime('now') WHERE id=?`).run(
-      'completed', JSON.stringify(extracted), extracted.confidence || 0.85, jobId
+      'completed', JSON.stringify(result), extracted.confidence || 0.85, jobId
     );
 
-    return { jobId, extracted, status: 'completed' };
+    return { jobId, extracted: result, status: 'completed' };
   } catch (err) {
     db.prepare(`UPDATE parse_jobs SET status=?, error=?, processed_at=datetime('now') WHERE id=?`).run('failed', err.message, jobId);
     throw err;

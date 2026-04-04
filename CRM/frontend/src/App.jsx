@@ -3,6 +3,7 @@ import { useState, createContext, useContext } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Pipeline from './pages/Pipeline.jsx';
+import Contacts from './pages/Contacts.jsx';
 import VoiceAgents from './pages/VoiceAgents.jsx';
 import Parser from './pages/Parser.jsx';
 import AIInsights from './pages/AIInsights.jsx';
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="/"            element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard"   element={<Dashboard />} />
               <Route path="/pipeline"    element={<Pipeline />} />
+              <Route path="/contacts"    element={<Contacts />} />
               <Route path="/voice"       element={<VoiceAgents />} />
               <Route path="/parser"      element={<Parser />} />
               <Route path="/insights"    element={<AIInsights />} />

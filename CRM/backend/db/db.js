@@ -27,6 +27,9 @@ export async function initDb() {
       name TEXT NOT NULL,
       industry TEXT NOT NULL,
       active INTEGER DEFAULT 1,
+      branding_primary_color TEXT DEFAULT '#6366f1',
+      branding_logo_url TEXT,
+      branding_company_name TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -62,6 +65,9 @@ export async function initDb() {
       transcript TEXT,
       summary TEXT,
       qualification_notes TEXT,
+      coaching_feedback TEXT,
+      talk_ratio REAL,
+      objections_handled INTEGER DEFAULT 0,
       created_at TEXT DEFAULT (datetime('now')),
       ended_at TEXT
     );
@@ -110,6 +116,68 @@ export async function initDb() {
       period_end TEXT,
       report_data TEXT,
       sent_at TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    -- Local contact cache (mirrors HubSpot, enables offline search + enrichment)
+    CREATE TABLE IF NOT EXISTS contacts_cache (
+      id TEXT PRIMARY KEY,
+      client_id TEXT NOT NULL,
+      hubspot_id TEXT,
+      firstname TEXT,
+      lastname TEXT,
+      email TEXT,
+      phone TEXT,
+      company TEXT,
+      jobtitle TEXT,
+      city TEXT,
+      state TEXT,
+      country TEXT,
+      website TEXT,
+      lead_status TEXT DEFAULT 'NEW',
+      lead_score INTEGER DEFAULT 0,
+      source TEXT,
+      tags TEXT,
+      notes TEXT,
+      last_activity_at TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_contacts_client ON contacts_cache(client_id);
+    CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts_cache(email);
+
+    -- Local deals cache
+    CREATE TABLE IF NOT EXISTS deals_cache (
+      id TEXT PRIMARY KEY,
+      client_id TEXT NOT NULL,
+      hubspot_id TEXT,
+      dealname TEXT NOT NULL,
+      amount REAL DEFAULT 0,
+      dealstage TEXT,
+      closedate TEXT,
+      contact_id TEXT,
+      probability REAL DEFAULT 0,
+      notes TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_deals_client ON deals_cache(client_id);
+
+    -- DocuSign document tracking
+    CREATE TABLE IF NOT EXISTS documents (
+      id TEXT PRIMARY KEY,
+      client_id TEXT NOT NULL,
+      docusign_envelope_id TEXT,
+      type TEXT NOT NULL,
+      status TEXT DEFAULT 'sent',
+      contact_id TEXT,
+      deal_id TEXT,
+      signer_name TEXT,
+      signer_email TEXT,
+      document_name TEXT,
+      signed_at TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
 

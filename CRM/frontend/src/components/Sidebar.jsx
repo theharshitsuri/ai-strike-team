@@ -1,16 +1,17 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useClient } from '../App.jsx';
 import {
-  LayoutDashboard, Kanban, Phone, FileSearch,
+  LayoutDashboard, Kanban, Users, Phone, FileSearch,
   Sparkles, Plug, Settings, Zap
 } from 'lucide-react';
 
 const NAV = [
   { label: 'Overview',     path: '/dashboard',    icon: LayoutDashboard },
   { label: 'Pipeline',     path: '/pipeline',     icon: Kanban },
+  { label: 'Contacts',     path: '/contacts',     icon: Users },
   { label: 'Voice Agents', path: '/voice',        icon: Phone, badge: 'AI' },
   { label: 'Parser',       path: '/parser',       icon: FileSearch },
-  { label: 'AI Insights',  path: '/insights',     icon: Sparkles, badge: 'NEW' },
+  { label: 'AI Insights',  path: '/insights',     icon: Sparkles },
   { label: 'Integrations', path: '/integrations', icon: Plug },
   { label: 'Settings',     path: '/settings',     icon: Settings },
 ];

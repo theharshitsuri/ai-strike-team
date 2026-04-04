@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { loadConfig } from '../core/configLoader.js';
-import { scoreContact, getNextBestAction, detectDealRisk, draftFollowUpEmail, getForecast } from '../intelligence/leadScoring.js';
+import { scoreContact, getNextBestAction, detectDealRisk, draftFollowUpEmail, getForecast, coachCall } from '../intelligence/leadScoring.js';
 import { getDb } from '../db/db.js';
 import { v4 as uuid } from 'uuid';
 
@@ -58,6 +58,19 @@ router.get('/forecast', async (req, res) => {
   try {
     const config = loadConfig(req.clientId);
     const result = await getForecast(config);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /ai/coach — analyze a call transcript for coaching feedback
+router.post('/coach', async (req, res) => {
+  try {
+    const config = loadConfig(req.clientId);
+    const { callId, transcript } = req.body;
+    if (!transcript) return res.status(400).json({ error: 'transcript is required' });
+    const result = await coachCall(config, callId || 'unknown', transcript);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });

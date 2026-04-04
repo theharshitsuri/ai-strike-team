@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { generateWithClaude } from '../core/claudeClient.js';
+import { generateWithClaude, extractWithClaude } from '../core/claudeClient.js';
 import { getDeals, getContact } from '../core/hubspot.js';
 import { getDb } from '../db/db.js';
 
@@ -184,6 +184,36 @@ export async function getForecast(config) {
     byStage,
     generatedAt: new Date().toISOString()
   };
+}
+
+// ─── Call Coaching ────────────────────────────────────────────────────────────
+
+/**
+ * Analyze a call transcript and give the rep coaching feedback.
+ */
+export async function coachCall(config, callId, transcript) {
+  const systemPrompt = `You are an expert sales call coach for a ${config.industry} company.
+Analyze this sales call transcript and return ONLY valid JSON:
+{
+  "overall_score": number (1-10),
+  "talk_ratio_estimate": number (0-1, rep's share of talking),
+  "strengths": ["array of 2-3 things rep did well"],
+  "improvements": ["array of 2-3 specific things to improve"],
+  "objections_handled": number,
+  "next_step_clarity": "clear|vague|none",
+  "recommended_followup": "string — what to do next",
+  "summary": "2-sentence summary of call outcome"
+}`;
+
+  const feedback = await extractWithClaude(systemPrompt, `Call Transcript:\n${transcript}`);
+
+  // Persist feedback on call log
+  const db = getDb();
+  db.prepare(`UPDATE call_logs SET coaching_feedback=?, talk_ratio=?, objections_handled=? WHERE id=? AND client_id=?`).run(
+    JSON.stringify(feedback), feedback.talk_ratio_estimate || 0.5, feedback.objections_handled || 0, callId, config.clientId
+  );
+
+  return { callId, feedback };
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

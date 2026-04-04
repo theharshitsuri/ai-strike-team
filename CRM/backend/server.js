@@ -11,6 +11,8 @@ import voiceRoutes from './routes/voice.js';
 import intelligenceRoutes from './routes/intelligence.js';
 import configRoutes from './routes/config.js';
 import dashboardRoutes from './routes/dashboard.js';
+import contactsRoutes from './routes/contacts.js';
+import onboardingRoutes from './routes/onboarding.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -35,13 +37,29 @@ app.use('/voice', voiceRoutes);
 app.use('/ai', intelligenceRoutes);
 app.use('/config', configRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/contacts', contactsRoutes);
+app.use('/onboarding', onboardingRoutes);
 
-// Health check
+// Enhanced health check — shows integration status
 app.get('/health', (req, res) => {
+  const integrations = {
+    hubspot:     !!process.env.HUBSPOT_ACCESS_TOKEN,
+    anthropic:   !!process.env.ANTHROPIC_API_KEY,
+    vapi:        !!process.env.VAPI_API_KEY,
+    twilio:      !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN),
+    slack:       !!process.env.SLACK_BOT_TOKEN,
+    gmail:       !!(process.env.GMAIL_CLIENT_ID && process.env.GMAIL_REFRESH_TOKEN),
+    stripe:      !!process.env.STRIPE_WEBHOOK_SECRET,
+    docusign:    !!process.env.DOCUSIGN_HMAC_KEY,
+  };
+  const configuredCount = Object.values(integrations).filter(Boolean).length;
+
   res.json({
     status: 'ok',
-    version: '1.0.0',
+    version: '2.0.0',
     mockMode: process.env.MOCK_MODE === 'true',
+    integrations,
+    configuredIntegrations: `${configuredCount}/${Object.keys(integrations).length}`,
     timestamp: new Date().toISOString()
   });
 });

@@ -40,7 +40,8 @@ router.post('/csv', upload.single('file'), async (req, res) => {
     let csvText = req.body.csvText;
     if (!csvText && req.file) csvText = req.file.buffer.toString('utf-8');
     if (!csvText) return res.status(400).json({ error: 'csvText or file is required' });
-    const result = await parseCsv(config, csvText);
+    const importToHubspot = req.body.importToHubspot === 'true' || req.body.importToHubspot === true;
+    const result = await parseCsv(config, csvText, { importToHubspot });
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });

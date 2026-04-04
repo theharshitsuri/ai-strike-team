@@ -1,7 +1,8 @@
 import { v4 as uuid } from 'uuid';
 import { createOutboundCall } from './vapiClient.js';
-import { getDeals, getContact, updateDealStage, logActivity } from '../core/hubspot.js';
+import { getDeals, updateDealStage, logActivity } from '../core/hubspot.js';
 import { parseTranscript } from '../parser/emailParser.js';
+import { coachCall } from '../intelligence/leadScoring.js';
 import { getDb } from '../db/db.js';
 
 /**
@@ -74,6 +75,14 @@ export async function handleCallEnded(config, callPayload) {
   // Update HubSpot deal stage if applicable
   if (metadata?.dealId && parsed?.deal_stage) {
     await updateDealStage(config, metadata.dealId, parsed.deal_stage).catch(() => {});
+  }
+
+  // Auto-run call coaching for completed calls with transcripts
+  const logRow = db.prepare(`SELECT id FROM call_logs WHERE vapi_call_id=?`).get(callId);
+  if (transcript && logRow?.id) {
+    coachCall(config, logRow.id, transcript).catch(err =>
+      console.error('[CallCoach] Coaching error:', err.message)
+    );
   }
 
   // Activity feed entry
